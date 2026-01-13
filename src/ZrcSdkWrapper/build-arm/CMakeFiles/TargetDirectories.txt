@@ -1,0 +1,7 @@
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/ZrcSdkWrapper.dir
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/edit_cache.dir
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/rebuild_cache.dir
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/list_install_components.dir
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/install.dir
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/install/local.dir
+/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm/CMakeFiles/install/strip.dir

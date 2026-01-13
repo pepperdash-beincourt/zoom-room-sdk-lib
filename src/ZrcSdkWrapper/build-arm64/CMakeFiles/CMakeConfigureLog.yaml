@@ -1,0 +1,2140 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/uname"
+      - "/opt/homebrew/bin/uname"
+      - "/opt/homebrew/sbin/uname"
+      - "/Users/awelker/bin/uname"
+      - "/usr/local/bin/uname"
+      - "/usr/local/go/bin/uname"
+      - "/Users/awelker/go/bin/uname"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/uname"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/uname"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/uname"
+      - "/System/Cryptexes/App/usr/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake:207 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The target system is: Linux -  - aarch64
+      The host system is: Darwin - 25.2.0 - arm64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/gmake"
+      - "/opt/homebrew/bin/gmake"
+      - "/opt/homebrew/sbin/gmake"
+      - "/Users/awelker/bin/gmake"
+      - "/usr/local/bin/gmake"
+      - "/usr/local/go/bin/gmake"
+      - "/Users/awelker/go/bin/gmake"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/gmake"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/gmake"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/gmake"
+      - "/System/Cryptexes/App/usr/bin/gmake"
+      - "/usr/bin/gmake"
+      - "/bin/gmake"
+      - "/usr/sbin/gmake"
+      - "/sbin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gmake"
+      - "/opt/pmk/env/global/bin/gmake"
+      - "/usr/local/share/dotnet/gmake"
+      - "/Users/awelker/.dotnet/tools/gmake"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/gmake"
+      - "/Users/awelker/Library/pnpm/gmake"
+      - "/cmdline-tools/tools/gmake"
+      - "/cmdline-tools/tools/bin/gmake"
+      - "/cmdline-tools/platform-tools/gmake"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/gmake"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/gmake"
+      - "/Users/awelker/android/cmdline-tools/tools/gmake"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/gmake"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/gmake"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/make"
+      - "/opt/homebrew/bin/make"
+      - "/opt/homebrew/sbin/make"
+      - "/Users/awelker/bin/make"
+      - "/usr/local/bin/make"
+      - "/usr/local/go/bin/make"
+      - "/Users/awelker/go/bin/make"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/make"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/make"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/make"
+      - "/System/Cryptexes/App/usr/bin/make"
+    found: "/usr/bin/make"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompiler.cmake:115 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:71 (_cmake_find_compiler_path)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_WITH_PATH"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-g++"
+    candidate_directories:
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-g++"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-g++"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "/opt/homebrew/share/cmake/Modules/"
+    found: "/opt/homebrew/share/cmake/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /opt/homebrew/bin/aarch64-linux-gnu-g++ 
+      Build flags: -march=armv8-a;-march=armv8-a
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles/4.2.1/CompilerIdCXX/a.out
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-ar"
+      - "ar"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-ar"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-ranlib"
+      - "ranlib"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-strip"
+      - "strip"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-strip"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-ld"
+      - "ld"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-ld"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-nm"
+      - "nm"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-nm"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-objdump"
+      - "objdump"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-objdump"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-objcopy"
+      - "objcopy"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-objcopy"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-readelf"
+      - "readelf"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-readelf"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-dlltool"
+      - "dlltool"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/opt/homebrew/bin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-dlltool"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/bin/aarch64-linux-gnu-dlltool"
+      - "/usr/local/bin/aarch64-linux-gnu-dlltool"
+      - "/usr/local/go/bin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-dlltool"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-dlltool"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-dlltool"
+      - "/usr/bin/aarch64-linux-gnu-dlltool"
+      - "/bin/aarch64-linux-gnu-dlltool"
+      - "/usr/sbin/aarch64-linux-gnu-dlltool"
+      - "/sbin/aarch64-linux-gnu-dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-dlltool"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-dlltool"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-dlltool"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-dlltool"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-dlltool"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-dlltool"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-dlltool"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-dlltool"
+      - "/opt/homebrew/bin/dlltool"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/dlltool"
+      - "/opt/homebrew/sbin/dlltool"
+      - "/Users/awelker/bin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/usr/local/go/bin/dlltool"
+      - "/Users/awelker/go/bin/dlltool"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/dlltool"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/dlltool"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/dlltool"
+      - "/System/Cryptexes/App/usr/bin/dlltool"
+      - "/usr/bin/dlltool"
+      - "/bin/dlltool"
+      - "/usr/sbin/dlltool"
+      - "/sbin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/dlltool"
+      - "/opt/pmk/env/global/bin/dlltool"
+      - "/usr/local/share/dotnet/dlltool"
+      - "/Users/awelker/.dotnet/tools/dlltool"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/dlltool"
+      - "/Users/awelker/Library/pnpm/dlltool"
+      - "/cmdline-tools/tools/dlltool"
+      - "/cmdline-tools/tools/bin/dlltool"
+      - "/cmdline-tools/platform-tools/dlltool"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/dlltool"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/dlltool"
+      - "/Users/awelker/android/cmdline-tools/tools/dlltool"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/dlltool"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-addr2line"
+      - "addr2line"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-addr2line"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-tapi"
+      - "tapi"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/opt/homebrew/bin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-tapi"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/bin/aarch64-linux-gnu-tapi"
+      - "/usr/local/bin/aarch64-linux-gnu-tapi"
+      - "/usr/local/go/bin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-tapi"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-tapi"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-tapi"
+      - "/usr/bin/aarch64-linux-gnu-tapi"
+      - "/bin/aarch64-linux-gnu-tapi"
+      - "/usr/sbin/aarch64-linux-gnu-tapi"
+      - "/sbin/aarch64-linux-gnu-tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-tapi"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-tapi"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-tapi"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-tapi"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-tapi"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-tapi"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-tapi"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-tapi"
+      - "/opt/homebrew/bin/tapi"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/tapi"
+      - "/opt/homebrew/sbin/tapi"
+      - "/Users/awelker/bin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/usr/local/go/bin/tapi"
+      - "/Users/awelker/go/bin/tapi"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/tapi"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/tapi"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/tapi"
+      - "/System/Cryptexes/App/usr/bin/tapi"
+      - "/usr/bin/tapi"
+      - "/bin/tapi"
+      - "/usr/sbin/tapi"
+      - "/sbin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/tapi"
+      - "/opt/pmk/env/global/bin/tapi"
+      - "/usr/local/share/dotnet/tapi"
+      - "/Users/awelker/.dotnet/tools/tapi"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/tapi"
+      - "/Users/awelker/Library/pnpm/tapi"
+      - "/cmdline-tools/tools/tapi"
+      - "/cmdline-tools/tools/bin/tapi"
+      - "/cmdline-tools/platform-tools/tapi"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/tapi"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/tapi"
+      - "/Users/awelker/android/cmdline-tools/tools/tapi"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/tapi"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-gcc-ar-13.3"
+      - "aarch64-linux-gnu-gcc-ar-13"
+      - "aarch64-linux-gnu-gcc-ar13"
+      - "aarch64-linux-gnu-gcc-ar"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/usr/local/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/usr/local/go/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/usr/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/usr/sbin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/sbin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ar-13.3"
+      - "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/usr/local/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/usr/local/go/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-gcc-ar-13"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/usr/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/usr/sbin/aarch64-linux-gnu-gcc-ar-13"
+      - "/sbin/aarch64-linux-gnu-gcc-ar-13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-gcc-ar-13"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-gcc-ar-13"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-gcc-ar-13"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ar-13"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ar-13"
+      - "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/usr/local/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/usr/local/go/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-gcc-ar13"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/usr/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/usr/sbin/aarch64-linux-gnu-gcc-ar13"
+      - "/sbin/aarch64-linux-gnu-gcc-ar13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-gcc-ar13"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-gcc-ar13"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-gcc-ar13"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ar13"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ar13"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ar"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "aarch64-linux-gnu-gcc-ranlib-13"
+      - "aarch64-linux-gnu-gcc-ranlib13"
+      - "aarch64-linux-gnu-gcc-ranlib"
+    candidate_directories:
+      - "/opt/homebrew/bin/"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/"
+      - "/opt/homebrew/sbin/"
+      - "/Users/awelker/bin/"
+      - "/usr/local/bin/"
+      - "/usr/local/go/bin/"
+      - "/Users/awelker/go/bin/"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/opt/pmk/env/global/bin/"
+      - "/usr/local/share/dotnet/"
+      - "/Users/awelker/.dotnet/tools/"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/"
+      - "/Users/awelker/Library/pnpm/"
+      - "/cmdline-tools/tools/"
+      - "/cmdline-tools/tools/bin/"
+      - "/cmdline-tools/platform-tools/"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/"
+      - "/Users/awelker/android/cmdline-tools/tools/"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/"
+    searched_directories:
+      - "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/usr/local/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/usr/local/go/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/usr/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/usr/sbin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/sbin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ranlib-13.3"
+      - "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/usr/local/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/usr/local/go/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/usr/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/usr/sbin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/sbin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ranlib-13"
+      - "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/.nvm/versions/node/v24.4.1/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/opt/homebrew/sbin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/usr/local/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/usr/local/go/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/go/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/opt/homebrew/opt/python@3.11/libexec/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli/aarch64-linux-gnu-gcc-ranlib13"
+      - "/System/Cryptexes/App/usr/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/usr/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/usr/sbin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/sbin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/opt/pmk/env/global/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/usr/local/share/dotnet/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/.dotnet/tools/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/.local/share/zinit/polaris/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/Library/pnpm/aarch64-linux-gnu-gcc-ranlib13"
+      - "/cmdline-tools/tools/aarch64-linux-gnu-gcc-ranlib13"
+      - "/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts/aarch64-linux-gnu-gcc-ranlib13"
+      - "/usr/lib/jvm/java-8-openjdk-amd64/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/android/cmdline-tools/tools/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/android/cmdline-tools/tools/bin/aarch64-linux-gnu-gcc-ranlib13"
+      - "/Users/awelker/android/cmdline-tools/platform-tools/aarch64-linux-gnu-gcc-ranlib13"
+    found: "/opt/homebrew/bin/aarch64-linux-gnu-gcc-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/opt/homebrew/bin"
+        - "/opt/homebrew/sbin"
+        - "/Users/awelker/bin"
+        - "/usr/local/bin"
+        - "/usr/local/go/bin"
+        - "/Users/awelker/go/bin"
+        - "/opt/homebrew/opt/python@3.11/libexec/bin"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/Users/awelker/Library/Application Support/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/Users/awelker/.nvm/versions/node/v24.4.1/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/opt/pmk/env/global/bin"
+        - "/usr/local/share/dotnet"
+        - "~/.dotnet/tools"
+        - "/Users/awelker/.local/share/zinit/polaris/bin"
+        - "/Users/awelker/Library/pnpm"
+        - "/cmdline-tools/tools"
+        - "/cmdline-tools/tools/bin"
+        - "/cmdline-tools/platform-tools"
+        - "/Users/awelker/.dotnet/tools"
+        - "/Users/awelker/.vscode/extensions/ms-python.debugpy-2025.18.0-darwin-arm64/bundled/scripts/noConfigScripts"
+        - "/usr/lib/jvm/java-8-openjdk-amd64/bin"
+        - "/Users/awelker/android/cmdline-tools/tools"
+        - "/Users/awelker/android/cmdline-tools/tools/bin"
+        - "/Users/awelker/android/cmdline-tools/platform-tools"
+      CMAKE_FIND_ROOT_PATH: "/usr/aarch64-linux-gnu"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles/CMakeScratch/TryCompile-6jngLi"
+      binary: "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles/CMakeScratch/TryCompile-6jngLi"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a -march=armv8-a"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles/CMakeScratch/TryCompile-6jngLi'
+        
+        Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_11d6d/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_11d6d.dir/build.make CMakeFiles/cmTC_11d6d.dir/build
+        Building CXX object CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o
+        /opt/homebrew/bin/aarch64-linux-gnu-g++   -march=armv8-a -march=armv8-a    -v -o CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+        Using built-in specs.
+        COLLECT_GCC=/opt/homebrew/bin/aarch64-linux-gnu-g++
+        Target: aarch64-unknown-linux-gnu
+        Configured with: /Volumes/build/.build/aarch64-unknown-linux-gnu/src/gcc/configure --build=aarch64-build_apple-darwin23.6.0 --host=aarch64-build_apple-darwin23.6.0 --target=aarch64-unknown-linux-gnu --prefix=/Volumes/tools/aarch64-unknown-linux-gnu --exec_prefix=/Volumes/tools/aarch64-unknown-linux-gnu --with-sysroot=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-languages=c,c++,fortran --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --enable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --disable-libmpx --with-gmp=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpfr=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpc=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-isl=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --enable-lto --enable-threads=posix --enable-target-optspace --enable-linker-build-id --with-linker-hash-style=both --enable-plugin --enable-gold --disable-nls --disable-multilib --with-local-prefix=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-long-long
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 13.3.0 (GCC) 
+        COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_11d6d.dir/'
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/cc1plus -quiet -v -iprefix /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/ -isysroot /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot -D_GNU_SOURCE /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_11d6d.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -march=armv8-a -mlittle-endian -mabi=lp64 -version -o /var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//ccemqf4Z.s
+        GNU C++17 (GCC) version 13.3.0 (aarch64-unknown-linux-gnu)
+        	compiled by GNU C version Apple LLVM 15.0.0 (clang-1500.3.9.4), GMP version 6.2.1, MPFR version 4.2.1, MPC version 1.3.1, isl version isl-0.26-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0"
+        ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu"
+        ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/backward"
+        ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include"
+        ignoring nonexistent directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/include"
+        ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed"
+        ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/backward
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/include
+        End of search list.
+        Compiler executable checksum: c3aca89f8974c6b0658098bc6e5a0bc3
+        COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_11d6d.dir/'
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/as -v -EL -march=armv8-a -mabi=lp64 -o CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o /var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//ccemqf4Z.s
+        GNU assembler version 2.29.1 (aarch64-unknown-linux-gnu) using BFD version (GNU Binutils) 2.29.1
+        COMPILER_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/
+        LIBRARY_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_11d6d
+        /opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_11d6d.dir/link.txt --verbose=1
+        Using built-in specs.
+        COLLECT_GCC=/opt/homebrew/bin/aarch64-linux-gnu-g++
+        COLLECT_LTO_WRAPPER=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper
+        Target: aarch64-unknown-linux-gnu
+        Configured with: /Volumes/build/.build/aarch64-unknown-linux-gnu/src/gcc/configure --build=aarch64-build_apple-darwin23.6.0 --host=aarch64-build_apple-darwin23.6.0 --target=aarch64-unknown-linux-gnu --prefix=/Volumes/tools/aarch64-unknown-linux-gnu --exec_prefix=/Volumes/tools/aarch64-unknown-linux-gnu --with-sysroot=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-languages=c,c++,fortran --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --enable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --disable-libmpx --with-gmp=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpfr=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpc=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-isl=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --enable-lto --enable-threads=posix --enable-target-optspace --enable-linker-build-id --with-linker-hash-style=both --enable-plugin --enable-gold --disable-nls --disable-multilib --with-local-prefix=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-long-long
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 13.3.0 (GCC) 
+        COMPILER_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/
+        LIBRARY_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'cmTC_11d6d' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_11d6d.'
+         /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/collect2 -plugin /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//cce4k4IW.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot --build-id --eh-frame-hdr --hash-style=both -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux -o cmTC_11d6d /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib -v CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o
+        collect2 version 13.3.0
+        /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/ld -plugin /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//cce4k4IW.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot --build-id --eh-frame-hdr --hash-style=both -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux -o cmTC_11d6d /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib -v CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o
+        GNU ld (GNU Binutils) 2.29.1
+        COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'cmTC_11d6d' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_11d6d.'
+        /opt/homebrew/bin/aarch64-linux-gnu-g++  -march=armv8-a -march=armv8-a   -v -Wl,-v CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_11d6d
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0]
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu]
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/backward]
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include]
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed]
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include]
+          add: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/include]
+        end of search list found
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0]
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu]
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/backward] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/backward]
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include]
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed]
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include]
+        collapse include dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/include] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include]
+        implicit include dirs: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/backward;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles/CMakeScratch/TryCompile-6jngLi']
+        ignore line: []
+        ignore line: [Run Build Command(s): /opt/homebrew/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_11d6d/fast]
+        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_11d6d.dir/build.make CMakeFiles/cmTC_11d6d.dir/build]
+        ignore line: [Building CXX object CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/opt/homebrew/bin/aarch64-linux-gnu-g++   -march=armv8-a -march=armv8-a    -v -o CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -c /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/opt/homebrew/bin/aarch64-linux-gnu-g++]
+        ignore line: [Target: aarch64-unknown-linux-gnu]
+        ignore line: [Configured with: /Volumes/build/.build/aarch64-unknown-linux-gnu/src/gcc/configure --build=aarch64-build_apple-darwin23.6.0 --host=aarch64-build_apple-darwin23.6.0 --target=aarch64-unknown-linux-gnu --prefix=/Volumes/tools/aarch64-unknown-linux-gnu --exec_prefix=/Volumes/tools/aarch64-unknown-linux-gnu --with-sysroot=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-languages=c c++ fortran --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --enable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --disable-libmpx --with-gmp=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpfr=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpc=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-isl=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --enable-lto --enable-threads=posix --enable-target-optspace --enable-linker-build-id --with-linker-hash-style=both --enable-plugin --enable-gold --disable-nls --disable-multilib --with-local-prefix=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-long-long]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 13.3.0 (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_11d6d.dir/']
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/cc1plus -quiet -v -iprefix /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/ -isysroot /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot -D_GNU_SOURCE /opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_11d6d.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -march=armv8-a -mlittle-endian -mabi=lp64 -version -o /var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//ccemqf4Z.s]
+        ignore line: [GNU C++17 (GCC) version 13.3.0 (aarch64-unknown-linux-gnu)]
+        ignore line: [	compiled by GNU C version Apple LLVM 15.0.0 (clang-1500.3.9.4)  GMP version 6.2.1  MPFR version 4.2.1  MPC version 1.3.1  isl version isl-0.26-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0"]
+        ignore line: [ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu"]
+        ignore line: [ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/backward"]
+        ignore line: [ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include"]
+        ignore line: [ignoring nonexistent directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/include"]
+        ignore line: [ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed"]
+        ignore line: [ignoring duplicate directory "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/../../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include/c++/13.3.0/backward]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/include-fixed]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/include]
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: c3aca89f8974c6b0658098bc6e5a0bc3]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_11d6d.dir/']
+        ignore line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/as -v -EL -march=armv8-a -mabi=lp64 -o CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o /var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//ccemqf4Z.s]
+        ignore line: [GNU assembler version 2.29.1 (aarch64-unknown-linux-gnu) using BFD version (GNU Binutils) 2.29.1]
+        ignore line: [COMPILER_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_11d6d]
+        ignore line: [/opt/homebrew/bin/cmake -E cmake_link_script CMakeFiles/cmTC_11d6d.dir/link.txt --verbose=1]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/opt/homebrew/bin/aarch64-linux-gnu-g++]
+        ignore line: [COLLECT_LTO_WRAPPER=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper]
+        ignore line: [Target: aarch64-unknown-linux-gnu]
+        ignore line: [Configured with: /Volumes/build/.build/aarch64-unknown-linux-gnu/src/gcc/configure --build=aarch64-build_apple-darwin23.6.0 --host=aarch64-build_apple-darwin23.6.0 --target=aarch64-unknown-linux-gnu --prefix=/Volumes/tools/aarch64-unknown-linux-gnu --exec_prefix=/Volumes/tools/aarch64-unknown-linux-gnu --with-sysroot=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-languages=c c++ fortran --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --enable-libssp --enable-libquadmath --enable-libquadmath-support --enable-libsanitizer --disable-libmpx --with-gmp=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpfr=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-mpc=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --with-isl=/Volumes/build/.build/aarch64-unknown-linux-gnu/buildtools --enable-lto --enable-threads=posix --enable-target-optspace --enable-linker-build-id --with-linker-hash-style=both --enable-plugin --enable-gold --disable-nls --disable-multilib --with-local-prefix=/Volumes/tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot --enable-long-long]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 13.3.0 (GCC) ]
+        ignore line: [COMPILER_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/:/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a' '-v' '-o' 'cmTC_11d6d' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_11d6d.']
+        link line: [ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/collect2 -plugin /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//cce4k4IW.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot --build-id --eh-frame-hdr --hash-style=both -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux -o cmTC_11d6d /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib -v CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o]
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//cce4k4IW.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--sysroot=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [--hash-style=both] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib/ld-linux-aarch64.so.1] ==> ignore
+          arg [-X] ==> ignore
+          arg [-EL] ==> ignore
+          arg [-maarch64linux] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_11d6d] ==> ignore
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o] ==> obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o]
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o] ==> obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o]
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o] ==> obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o]
+          arg [-L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0] ==> dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0]
+          arg [-L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc] ==> dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc]
+          arg [-L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64] ==> dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64]
+          arg [-L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64] ==> dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64]
+          arg [-L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib] ==> dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib]
+          arg [-L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib] ==> dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o] ==> obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o]
+          arg [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o] ==> obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o]
+        ignore line: [collect2 version 13.3.0]
+        ignore line: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/ld -plugin /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../libexec/gcc/aarch64-unknown-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/var/folders/30/24cfm5cd2cl99h04jytk09m40000gp/T//cce4k4IW.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot --build-id --eh-frame-hdr --hash-style=both -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux -o cmTC_11d6d /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64 -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib -L/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib -v CMakeFiles/cmTC_11d6d.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o]
+        linker tool for 'CXX': /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/ld
+        collapse obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crt1.o] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64/crt1.o]
+        collapse obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crti.o] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64/crti.o]
+        collapse obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o]
+        collapse obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o]
+        collapse obj [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64/crtn.o] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64/crtn.o]
+        collapse library dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0]
+        collapse library dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc]
+        collapse library dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib/../lib64] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/lib64]
+        collapse library dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib/../lib64] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64]
+        collapse library dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/lib] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/lib]
+        collapse library dir [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../aarch64-unknown-linux-gnu/sysroot/usr/lib] ==> [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib]
+        implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64/crt1.o;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64/crti.o;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtbegin.o;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0/crtend.o;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64/crtn.o]
+        implicit dirs: [/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc/aarch64-unknown-linux-gnu/13.3.0;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/lib/gcc;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/lib64;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib64;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/lib;/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/homebrew/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/opt/homebrew/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "/opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/bin/../lib/gcc/aarch64-unknown-linux-gnu/13.3.0/../../../../aarch64-unknown-linux-gnu/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.29.1
+...
