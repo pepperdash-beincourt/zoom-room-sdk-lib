@@ -33,26 +33,18 @@ target_compile_definitions(ZrcSdkWrapper PRIVATE
 
 # Platform-specific settings
 if(UNIX AND NOT APPLE)
-    # Linux-specific settings (including Crestron ARM)
+    # Linux ARM32 hard-float (Crestron device)
+    message(STATUS "Building for ARM32 hard-float ABI (matching Crestron device)")
     target_compile_options(ZrcSdkWrapper PRIVATE
         -Wall
         -Wextra
         -fvisibility=hidden
+        -march=armv7-a
     )
-    
-    # Link with pthread and dl for dynamic loading
     target_link_libraries(ZrcSdkWrapper PRIVATE
         pthread
         dl
     )
-    
-    # For ARM processors, optimize accordingly
-    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
-        message(STATUS "Building for ARM32 hard-float ABI (matching Crestron device)")
-        target_compile_options(ZrcSdkWrapper PRIVATE
-            -march=armv7-a
-        )
-    endif()
 elseif(APPLE)
     # macOS-specific settings for development/testing
     target_compile_options(ZrcSdkWrapper PRIVATE
