@@ -1,4 +1,4 @@
-name: Build PepperDash Essentials
+name: Build Zoom Room SDK Library
 
 on:
   push:
