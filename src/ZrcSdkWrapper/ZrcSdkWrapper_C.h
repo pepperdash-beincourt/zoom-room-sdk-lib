@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 #ifdef _WIN32
     #ifdef ZRCSDKWRAPPER_EXPORTS
         #define ZRCSDKWRAPPER_API __declspec(dllexport)
@@ -21,6 +23,91 @@ typedef void* ZrcSdkHandle;
 
 // Callback type: message + errorCode + caller-supplied userData
 typedef void (ZRCSDKWRAPPER_CALL *SdkEventCallback)(const char* message, int errorCode, void* userData);
+
+// ── Participant flat struct ────────────────────────────────────────────────────
+// Flattened representation of MeetingParticipant + nested status structs.
+// All strings are null-terminated; all booleans are int32_t (0=false, 1=true).
+typedef struct ZrcParticipant {
+    int32_t userID;
+    int32_t parentUserID;
+    char    userGUID[256];
+    int32_t userType;               // UserType enum
+    char    userName[256];
+    char    pronouns[128];
+    int32_t isMySelf;
+    int32_t isHost;
+    int32_t isOriginalOrAlternativeHost;
+    int32_t isCohost;
+    int32_t isGuest;
+    int32_t isViewOnlyUser;
+    int32_t isViewOnlyUserCanTalk;
+    int32_t canRecord;
+    int32_t isRecording;
+    int32_t recordingDisabled;
+    int32_t isInSilentMode;
+    // AudioStatus
+    int32_t audioType;              // AudioType enum
+    int32_t audioMuted;
+    // VideoStatus
+    int32_t videoHasSource;
+    int32_t videoReceiving;
+    int32_t videoSending;
+    int32_t videoCanControl;
+    // CameraControlStatus
+    int32_t cameraCanRequestControl;
+    int32_t cameraAmIControlling;
+    int32_t cameraCanSwitch;
+    int32_t cameraCanMove;
+    int32_t cameraCanZoom;
+    // HandStatus
+    int32_t handRaised;
+    int32_t handSkinTone;           // HandSkinTone enum
+    char    reactionEmoji[32];
+    int32_t reactionFeedback;       // ReactionFeedback enum
+    // Interpretation
+    int32_t isInterpreter;
+    int32_t interpreterLanguage;    // InterpretLanguage enum
+    char    interpreterLanguageID[64];
+    char    interpreterLanguageName[64];
+    // Miscellaneous
+    int32_t isRemoteControlAdmin;
+    int32_t isVirtualAssistant;
+    int32_t isCompanionModeUser;
+    int32_t isCompanionZRUser;
+    // BreakoutRoomStatus
+    char    boSessionBID[128];
+    int32_t boUserStatus;           // BO_USER_STATUS enum
+    int32_t boSupportForceJoinLeave;
+    int32_t boSupportSelfChoose;
+    int32_t boSupportCohostStartStop;
+    // Streaming / webinar flags
+    int32_t canPinMultiVideo;
+    int32_t isSupportGreenRoom;
+    int32_t isInGreenRoom;
+    // AudioControlStatus
+    int32_t audioCanRequestControl;
+    int32_t audioCanBeRequested;
+    int32_t audioAmIControlling;
+    // RTMP / special user flags
+    int32_t isRTMPUser;
+    int32_t isActiveRTMPUser;
+    int32_t isSimuliveUser;
+    // Timezone
+    int32_t timeZoneOffsetMinutes;
+    int32_t isSupportDisplayLocalTime;
+    char    attendeeJid[256];
+} ZrcParticipant;
+
+// Callback type for participant list updates.
+// participants: array of count ZrcParticipant values (caller-owned, valid only during callback)
+// needCleanUp:  1 = caller should clear its local list before applying updates
+// sessionType:  ConfSessionType enum value
+typedef void (ZRCSDKWRAPPER_CALL *ZrcParticipantListCallback)(
+    const ZrcParticipant* participants,
+    int count,
+    int needCleanUp,
+    int sessionType,
+    void* userData);
 
 // ── SDK Lifecycle ─────────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API ZrcSdkHandle ZRCSDKWRAPPER_CALL ZrcSdk_Create();
@@ -73,6 +160,10 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ResumeRecording(ZrcSdkHandle han
 // ── Participants ──────────────────────────────────────────────────────────────
 // Returns last-known participant count (updated by callbacks)
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetParticipantCount(ZrcSdkHandle handle);
+
+// ── Event Callback Setters ────────────────────────────────────────────────────
+// Participant list (Init / Join / Leave / Update)
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData);
 
 // ── Control System (ZRCS) ─────────────────────────────────────────────────────
 // Returns 1 if enabled, 0 if disabled, <0 on error

@@ -134,7 +134,7 @@ public:
                                    bool needCleanUpUserList, ConfSessionType session) override;
     void OnUserJoin(const std::vector<MeetingParticipant>& participants, ConfSessionType session) override;
     void OnUserLeave(const std::vector<MeetingParticipant>& participants, ConfSessionType session) override;
-    void OnUserUpdate(const std::vector<MeetingParticipant>& participants, ConfSessionType session) override {}
+    void OnUserUpdate(const std::vector<MeetingParticipant>& participants, ConfSessionType session) override;
     void OnHostChangedNotification(int32_t hostUserID, bool amIHost, ConfSessionType session) override;
     void OnMeetingParticipantsChanged(ConfSessionType session) override {}
     void OnUpdateHideProfilePictures(bool isHideProfilePictures) override {}
@@ -218,6 +218,7 @@ struct ZrcSdkInstance
     SdkEventCallback hostChangedCallback;           void* hostChangedUserData;
     SdkEventCallback recordingStatusCallback;       void* recordingStatusUserData;
     SdkEventCallback controlSystemEnabledCallback;  void* controlSystemEnabledUserData;
+    ZrcParticipantListCallback participantListCallback; void* participantListUserData;
 
     ZrcSdkInstance()
         : pNativeSDK(nullptr), bInitialized(false)
@@ -243,6 +244,7 @@ struct ZrcSdkInstance
         , hostChangedCallback(nullptr), hostChangedUserData(nullptr)
         , recordingStatusCallback(nullptr), recordingStatusUserData(nullptr)
         , controlSystemEnabledCallback(nullptr), controlSystemEnabledUserData(nullptr)
+        , participantListCallback(nullptr), participantListUserData(nullptr)
     {}
 
     void Raise(SdkEventCallback cb, void* ud, const char* msg, int code) { if (cb) cb(msg, code, ud); }
@@ -262,9 +264,106 @@ struct ZrcSdkInstance
     void RaiseHostChangedEvent(int amIHost)                       { Raise(hostChangedCallback, hostChangedUserData, "", amIHost); }
     void RaiseRecordingStatusEvent(int isRecording)               { Raise(recordingStatusCallback, recordingStatusUserData, "", isRecording); }
     void RaiseControlSystemEnabledEvent(int enabled)              { Raise(controlSystemEnabledCallback, controlSystemEnabledUserData, "", enabled); }
+
+    void RaiseParticipantListEvent(const std::vector<MeetingParticipant>& participants,
+                                   int total, bool needCleanUp, ConfSessionType session);
 };
 
 // ─── Sink implementations ─────────────────────────────────────────────────────
+
+// Helper: copy std::string into a fixed char array, always null-terminated.
+static void strncpy_safe(char* dst, const std::string& src, size_t maxLen)
+{
+    size_t len = src.size() < maxLen - 1 ? src.size() : maxLen - 1;
+    memcpy(dst, src.c_str(), len);
+    dst[len] = '\0';
+}
+
+// Helper: flatten a C++ MeetingParticipant to the C ZrcParticipant struct.
+static void FlattenParticipant(const MeetingParticipant& src, ZrcParticipant& dst)
+{
+    memset(&dst, 0, sizeof(ZrcParticipant));
+    dst.userID       = src.userID;
+    dst.parentUserID = src.parentUserID;
+    strncpy_safe(dst.userGUID, src.userGUID, sizeof(dst.userGUID));
+    dst.userType     = (int32_t)src.userType;
+    strncpy_safe(dst.userName, src.userName, sizeof(dst.userName));
+    strncpy_safe(dst.pronouns, src.pronouns, sizeof(dst.pronouns));
+    dst.isMySelf                      = src.isMySelf ? 1 : 0;
+    dst.isHost                        = src.isHost ? 1 : 0;
+    dst.isOriginalOrAlternativeHost   = src.isOriginalOrAlternativeHost ? 1 : 0;
+    dst.isCohost                      = src.isCohost ? 1 : 0;
+    dst.isGuest                       = src.isGuest ? 1 : 0;
+    dst.isViewOnlyUser                = src.isViewOnlyUser ? 1 : 0;
+    dst.isViewOnlyUserCanTalk         = src.isViewOnlyUserCanTalk ? 1 : 0;
+    dst.canRecord                     = src.canRecord ? 1 : 0;
+    dst.isRecording                   = src.isRecording ? 1 : 0;
+    dst.recordingDisabled             = src.recordingDisabled ? 1 : 0;
+    dst.isInSilentMode                = src.isInSilentMode ? 1 : 0;
+    // AudioStatus
+    dst.audioType   = (int32_t)src.audioStatus.audioType;
+    dst.audioMuted  = src.audioStatus.isMuted ? 1 : 0;
+    // VideoStatus
+    dst.videoHasSource  = src.videoStatus.hasSource ? 1 : 0;
+    dst.videoReceiving  = src.videoStatus.receiving ? 1 : 0;
+    dst.videoSending    = src.videoStatus.sending ? 1 : 0;
+    dst.videoCanControl = src.videoStatus.canControl ? 1 : 0;
+    // CameraControlStatus
+    dst.cameraCanRequestControl = src.cameraControlStatus.canIRequestControl ? 1 : 0;
+    dst.cameraAmIControlling    = src.cameraControlStatus.amIControlling ? 1 : 0;
+    dst.cameraCanSwitch         = src.cameraControlStatus.canSwitchCamera ? 1 : 0;
+    dst.cameraCanMove           = src.cameraControlStatus.canMoveCamera ? 1 : 0;
+    dst.cameraCanZoom           = src.cameraControlStatus.canZoomCamera ? 1 : 0;
+    // HandStatus
+    dst.handRaised  = src.handStatus.handRaised ? 1 : 0;
+    dst.handSkinTone = (int32_t)src.handStatus.skinTone;
+    strncpy_safe(dst.reactionEmoji, src.reactionEmoji, sizeof(dst.reactionEmoji));
+    dst.reactionFeedback = (int32_t)src.reactionFeedback;
+    // Interpretation
+    dst.isInterpreter    = src.isInterpreter ? 1 : 0;
+    dst.interpreterLanguage = (int32_t)src.activeInterpreterLanguage.language;
+    strncpy_safe(dst.interpreterLanguageID, src.activeInterpreterLanguage.languageID, sizeof(dst.interpreterLanguageID));
+    strncpy_safe(dst.interpreterLanguageName, src.activeInterpreterLanguage.displayName, sizeof(dst.interpreterLanguageName));
+    // Misc
+    dst.isRemoteControlAdmin = src.isRemoteControlAdmin ? 1 : 0;
+    dst.isVirtualAssistant   = src.isVirtualAssistant ? 1 : 0;
+    dst.isCompanionModeUser  = src.isCompanionModeUser ? 1 : 0;
+    dst.isCompanionZRUser    = src.isCompanionZRUser ? 1 : 0;
+    // BreakoutRoomStatus
+    strncpy_safe(dst.boSessionBID, src.breakoutRoomStatus.sessionBID, sizeof(dst.boSessionBID));
+    dst.boUserStatus              = (int32_t)src.breakoutRoomStatus.userStatus;
+    dst.boSupportForceJoinLeave   = src.breakoutRoomStatus.supportForceJoinLeave ? 1 : 0;
+    dst.boSupportSelfChoose       = src.breakoutRoomStatus.supportSelfChooseRoom ? 1 : 0;
+    dst.boSupportCohostStartStop  = src.breakoutRoomStatus.supportCohostStartStopBO ? 1 : 0;
+    // Streaming / webinar
+    dst.canPinMultiVideo    = src.canPinMultiVideo ? 1 : 0;
+    dst.isSupportGreenRoom  = src.isSupportGreenRoom ? 1 : 0;
+    dst.isInGreenRoom       = src.isInGreenRoom ? 1 : 0;
+    // AudioControlStatus
+    dst.audioCanRequestControl = src.audioControlStatus.canIRequestAudioControl ? 1 : 0;
+    dst.audioCanBeRequested    = src.audioControlStatus.canBeRequestedAudioControl ? 1 : 0;
+    dst.audioAmIControlling    = src.audioControlStatus.amIControllingAudio ? 1 : 0;
+    // RTMP / special
+    dst.isRTMPUser        = src.isRTMPUser ? 1 : 0;
+    dst.isActiveRTMPUser  = src.isActiveRTMPUser ? 1 : 0;
+    dst.isSimuliveUser    = src.isSimuliveUser ? 1 : 0;
+    // Timezone
+    dst.timeZoneOffsetMinutes    = src.timeZoneOffsetMinutes;
+    dst.isSupportDisplayLocalTime = src.isSupportDisplayLocalTime ? 1 : 0;
+    strncpy_safe(dst.attendeeJid, src.attendeeJid, sizeof(dst.attendeeJid));
+}
+
+void ZrcSdkInstance::RaiseParticipantListEvent(const std::vector<MeetingParticipant>& participants,
+                                               int total, bool needCleanUp, ConfSessionType session)
+{
+    if (!participantListCallback) return;
+    std::vector<ZrcParticipant> flat(participants.size());
+    for (size_t i = 0; i < participants.size(); ++i)
+        FlattenParticipant(participants[i], flat[i]);
+    participantListCallback(flat.empty() ? nullptr : flat.data(),
+                            (int)flat.size(), needCleanUp ? 1 : 0,
+                            (int)session, participantListUserData);
+}
 
 void ZrcZoomRoomsServiceSink::OnPairRoomResult(int32_t result)
 {
@@ -358,28 +457,45 @@ void ZrcMeetingAudioHelperSink::OnMuteOnEntryNotification(bool isMuteOnEntry)
     if (owner) owner->RaiseMuteOnEntryEvent(isMuteOnEntry ? 1 : 0);
 }
 
-void ZrcParticipantHelperSink::OnInitMeetingParticipants(const std::vector<MeetingParticipant>& /*participants*/,
+void ZrcParticipantHelperSink::OnInitMeetingParticipants(const std::vector<MeetingParticipant>& participants,
                                                           int32_t totalParticipantsCount,
-                                                          bool /*needCleanUpUserList*/, ConfSessionType session)
+                                                          bool needCleanUpUserList, ConfSessionType session)
 {
-    if (!owner || session != CurrentSession) return;
-    owner->participantCount = totalParticipantsCount;
-    owner->RaiseParticipantCountEvent(totalParticipantsCount);
+    if (!owner) return;
+    if (session == CurrentSession)
+    {
+        owner->participantCount = totalParticipantsCount;
+        owner->RaiseParticipantCountEvent(totalParticipantsCount);
+    }
+    owner->RaiseParticipantListEvent(participants, totalParticipantsCount, needCleanUpUserList, session);
 }
 
 void ZrcParticipantHelperSink::OnUserJoin(const std::vector<MeetingParticipant>& participants, ConfSessionType session)
 {
-    if (!owner || session != CurrentSession) return;
-    owner->participantCount += (int)participants.size();
-    owner->RaiseParticipantCountEvent(owner->participantCount);
+    if (!owner) return;
+    if (session == CurrentSession)
+    {
+        owner->participantCount += (int)participants.size();
+        owner->RaiseParticipantCountEvent(owner->participantCount);
+    }
+    owner->RaiseParticipantListEvent(participants, owner->participantCount, false, session);
 }
 
 void ZrcParticipantHelperSink::OnUserLeave(const std::vector<MeetingParticipant>& participants, ConfSessionType session)
 {
-    if (!owner || session != CurrentSession) return;
-    owner->participantCount -= (int)participants.size();
-    if (owner->participantCount < 0) owner->participantCount = 0;
-    owner->RaiseParticipantCountEvent(owner->participantCount);
+    if (!owner) return;
+    if (session == CurrentSession)
+    {
+        owner->participantCount -= (int)participants.size();
+        if (owner->participantCount < 0) owner->participantCount = 0;
+        owner->RaiseParticipantCountEvent(owner->participantCount);
+    }
+    owner->RaiseParticipantListEvent(participants, owner->participantCount, false, session);
+}
+
+void ZrcParticipantHelperSink::OnUserUpdate(const std::vector<MeetingParticipant>& participants, ConfSessionType session)
+{
+    if (owner) owner->RaiseParticipantListEvent(participants, owner->participantCount, false, session);
 }
 
 void ZrcParticipantHelperSink::OnHostChangedNotification(int32_t /*hostUserID*/, bool amIHost, ConfSessionType session)
@@ -963,3 +1079,11 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingStatusCallback(ZrcS
     { SET_CB(recordingStatus, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetControlSystemEnabledCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(controlSystemEnabled, callback, userData); }
+
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData)
+{
+    if (!handle) return;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    inst->participantListCallback = callback;
+    inst->participantListUserData = userData;
+}

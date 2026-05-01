@@ -3,7 +3,7 @@ namespace PepperDash.Zoom.ZrcSdk;
 /// <summary>
 /// Event arguments passed to all ZRC SDK events.
 /// </summary>
-public class SdkEventArgs : EventArgs
+public class SdkEventArgs : System.EventArgs
 {
     /// <summary>
     /// A human-readable message describing the event. May be empty for numeric-only events.
