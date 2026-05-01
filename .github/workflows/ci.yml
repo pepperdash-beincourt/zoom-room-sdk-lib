@@ -1,25 +1,23 @@
-name: CI
+name: Build PepperDash Essentials
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - '**'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Restore
-        run: dotnet restore ZrcSdkTest.sln
-
-      - name: Build
-        run: dotnet build ZrcSdkTest.sln --no-restore --configuration Release
+  getVersion:
+    uses: PepperDash/workflow-templates/.github/workflows/essentialsplugins-getversion.yml@main
+    secrets: inherit
+  build-4Series:
+    uses: PepperDash/workflow-templates/.github/workflows/essentialsplugins-4Series-builds.yml@main
+    secrets: inherit
+    needs: getVersion
+    if: needs.getVersion.outputs.newVersion == 'true'
+    with:
+      newVersion: ${{ needs.getVersion.outputs.newVersion }}
+      version: ${{ needs.getVersion.outputs.version }}
+      tag: ${{ needs.getVersion.outputs.tag }}
+      channel: ${{ needs.getVersion.outputs.channel }}
+      bypassPackageCheck: true
+      devToolsVersion: ${{ vars.ESSENTIALSDEVTOOLSVERSION }}

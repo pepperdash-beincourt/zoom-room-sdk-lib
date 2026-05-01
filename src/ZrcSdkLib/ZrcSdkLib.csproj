@@ -20,11 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.237" />
-  </ItemGroup>
+  </PropertyGroup>  
 
   <!-- README included in the NuGet package -->
   <ItemGroup>

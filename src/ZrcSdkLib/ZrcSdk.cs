@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using Path = System.IO.Path;
+using System.IO;
 
 namespace PepperDash.Zoom.ZrcSdk;
 
@@ -227,23 +227,15 @@ public class ZrcSdk : IDisposable
             return IntPtr.Zero;
 
         if (_cachedWrapperHandle != IntPtr.Zero)
-            return _cachedWrapperHandle;
+            return _cachedWrapperHandle;        
+        var libPath = "/usr/lib/libzrcsdkwrapperpdt.so";
 
-        // Resolve library path: try Crestron app directory first, then /usr/lib
-        var appDir = _overrideLibraryPath
-            ?? Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory();
-        var libPath = Path.Combine(appDir, "libzrcsdkwrapperpdt.so");
-
-        if (!System.IO.File.Exists(libPath))
-            libPath = "/usr/lib/libzrcsdkwrapperpdt.so";
-
-        if (!System.IO.File.Exists(libPath))
+        if (!File.Exists(libPath))
             throw new DllNotFoundException($"libzrcsdkwrapperpdt.so not found in app directory or /usr/lib");
 
         // All writable Crestron paths are mounted noexec. Load via memfd_create so the anonymous
         // fd is never subject to noexec enforcement.
-        var libBytes = System.IO.File.ReadAllBytes(libPath);
-        Console.WriteLine($"Loading {libPath} via memfd ({libBytes.Length} bytes)");
+        var libBytes = File.ReadAllBytes(libPath);        
 
         int memfd = syscall(SYS_memfd_create, "zrcsdkwrapperpdt", MFD_CLOEXEC);
         if (memfd < 0)
@@ -264,8 +256,7 @@ public class ZrcSdk : IDisposable
                 var errMsg = errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "Unknown error";
                 throw new DllNotFoundException($"Failed to dlopen via memfd ({procPath}): {errMsg}");
             }
-
-            Console.WriteLine($"Successfully loaded {libPath} via memfd");
+            
             _cachedWrapperHandle = handle;
             return handle;
         }
