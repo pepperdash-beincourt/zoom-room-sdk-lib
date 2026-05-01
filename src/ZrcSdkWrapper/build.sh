@@ -103,6 +103,9 @@ if [ "$TARGET" == "arm" ]; then
         echo ""
         echo "Please install the ARM32 hard-float toolchain:"
         echo ""
+        echo "On Ubuntu/Debian:"
+        echo -e "  ${GREEN}sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf${NC}"
+        echo ""
         echo "On macOS with Homebrew:"
         echo -e "  ${GREEN}brew tap messense/macos-cross-toolchains${NC}"
         echo -e "  ${GREEN}brew install arm-unknown-linux-gnueabihf${NC}"
@@ -159,7 +162,7 @@ fi
 # Build
 echo ""
 echo -e "${YELLOW}Building...${NC}"
-cmake --build . --config "$BUILD_TYPE" -j$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
+cmake --build . --config "$BUILD_TYPE" -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
 # Check if build succeeded
 if [ $? -eq 0 ]; then
