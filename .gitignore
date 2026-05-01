@@ -56,3 +56,8 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 .DS_Store
+
+# CMake build output directories
+src/ZrcSdkWrapper/build/
+src/ZrcSdkWrapper/build-arm/
+src/ZrcSdkWrapper/build-arm64/

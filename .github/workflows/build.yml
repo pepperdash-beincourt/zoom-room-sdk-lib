@@ -39,7 +39,7 @@ jobs:
       - name: Build native ARM32 wrapper
         run: |
           chmod +x src/ZrcSdkWrapper/build.sh
-          src/ZrcSdkWrapper/build.sh --arm --release
+          src/ZrcSdkWrapper/build.sh --arm --release --clean
           cp src/ZrcSdkWrapper/build-arm/libzrcsdkwrapperpdt.so.1.0.0 \
              src/ZrcSdkLib/native/linux-arm/libzrcsdkwrapperpdt.so
 

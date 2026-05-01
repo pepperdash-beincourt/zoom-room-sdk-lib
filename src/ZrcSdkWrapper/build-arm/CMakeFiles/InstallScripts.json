@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
