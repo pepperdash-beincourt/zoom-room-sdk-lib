@@ -1,4 +1,4 @@
-name: Essentials Plugin Build 4-Series
+name: Zoom Room Library Build
 
 on:
   workflow_call:
@@ -23,7 +23,7 @@ on:
 env:
   BUILD_TYPE: ${{ inputs.channel == '' && 'Release' || 'Debug' }}
 jobs:
-  Build_Project_4-Series:
+  buildZoomRoomSdkLibrary:
     runs-on: windows-latest
     steps:
       # ---------------------------
