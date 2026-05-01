@@ -21,26 +21,10 @@ set_target_properties(ZrcSdkWrapper PROPERTIES
 )
 
 # Add include directories
-if(UNIX AND NOT APPLE)
-    # For ARM builds, include path depends on architecture
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-        target_include_directories(ZrcSdkWrapper PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}
-            ${CMAKE_SOURCE_DIR}/../../zrcsdkArm64/include
-        )
-    else()
-        target_include_directories(ZrcSdkWrapper PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}
-            "${CMAKE_SOURCE_DIR}/../../zrcsdk 2/include"
-        )
-    endif()
-else()
-    # For macOS/Windows development
-    target_include_directories(ZrcSdkWrapper PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/../../zrcsdk/include
-    )
-endif()
+target_include_directories(ZrcSdkWrapper PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/../../zrcsdk/include
+)
 
 # Define export macro
 target_compile_definitions(ZrcSdkWrapper PRIVATE
@@ -63,11 +47,6 @@ if(UNIX AND NOT APPLE)
     )
     
     # For ARM processors, optimize accordingly
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-        message(STATUS "Building for ARM64 (aarch64) architecture")
-        target_compile_options(ZrcSdkWrapper PRIVATE
-            -march=armv8-a
-        )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
         message(STATUS "Building for ARM32 hard-float ABI (matching Crestron device)")
         target_compile_options(ZrcSdkWrapper PRIVATE
@@ -90,15 +69,8 @@ elseif(WIN32)
 endif()
 
 # Link with ZRC SDK libraries
-# Adjust the path to ZRC SDK libraries based on platform
 if(UNIX AND NOT APPLE)
-    # For ARM64 Linux (Crestron 4-series)
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-        set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdkArm64/libs")
-    else()
-        # For ARM32 Linux
-        set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdk 2/libs/armhf")
-    endif()
+    set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdk/libs/armhf")
 elseif(APPLE)
     # For macOS development
     set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdk/libs/macos")

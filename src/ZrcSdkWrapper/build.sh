@@ -22,7 +22,7 @@ echo -e "${GREEN}========================================${NC}"
 
 # Parse command line arguments
 BUILD_TYPE="Release"
-TARGET="arm64"
+TARGET="arm"
 CLEAN=false
 
 while [[ $# -gt 0 ]]; do
@@ -43,10 +43,6 @@ while [[ $# -gt 0 ]]; do
             TARGET="arm"
             shift
             ;;
-        --arm64)
-            TARGET="arm64"
-            shift
-            ;;
         --clean)
             CLEAN=true
             shift
@@ -57,8 +53,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --debug         Build in Debug mode (default: Release)"
             echo "  --release       Build in Release mode"
             echo "  --native        Build for native platform (macOS)"
-            echo "  --arm           Build for ARM32 Linux (older Crestron)"
-            echo "  --arm64         Build for ARM64 Linux (Crestron 4-series - default)"
+            echo "  --arm           Build for ARM32 Linux (Crestron device - default)"
             echo "  --clean         Clean build directories before building"
             echo "  --help          Show this help message"
             exit 0
@@ -76,11 +71,6 @@ if [ "$TARGET" == "arm" ]; then
     TOOLCHAIN_FILE="$WRAPPER_DIR/arm-linux-toolchain.cmake"
     COMPILER_PREFIX="arm-linux-gnueabihf"
     echo -e "${YELLOW}Building for: ARM32 Linux hard-float (matching Crestron device ABI)${NC}"
-elif [ "$TARGET" == "arm64" ]; then
-    BUILD_DIR="$WRAPPER_DIR/build-arm64"
-    TOOLCHAIN_FILE="$WRAPPER_DIR/arm64-linux-toolchain.cmake"
-    COMPILER_PREFIX="aarch64-linux-gnu"
-    echo -e "${YELLOW}Building for: ARM64 Linux (Crestron 4-series)${NC}"
 else
     BUILD_DIR="$WRAPPER_DIR/build"
     TOOLCHAIN_FILE=""
@@ -115,22 +105,6 @@ if [ "$TARGET" == "arm" ]; then
         exit 1
     fi
     echo -e "${GREEN}✓ ARM32 hard-float toolchain found${NC}"
-elif [ "$TARGET" == "arm64" ]; then
-    if ! command -v aarch64-linux-gnu-gcc &> /dev/null; then
-        echo -e "${RED}ERROR: ARM64 cross-compiler not found!${NC}"
-        echo ""
-        echo "Please install the ARM64 toolchain:"
-        echo ""
-        echo "On macOS with Homebrew:"
-        echo -e "  ${GREEN}brew tap messense/macos-cross-toolchains${NC}"
-        echo -e "  ${GREEN}brew install aarch64-unknown-linux-gnu${NC}"
-        echo ""
-        echo "On Ubuntu/Debian:"
-        echo -e "  ${GREEN}sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu${NC}"
-        echo ""
-        exit 1
-    fi
-    echo -e "${GREEN}✓ ARM64 toolchain found${NC}"
 fi
 
 # Check for CMake
@@ -149,7 +123,7 @@ cd "$BUILD_DIR"
 # Configure with CMake
 echo ""
 echo -e "${YELLOW}Configuring build...${NC}"
-if [ "$TARGET" == "arm" ] || [ "$TARGET" == "arm64" ]; then
+if [ "$TARGET" == "arm" ]; then
     cmake "$WRAPPER_DIR" \
         -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
         -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
