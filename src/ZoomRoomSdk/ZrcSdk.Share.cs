@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -54,7 +54,10 @@ public partial class ZrcSdk
 /// <summary>Event args for <see cref="ZrcSdk.SharingStatusChanged"/>.</summary>
 public class SharingStatusEventArgs : System.EventArgs
 {
+    /// <summary>Current sharing state code (0 = not sharing, non-zero = sharing active).</summary>
     public int  SharingState  { get; set; }
+    /// <summary><see langword="true"/> if content can be shared into a breakout room.</summary>
     public bool CanShareToBO  { get; set; }
+    /// <summary><see langword="true"/> if content is currently being shared to a breakout room.</summary>
     public bool IsSharingToBO { get; set; }
 }

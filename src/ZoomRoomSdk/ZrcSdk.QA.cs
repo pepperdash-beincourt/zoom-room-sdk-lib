@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -75,13 +75,19 @@ public partial class ZrcSdk
         QAEnabled?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = enabled });
 }
 
-/// <summary>A live transcription / closed caption segment.</summary>
+/// <summary>A live transcription / closed caption text segment.</summary>
 public class CaptionMessage
 {
+    /// <summary>Unique identifier for this caption segment.</summary>
     public string MessageID   { get; set; } = string.Empty;
+    /// <summary>Meeting user ID of the speaker who generated this caption.</summary>
     public int    UserID      { get; set; }
+    /// <summary>Display name of the speaker.</summary>
     public string UserName    { get; set; } = string.Empty;
+    /// <summary>Segment timestamp as a Unix timestamp (milliseconds).</summary>
     public long   MessageTime { get; set; }
+    /// <summary>Transcribed text for this segment.</summary>
     public string Content     { get; set; } = string.Empty;
+    /// <summary><see langword="true"/> if this is a finalized (committed) transcription; <see langword="false"/> if still interim.</summary>
     public bool   IsFinal     { get; set; }
 }

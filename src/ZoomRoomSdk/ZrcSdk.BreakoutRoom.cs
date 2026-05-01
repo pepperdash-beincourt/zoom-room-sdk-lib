@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -88,9 +88,11 @@ public partial class ZrcSdk
     }
 }
 
-/// <summary>Represents a breakout room.</summary>
+/// <summary>Represents a breakout room available within the current meeting.</summary>
 public class BORoom
 {
+    /// <summary>Unique breakout room session BID string assigned by the Zoom platform.</summary>
     public string SessionBID  { get; set; } = string.Empty;
+    /// <summary>Display name of the breakout room as configured by the host.</summary>
     public string SessionName { get; set; } = string.Empty;
 }

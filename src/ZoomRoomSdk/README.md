@@ -1,4 +1,4 @@
-# PepperDash.Zoom.ZrcSdk
+# PepperDash.ZoomRoom.Sdk
 
 C# P/Invoke wrapper for the **Zoom Rooms Controller SDK (ZRC SDK)**, targeting Crestron control systems running ARM32 Linux (e.g. CP4N).
 
@@ -14,7 +14,7 @@ C# P/Invoke wrapper for the **Zoom Rooms Controller SDK (ZRC SDK)**, targeting C
 ## Installation
 
 ```
-dotnet add package PepperDash.Zoom.ZrcSdk
+dotnet add package PepperDash.ZoomRoom.Sdk
 ```
 
 The NuGet package includes the compiled C wrapper (`libzrcsdkwrapperpdt.so`) as a `runtimes/linux-arm/native/` asset. The proprietary `libZRCSdk.so` must be separately installed on the target device.
@@ -22,7 +22,7 @@ The NuGet package includes the compiled C wrapper (`libzrcsdkwrapperpdt.so`) as 
 ## Quick Start
 
 ```csharp
-using PepperDash.Zoom.ZrcSdk;
+using PepperDash.ZoomRoom.Sdk;
 
 // Optionally override the library search path (useful for testing outside Crestron)
 // ZrcSdk.SetLibraryPath("/path/to/libs");

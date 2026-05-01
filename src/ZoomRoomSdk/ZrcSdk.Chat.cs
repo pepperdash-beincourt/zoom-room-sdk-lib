@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -76,15 +76,23 @@ public partial class ZrcSdk
     }
 }
 
-/// <summary>A chat message received from the SDK.</summary>
+/// <summary>A chat message received from the Zoom Rooms meeting chat.</summary>
 public class ChatMessage
 {
+    /// <summary>Unique message identifier string.</summary>
     public string MessageID             { get; set; } = string.Empty;
+    /// <summary>Meeting user ID of the sender.</summary>
     public int    SenderMeetingUserID   { get; set; }
+    /// <summary>Display name of the sender.</summary>
     public string SenderName            { get; set; } = string.Empty;
+    /// <summary>Meeting user ID of the receiver; 0 if sent to everyone.</summary>
     public int    ReceiverMeetingUserID { get; set; }
+    /// <summary>Send-to target type (0 = all, 1 = individual, etc.).</summary>
     public int    SendToType            { get; set; }
+    /// <summary>Text body of the chat message.</summary>
     public string Content               { get; set; } = string.Empty;
+    /// <summary>Message send time as a Unix timestamp (milliseconds).</summary>
     public long   MessageTime           { get; set; }
+    /// <summary><see langword="true"/> if the message has been deleted by the sender or host.</summary>
     public bool   IsDeleted             { get; set; }
 }

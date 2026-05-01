@@ -1,4 +1,4 @@
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 /// <summary>
 /// Translates ZRC SDK integer codes to human-readable strings.

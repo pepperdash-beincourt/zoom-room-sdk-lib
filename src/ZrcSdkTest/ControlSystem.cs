@@ -1,7 +1,7 @@
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.Ssh;
 using Crestron.SimplSharpPro;
-using PepperDash.Zoom.ZrcSdk;
+using PepperDash.ZoomRoom.Sdk;
 using System;
 
 namespace ZrcSdkTest;

@@ -1,4 +1,4 @@
-namespace PepperDash.Zoom.ZrcSdk.EventArgs;
+namespace PepperDash.ZoomRoom.Sdk.EventArgs;
 
 /// <summary>
 /// Event arguments for participant list updates received from the Zoom Room.

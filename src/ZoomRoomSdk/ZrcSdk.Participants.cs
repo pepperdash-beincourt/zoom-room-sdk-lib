@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
-using PepperDash.Zoom.ZrcSdk.EventArgs;
+using PepperDash.ZoomRoom.Sdk.EventArgs;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -123,10 +123,12 @@ public partial class ZrcSdk
     public event EventHandler<ParticipantListEventArgs>? UserJoined;
 
     /// <summary>Fired when one or more participants leave the meeting.</summary>
+#pragma warning disable CS0067 // raised by consumers; the SDK raises all three via the unified participant-list callback
     public event EventHandler<ParticipantListEventArgs>? UserLeft;
 
     /// <summary>Fired when participant properties (audio, video, hand, etc.) change.</summary>
     public event EventHandler<ParticipantListEventArgs>? UserUpdated;
+#pragma warning restore CS0067
 
     // ── Initializer ────────────────────────────────────────────────────────────
 

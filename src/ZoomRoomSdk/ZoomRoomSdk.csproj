@@ -8,7 +8,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <!-- NuGet package metadata -->
-    <PackageId>PepperDash.Zoom.ZrcSdk</PackageId>
+    <PackageId>PepperDash.ZoomRoom.Sdk</PackageId>
     <Version>0.1.0</Version>
     <Authors>PepperDash Engineering</Authors>
     <Company>PepperDash Technology</Company>

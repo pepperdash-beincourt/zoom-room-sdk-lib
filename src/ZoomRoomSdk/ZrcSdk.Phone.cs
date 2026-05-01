@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -78,13 +78,19 @@ public partial class ZrcSdk
         SIPServiceStatus?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = status });
 }
 
-/// <summary>Represents a SIP call state snapshot.</summary>
+/// <summary>Represents the current state of a SIP phone call.</summary>
 public class SIPCall
 {
+    /// <summary>Unique call identifier assigned by the SIP stack.</summary>
     public string CallID          { get; set; } = string.Empty;
+    /// <summary>Current SIP call status code.</summary>
     public int    Status          { get; set; }
+    /// <summary>Display name of the remote party.</summary>
     public string PeerDisplayName { get; set; } = string.Empty;
+    /// <summary>Phone number or SIP URI of the remote party.</summary>
     public string PeerNumber      { get; set; } = string.Empty;
+    /// <summary><see langword="true"/> if this is an inbound (incoming) call.</summary>
     public bool   IsIncomingCall  { get; set; }
+    /// <summary>Elapsed call duration in seconds since the call was answered.</summary>
     public long   ElapsedCallTime { get; set; }
 }

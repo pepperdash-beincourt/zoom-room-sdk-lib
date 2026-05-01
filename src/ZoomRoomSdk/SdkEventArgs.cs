@@ -1,4 +1,4 @@
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 /// <summary>
 /// Event arguments passed to all ZRC SDK events.

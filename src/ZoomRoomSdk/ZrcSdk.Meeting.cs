@@ -1,4 +1,4 @@
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 using System.Runtime.InteropServices;
 

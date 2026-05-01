@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.IO;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 /// <summary>
 /// C# P/Invoke wrapper for the Zoom Rooms Controller SDK (ZRC SDK).

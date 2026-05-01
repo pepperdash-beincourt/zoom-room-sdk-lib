@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace PepperDash.Zoom.ZrcSdk;
+namespace PepperDash.ZoomRoom.Sdk;
 
 public partial class ZrcSdk
 {
@@ -113,19 +113,26 @@ public partial class ZrcSdk
     }
 }
 
-/// <summary>Represents a ZRCS-managed device.</summary>
+/// <summary>Represents a ZRCS-managed (Room Controls) device.</summary>
 public class ZRCSDevice
 {
+    /// <summary>Unique device identifier string.</summary>
     public string DeviceID     { get; set; } = string.Empty;
+    /// <summary>Human-readable display name of the device.</summary>
     public string DeviceName   { get; set; } = string.Empty;
+    /// <summary>Current device status code reported by the ZRCS platform.</summary>
     public int    DeviceStatus { get; set; }
+    /// <summary>Update type code indicating why this device entry was sent (add, update, remove, etc.).</summary>
     public int    UpdateType   { get; set; }
 }
 
-/// <summary>Represents a ZRCS automation scene.</summary>
+/// <summary>Represents a ZRCS automation scene that can be executed.</summary>
 public class ZRCSScene
 {
+    /// <summary>Unique scene identifier string.</summary>
     public string SceneID   { get; set; } = string.Empty;
+    /// <summary>Human-readable display name of the scene.</summary>
     public string SceneName { get; set; } = string.Empty;
+    /// <summary>Icon identifier or URL for the scene, used by display UIs.</summary>
     public string SceneIcon { get; set; } = string.Empty;
 }

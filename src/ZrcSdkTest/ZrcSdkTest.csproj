@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZrcSdkLib\ZrcSdkLib.csproj" />
+    <ProjectReference Include="..\ZoomRoomSdk\ZoomRoomSdk.csproj" />
   </ItemGroup>
 
   <!-- Files moved to ZrcSdkLib -->

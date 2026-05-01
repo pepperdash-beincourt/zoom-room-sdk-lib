@@ -1,0 +1,33 @@
+{
+    "configurations": [
+        {
+            "name": "ARM Linux (ZRC SDK)",
+            "includePath": [
+                "${workspaceFolder}/src/ZrcSdkWrapper",
+                "${workspaceFolder}/zrcsdkArm/include",
+                "${workspaceFolder}/zrcsdkArm/include/ServiceComponents",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/arm-unknown-linux-gnueabihf/include/c++/15.2.0",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/arm-unknown-linux-gnueabihf/include/c++/15.2.0/arm-unknown-linux-gnueabihf",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/arm-unknown-linux-gnueabihf/include/c++/15.2.0/backward",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/lib/gcc/arm-unknown-linux-gnueabihf/15.2.0/include",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/lib/gcc/arm-unknown-linux-gnueabihf/15.2.0/include-fixed",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/arm-unknown-linux-gnueabihf/include",
+                "/opt/homebrew/Cellar/arm-unknown-linux-gnueabihf/15.2.0/toolchain/arm-unknown-linux-gnueabihf/sysroot/usr/include"
+            ],
+            "defines": [
+                "__linux__",
+                "__arm__",
+                "__ARM_ARCH=7",
+                "__ARM_ARCH_7A__",
+                "__ARM_PCS_VFP",
+                "ZRCSDKWRAPPER_EXPORT"
+            ],
+            "compilerPath": "/opt/homebrew/bin/arm-linux-gnueabihf-g++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-arm",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
