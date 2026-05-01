@@ -28,22 +28,7 @@ jobs:
     steps:
       # ---------------------------
       - name: Checkout repo
-        uses: actions/checkout@v6     
-
-      # ---------------------------
-      - name: Get SLN Info
-        id: get_sln_info
-        shell: powershell
-        run: |
-          $solution_file = Get-ChildItem .\*.sln -recurse
-          Write-Output $solution_file
-          echo "SOLUTION_FILE=$($solution_file.BaseName)"| Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
-          $solution_path = Get-ChildItem *.4Series.sln -recurse 
-          $solution_path = $solution_path.FullName
-          $solution_path = $solution_path -replace "(?:[^\\]*\\){4}", ""
-          Write-Output $solution_path
-          echo "SOLUTION_PATH=$($solution_path)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        uses: actions/checkout@v6           
       
       - name: Install ARM32 cross-compiler
         run: |
@@ -59,34 +44,33 @@ jobs:
              src/ZrcSdkLib/native/linux-arm/libzrcsdkwrapperpdt.so
 
       # ---------------------------
-      - name: Build Solution       
+      - name: Build Solution
         id: build
-        shell: powershell
         run: |
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## Build Solution`n"          
-          
-          # updated msbuild to use dotnet build, which also inlcudes the dotnet restore step
-          $buildOutput = dotnet build .\${{ steps.get_sln_info.outputs.SOLUTION_FILE }}.sln /p:Platform="Any CPU" /p:Configuration="$($ENV:BUILD_TYPE)" /p:Version="${{ inputs.version }}" /p:IncludeSourceRevisionInInformationalVersion=false -m 2>&1
+          echo '## Build Solution' >> "$GITHUB_STEP_SUMMARY"
 
-          # Display output
-          $buildOutput | Out-String | Write-Output
-          
-          # Save build output to file
-          $buildOutput | Out-String | Out-File -FilePath "build-output.log" -Encoding utf8
-          
-          # Check for build success
-          if ($LASTEXITCODE -eq 0) {
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "**BUILD SUCCESS**`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- **Configuration**: $($ENV:BUILD_TYPE)`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- **Version**: ${{ inputs.version }}`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- **Solution**: ${{ steps.get_sln_info.outputs.SOLUTION_FILE }}.sln`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`n"
-          } else {
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "**BUILD FAILED** - Exit code: $LASTEXITCODE`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "Check the step logs above for detailed error information.`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`n"
-            exit $LASTEXITCODE
-          }   
+          # dotnet build includes restore
+          dotnet build ZrcSdkTest.sln \
+            -p:Platform="Any CPU" \
+            -p:Configuration="$BUILD_TYPE" \
+            -p:Version="${{ inputs.version }}" \
+            -p:IncludeSourceRevisionInInformationalVersion=false \
+            -m \
+            | tee build-output.log
+          build_exit=${PIPESTATUS[0]}
+
+          if [ $build_exit -eq 0 ]; then
+            echo '**BUILD SUCCESS**' >> "$GITHUB_STEP_SUMMARY"
+            echo "- **Configuration**: $BUILD_TYPE" >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Version**: ${{ inputs.version }}' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Solution**: ZrcSdkTest.sln' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '**BUILD FAILED**' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Check the step logs above for detailed error information.' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
           
       # ---------------------------
@@ -102,48 +86,38 @@ jobs:
       # ---------------------------
       - name: Clean up after failed build
         if: failure()
-        shell: powershell
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $ErrorActionPreference = 'Continue'
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## Build Failed Clean up`n"
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "The build output above shows the specific errors that caused the build to fail.`n`n"
-          
-          # Delete the release if it exists
-          Write-Output "Checking for release with tag '${{ inputs.tag }}'..."
-          $releaseJson = gh api repos/${{ github.repository }}/releases/tags/${{ inputs.tag }} 2>&1 | Out-String
-          if ($LASTEXITCODE -eq 0) {
-            $release = $releaseJson | ConvertFrom-Json
-            Write-Output "Deleting release: $($release.name) (ID: $($release.id))"
-            gh api -X DELETE repos/${{ github.repository }}/releases/$($release.id) 2>&1 | Out-String | Write-Output
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "Deleted release ``$($release.name)```n"
-          }
-          else {
-            Write-Output "No release found for tag '${{ inputs.tag }}', skipping delete."
-          }          
+          echo '## Build Failed Clean up' >> "$GITHUB_STEP_SUMMARY"
+          echo 'The build output above shows the specific errors that caused the build to fail.' >> "$GITHUB_STEP_SUMMARY"
 
-          # Check if tag exists on remote and delete it
-          $tagExists = git ls-remote --tags origin "${{ inputs.tag }}" 2>&1
-          if ($tagExists -match "${{ inputs.tag }}") {
-            Write-Output "Deleting tag '${{ inputs.tag }}' from remote..."
-            $ErrorActionPreference = 'SilentlyContinue'
-            $output = git push origin --delete "${{ inputs.tag }}" 2>&1
-            $exitCode = $LASTEXITCODE
-            $ErrorActionPreference = 'Continue'
-            $output | Out-String | Write-Output
-            if ($exitCode -eq 0) {
-              Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "Deleted tag ``${{ inputs.tag }}`` from remote.`n"
-            }
-            else {
-              Write-Output "Failed to delete tag '${{ inputs.tag }}' from remote."
-            }
-          }
-          else {
-            Write-Output "Tag '${{ inputs.tag }}' does not exist on remote, skipping delete."
-          }
-                    
-          exit 1        
+          # Delete the release if it exists
+          echo "Checking for release with tag '${{ inputs.tag }}'..."
+          release_json=$(gh api repos/${{ github.repository }}/releases/tags/${{ inputs.tag }} 2>/dev/null)
+          if [ $? -eq 0 ]; then
+            release_id=$(echo "$release_json" | jq -r '.id')
+            release_name=$(echo "$release_json" | jq -r '.name')
+            echo "Deleting release: $release_name (ID: $release_id)"
+            gh api -X DELETE repos/${{ github.repository }}/releases/$release_id
+            echo "Deleted release \`$release_name\`" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No release found for tag '${{ inputs.tag }}', skipping delete."
+          fi
+
+          # Delete the tag from remote if it exists
+          if git ls-remote --tags origin '${{ inputs.tag }}' | grep -q '${{ inputs.tag }}'; then
+            echo "Deleting tag '${{ inputs.tag }}' from remote..."
+            if git push origin --delete '${{ inputs.tag }}'; then
+              echo "Deleted tag \`${{ inputs.tag }}\` from remote." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Failed to delete tag '${{ inputs.tag }}' from remote."
+            fi
+          else
+            echo "Tag '${{ inputs.tag }}' does not exist on remote, skipping delete."
+          fi
+
+          exit 1
       
       # ---------------------------
       # Create the release on the source repo  
@@ -173,23 +147,18 @@ jobs:
       - name: Publish to GitHub Package Registry
         if: success() && inputs.newVersion == 'true'
         continue-on-error: true
-        run: |       
-          if (-not (nuget sources list | Select-String -Pattern "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json")) {
-            nuget sources add -name github -source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -username pepperdash -password ${{ secrets.GITHUB_TOKEN }}
-          }
-          
-          try {
-            Get-ChildItem -Path .\src -Recurse -Include *.nupkg | ForEach-Object {
-              $packageName = $_.Name
-              Write-Output "Pushing $packageName to GitHub feed..."
-              nuget push $_.FullName -source github -apikey ${{ secrets.GITHUB_TOKEN }} -SkipDuplicate
-            }
-          }
-          catch {
-            $msg = "Failed to publish to GitHub feed: $($_.Exception.Message)"
-            Write-Error $msg
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## Publish to GitHub Package Registry`n"
-            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "***ERROR***`n$msg`n"
-            exit 1
-          }
+        run: |
+          feed_url="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          echo '## Publish to GitHub Package Registry' >> "$GITHUB_STEP_SUMMARY"
+
+          find src -name '*.nupkg' | while read -r pkg; do
+            echo "Pushing $(basename "$pkg") to GitHub feed..."
+            if ! dotnet nuget push "$pkg" \
+              --source "$feed_url" \
+              --api-key '${{ secrets.GITHUB_TOKEN }}' \
+              --skip-duplicate; then
+              echo "***ERROR*** Failed to push $(basename "$pkg") to GitHub feed" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+          done
       
