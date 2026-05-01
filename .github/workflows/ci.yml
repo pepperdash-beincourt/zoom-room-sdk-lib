@@ -10,7 +10,7 @@ jobs:
     uses: PepperDash/workflow-templates/.github/workflows/essentialsplugins-getversion.yml@main
     secrets: inherit
   build-4Series:
-    uses: PepperDash/workflow-templates/.github/workflows/essentialsplugins-4Series-builds.yml@main
+    uses: ./.github/workflows/build.yml
     secrets: inherit
     needs: getVersion
     if: needs.getVersion.outputs.newVersion == 'true'
@@ -19,5 +19,3 @@ jobs:
       version: ${{ needs.getVersion.outputs.version }}
       tag: ${{ needs.getVersion.outputs.tag }}
       channel: ${{ needs.getVersion.outputs.channel }}
-      bypassPackageCheck: true
-      devToolsVersion: ${{ vars.ESSENTIALSDEVTOOLSVERSION }}
