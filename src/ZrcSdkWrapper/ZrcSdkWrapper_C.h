@@ -109,6 +109,78 @@ typedef void (ZRCSDKWRAPPER_CALL *ZrcParticipantListCallback)(
     int sessionType,
     void* userData);
 
+// ── Sharing status flat struct ────────────────────────────────────────────────
+typedef struct ZrcSharingStatus {
+    int32_t sharingState;           // SharingState enum
+    int32_t canShareToBO;
+    int32_t isSharingToBO;
+} ZrcSharingStatus;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcSharingStatusCallback)(const ZrcSharingStatus* status, void* userData);
+
+// ── Chat message flat struct ──────────────────────────────────────────────────
+typedef struct ZrcChatMessage {
+    char    messageID[128];
+    int32_t senderMeetingUserID;
+    char    senderName[256];
+    int32_t receiverMeetingUserID;  // 0 = all
+    int32_t sendToType;             // MeetingChatMSGSendToType enum
+    char    content[2048];
+    int64_t messageTime;            // milliseconds
+    int32_t isDeleted;
+} ZrcChatMessage;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcChatMessageCallback)(const ZrcChatMessage* msg, void* userData);
+
+// ── Caption flat struct ───────────────────────────────────────────────────────
+typedef struct ZrcCaption {
+    char    messageID[128];
+    int32_t userID;
+    char    userName[256];
+    int64_t messageTime;
+    char    content[2048];
+    int32_t isFinal;                // 1 = not expected to change further
+} ZrcCaption;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcCaptionCallback)(const ZrcCaption* caption, void* userData);
+
+// ── SIP call flat struct ──────────────────────────────────────────────────────
+typedef struct ZrcSIPCall {
+    char    callID[128];
+    int32_t status;                 // SIPCallStatus enum
+    char    peerDisplayName[256];
+    char    peerNumber[128];
+    int32_t isIncomingCall;
+    int64_t elapsedCallTime;
+} ZrcSIPCall;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcSIPCallCallback)(const ZrcSIPCall* call, void* userData);
+
+// ── BreakoutRoom flat struct ──────────────────────────────────────────────────
+typedef struct ZrcBORoom {
+    char sessionBID[128];
+    char sessionName[256];
+} ZrcBORoom;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcBORoomListCallback)(const ZrcBORoom* rooms, int count, void* userData);
+
+// ── ZRCS device/scene flat structs ───────────────────────────────────────────
+typedef struct ZrcZRCSDevice {
+    char    deviceID[256];
+    char    deviceName[256];
+    int32_t deviceStatus;           // ControlSystemDeviceStatus enum
+    int32_t updateType;             // ControlSystemUpdateDeviceType enum
+} ZrcZRCSDevice;
+
+typedef struct ZrcZRCSScene {
+    char sceneID[256];
+    char sceneName[256];
+    char sceneIcon[256];
+} ZrcZRCSScene;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcZRCSDeviceListCallback)(const ZrcZRCSDevice* devices, int count, int updateType, void* userData);
+typedef void (ZRCSDKWRAPPER_CALL *ZrcZRCSSceneListCallback)(const ZrcZRCSScene* scenes, int count, void* userData);
+
 // ── SDK Lifecycle ─────────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API ZrcSdkHandle ZRCSDKWRAPPER_CALL ZrcSdk_Create();
 ZRCSDKWRAPPER_API void         ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle);
@@ -165,6 +237,84 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetParticipantCount(ZrcSdkHandle
 // Participant list (Init / Join / Leave / Update)
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData);
 
+// ── Audio extensions ──────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteUserAudio(ZrcSdkHandle handle, int32_t userID, int mute);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteAllAudio(ZrcSdkHandle handle, int mute);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMuteOnEntry(ZrcSdkHandle handle, int mute);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AnswerUnmuteRequest(ZrcSdkHandle handle, int accepted);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowAttendeesUnmute(ZrcSdkHandle handle, int allow);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RequestFarEndAudioControl(ZrcSdkHandle handle, int32_t farEndUserID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GiveUpFarEndAudioControl(ZrcSdkHandle handle, int32_t farEndUserID);
+
+// ── Video extensions ──────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteUserVideo(ZrcSdkHandle handle, int32_t userID, int mute);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowAttendeesStartVideo(ZrcSdkHandle handle, int allow);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_PinUserOnScreen(ZrcSdkHandle handle, int32_t userID, int32_t screenIndex);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnpinUserFromScreen(ZrcSdkHandle handle, int32_t userID, int32_t screenIndex);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SpotlightUser(ZrcSdkHandle handle, int32_t userID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CancelSpotlightUser(ZrcSdkHandle handle, int32_t userID);
+
+// ── Share extensions ──────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StartShare(ZrcSdkHandle handle, const char* shareSourceID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StopShare(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_PinShare(ZrcSdkHandle handle, int32_t shareSourceID, int32_t screenIndex);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnpinShare(ZrcSdkHandle handle, int32_t shareSourceID, int32_t screenIndex);
+
+// ── Layout extensions ─────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handle, int32_t videoOrderType);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetFollowingHostOrder(ZrcSdkHandle handle, int follow);
+
+// ── Recording extensions ──────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowUserRecording(ZrcSdkHandle handle, int32_t userID, int allow);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ResponseToRecordingRequest(ZrcSdkHandle handle, int accept, int acceptAlways);
+
+// ── Reaction / Hand ───────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RaiseHand(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LowerHand(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LowerHandForUser(ZrcSdkHandle handle, int32_t userID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionFeedback(ZrcSdkHandle handle, int32_t feedbackType);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ClearAllFeedback(ZrcSdkHandle handle);
+
+// ── Waiting Room ──────────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AdmitUserFromWaitingRoom(ZrcSdkHandle handle, int32_t userID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AdmitAllFromWaitingRoom(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_PutUserInWaitingRoom(ZrcSdkHandle handle, int32_t userID);
+
+// ── Breakout Rooms ────────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StartBreakoutRooms(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StopBreakoutRooms(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_JoinBreakoutRoom(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LeaveBreakoutRoom(ZrcSdkHandle handle, const char* boRoomBID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_BroadcastMessageToBreakoutRooms(ZrcSdkHandle handle, const char* message);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AskForHelpInBreakoutRoom(ZrcSdkHandle handle);
+
+// ── Chat ──────────────────────────────────────────────────────────────────────
+// Send chat message to all (receiverUserID=0) or to individual
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendChatMessage(ZrcSdkHandle handle, const char* message, int32_t receiverUserID, int32_t sendToType);
+
+// ── Closed Caption / LTT ──────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowCaption(ZrcSdkHandle handle, int show);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableLiveTranscription(ZrcSdkHandle handle, int enable);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignClosedCaption(ZrcSdkHandle handle, int32_t userID, int assign);
+
+// ── Camera control ────────────────────────────────────────────────────────────
+// action: CameraControlAction enum, type: CameraControlType enum
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlCamera(ZrcSdkHandle handle, const char* deviceID, int32_t action, int32_t type, const char* panTilt);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept);
+
+// ── Phone Call ────────────────────────────────────────────────────────────────
+// SIP call wrapping
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_DeclineSIPCall(ZrcSdkHandle handle, const char* callID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TerminateSIPCall(ZrcSdkHandle handle, const char* callID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_HoldSIPCall(ZrcSdkHandle handle, const char* callID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnholdSIPCall(ZrcSdkHandle handle, const char* callID);
+
+// ── Meeting Control extensions ────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LockMeeting(ZrcSdkHandle handle, int lock);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableMeetingQA(ZrcSdkHandle handle, int enable);
+
 // ── Control System (ZRCS) ─────────────────────────────────────────────────────
 // Returns 1 if enabled, 0 if disabled, <0 on error
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_IsZRCSEnabled(ZrcSdkHandle handle);
@@ -203,6 +353,43 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetControlSystemEnabledCallback
 // Generic error / instant meeting started
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetErrorCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetInstantMeetingStartedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+
+// ── Event Callback Setters (continued) ───────────────────────────────────────
+// Audio extended
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAllowAttendeesUnmuteCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAskUnmuteByHostCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFEACRequestCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFEACApprovedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFEACDeclinedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+// Video extended
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAllowAttendeesVideoCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+// Share
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSharingStatusCallback(ZrcSdkHandle handle, ZrcSharingStatusCallback callback, void* userData);
+// Breakout Room
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=BO_STATUS
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBORoomListCallback(ZrcSdkHandle handle, ZrcBORoomListCallback callback, void* userData);
+// Waiting room
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetInSilentModeCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=isInSilentMode
+// Reactions
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetReactionStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData); // errorCode=selectedFeedback
+// Chat
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetChatPrivilegeCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetChatMessageCallback(ZrcSdkHandle handle, ZrcChatMessageCallback callback, void* userData);
+// Caption
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetCaptionCallback(ZrcSdkHandle handle, ZrcCaptionCallback callback, void* userData);
+// Meeting control
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingLockStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetQAEnabledCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+// Recording extended
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingRequestCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=userID
+// Camera control
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFarEndCameraControlRequestCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=userID
+// Phone / SIP
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSIPCallStatusCallback(ZrcSdkHandle handle, ZrcSIPCallCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSIPServiceStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData); // message=displayName, errorCode=status
+// ZRCS extended
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetZRCSDeviceListCallback(ZrcSdkHandle handle, ZrcZRCSDeviceListCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetZRCSSceneListCallback(ZrcSdkHandle handle, ZrcZRCSSceneListCallback callback, void* userData);
 
 #ifdef __cplusplus
 }

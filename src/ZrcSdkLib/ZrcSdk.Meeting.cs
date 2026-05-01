@@ -1,5 +1,7 @@
 namespace PepperDash.Zoom.ZrcSdk;
 
+using System.Runtime.InteropServices;
+
 public partial class ZrcSdk
 {
     private SdkEventCallbackDelegate? _meetingStatusCallbackDelegate;
@@ -8,6 +10,17 @@ public partial class ZrcSdk
     private SdkEventCallbackDelegate? _meetingNeedsPasswordCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingInviteCallbackDelegate;
     private SdkEventCallbackDelegate? _instantMeetingStartedCallbackDelegate;
+    private SdkEventCallbackDelegate? _meetingLockStatusCallbackDelegate;
+
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_LockMeeting(IntPtr handle, int lockMeeting);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_EnableMeetingQA(IntPtr handle, int enable);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetMeetingLockStatusCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+
+    /// <summary>Meeting lock status changed. <see cref="SdkEventArgs.ErrorCode"/> is 1 if locked.</summary>
+    public event EventHandler<SdkEventArgs>? MeetingLockStatus;
 
     /// <summary>
     /// Fired when the meeting status changes.
@@ -49,6 +62,8 @@ public partial class ZrcSdk
 
     partial void InitializeMeetingCallbacks()
     {
+        _meetingLockStatusCallbackDelegate    = OnMeetingLockStatusCallback;
+        ZrcSdk_SetMeetingLockStatusCallback(_handle, _meetingLockStatusCallbackDelegate, IntPtr.Zero);
         _meetingStatusCallbackDelegate        = OnMeetingStatusCallback;
         _startPmiResultCallbackDelegate       = OnStartPmiResultCallback;
         _exitMeetingCallbackDelegate          = OnExitMeetingCallback;
@@ -127,12 +142,18 @@ public partial class ZrcSdk
         return ZrcSdk_CancelEnteringMeetingPassword(_handle) == 0;
     }
 
+    /// <summary>Locks or unlocks the meeting. Host only.</summary>
+    public bool LockMeeting(bool lockMeeting) { ThrowIfDisposed(); return ZrcSdk_LockMeeting(_handle, lockMeeting ? 1 : 0) == 0; }
+
     /// <summary>Cancels waiting for the host and aborts joining.</summary>
     public bool CancelWaitingForHost()
     {
         ThrowIfDisposed();
         return ZrcSdk_CancelWaitingForHost(_handle) == 0;
     }
+
+    private void OnMeetingLockStatusCallback(string message, int locked, IntPtr userData) =>
+        MeetingLockStatus?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = locked });
 
     private void OnMeetingStatusCallback(string message, int statusCode, IntPtr userData) =>
         MeetingStatus?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = statusCode });
