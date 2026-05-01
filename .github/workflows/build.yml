@@ -50,7 +50,7 @@ jobs:
           echo '## Build Solution' >> "$GITHUB_STEP_SUMMARY"
 
           # dotnet build includes restore
-          dotnet build ZrcSdkTest.sln \
+          dotnet build ZrcSdkLib.sln \
             -p:Platform="Any CPU" \
             -p:Configuration="$BUILD_TYPE" \
             -p:Version="${{ inputs.version }}" \
