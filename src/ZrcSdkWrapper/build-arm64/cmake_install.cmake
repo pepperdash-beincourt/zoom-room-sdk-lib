@@ -1,4 +1,4 @@
-# Install script for directory: /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper
+# Install script for directory: /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Debug")
+    set(CMAKE_INSTALL_CONFIG_NAME "Release")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -55,8 +55,8 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
     endif()
   endforeach()
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES
-    "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/libZrcSdkWrapper.so.1.0.0"
-    "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/libZrcSdkWrapper.so.1"
+    "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/libZrcSdkWrapper.so.1.0.0"
+    "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/libZrcSdkWrapper.so.1"
     )
   foreach(file
       "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libZrcSdkWrapper.so.1.0.0"
@@ -66,7 +66,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
        NOT IS_SYMLINK "${file}")
       file(RPATH_CHANGE
            FILE "${file}"
-           OLD_RPATH "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/libs:"
+           OLD_RPATH "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/libs:"
            NEW_RPATH "")
       if(CMAKE_INSTALL_DO_STRIP)
         execute_process(COMMAND "/opt/homebrew/bin/aarch64-linux-gnu-strip" "${file}")
@@ -76,17 +76,17 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/libZrcSdkWrapper.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/libZrcSdkWrapper.so")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.h")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE FILE FILES "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.h")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/install_local_manifest.txt"
+  file(WRITE "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -102,6 +102,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

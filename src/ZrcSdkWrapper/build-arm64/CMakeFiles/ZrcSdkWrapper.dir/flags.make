@@ -4,7 +4,7 @@
 # compile CXX with /opt/homebrew/bin/aarch64-linux-gnu-g++
 CXX_DEFINES = -DZRCSDKWRAPPER_EXPORTS -DZrcSdkWrapper_EXPORTS
 
-CXX_INCLUDES = -I/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper -I/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include
+CXX_INCLUDES = -I/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper -I/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include
 
-CXX_FLAGS =  -march=armv8-a -march=armv8-a -g -std=c++17 -fPIC -Wall -Wextra -fvisibility=hidden -march=armv8-a
+CXX_FLAGS =  -march=armv8-a -march=armv8-a -O3 -DNDEBUG -std=c++17 -fPIC -Wall -Wextra -fvisibility=hidden -march=armv8-a
 

@@ -56,10 +56,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper
+CMAKE_SOURCE_DIR = /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64
+CMAKE_BINARY_DIR = /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64
 
 # Include any dependencies generated for this target.
 include CMakeFiles/ZrcSdkWrapper.dir/depend.make
@@ -76,18 +76,18 @@ CMakeFiles/ZrcSdkWrapper.dir/codegen:
 .PHONY : CMakeFiles/ZrcSdkWrapper.dir/codegen
 
 CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: CMakeFiles/ZrcSdkWrapper.dir/flags.make
-CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp
+CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp
 CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: CMakeFiles/ZrcSdkWrapper.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o"
-	/opt/homebrew/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o -MF CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o.d -o CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o -c /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o"
+	/opt/homebrew/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o -MF CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o.d -o CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o -c /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp
 
 CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.i"
-	/opt/homebrew/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp > CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.i
+	/opt/homebrew/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp > CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.i
 
 CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.s"
-	/opt/homebrew/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp -o CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.s
+	/opt/homebrew/bin/aarch64-linux-gnu-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp -o CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.s
 
 # Object files for target ZrcSdkWrapper
 ZrcSdkWrapper_OBJECTS = \
@@ -99,7 +99,7 @@ ZrcSdkWrapper_EXTERNAL_OBJECTS =
 libZrcSdkWrapper.so.1.0.0: CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o
 libZrcSdkWrapper.so.1.0.0: CMakeFiles/ZrcSdkWrapper.dir/build.make
 libZrcSdkWrapper.so.1.0.0: CMakeFiles/ZrcSdkWrapper.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library libZrcSdkWrapper.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library libZrcSdkWrapper.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ZrcSdkWrapper.dir/link.txt --verbose=$(VERBOSE)
 	$(CMAKE_COMMAND) -E cmake_symlink_library libZrcSdkWrapper.so.1.0.0 libZrcSdkWrapper.so.1 libZrcSdkWrapper.so
 
@@ -118,6 +118,6 @@ CMakeFiles/ZrcSdkWrapper.dir/clean:
 .PHONY : CMakeFiles/ZrcSdkWrapper.dir/clean
 
 CMakeFiles/ZrcSdkWrapper.dir/depend:
-	cd /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64 /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64 /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/build-arm64/CMakeFiles/ZrcSdkWrapper.dir/DependInfo.cmake "--color=$(COLOR)" ZrcSdkWrapper
+	cd /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64 /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64 /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/build-arm64/CMakeFiles/ZrcSdkWrapper.dir/DependInfo.cmake "--color=$(COLOR)" ZrcSdkWrapper
 .PHONY : CMakeFiles/ZrcSdkWrapper.dir/depend
 

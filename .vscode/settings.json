@@ -1,3 +1,4 @@
 {
-  "dotnet.defaultSolution": "ZrcSdkTest.sln"
+  "dotnet.defaultSolution": "ZrcSdkTest.sln",
+  "cmake.ignoreCMakeListsMissing": true
 }

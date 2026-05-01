@@ -14,7 +14,7 @@ add_library(ZrcSdkWrapper SHARED
 
 # Set output name (will produce libZrcSdkWrapper.so on Linux)
 set_target_properties(ZrcSdkWrapper PROPERTIES
-    OUTPUT_NAME "ZrcSdkWrapper"
+    OUTPUT_NAME "zrcsdkwrapperpdt"
     VERSION ${PROJECT_VERSION}
     SOVERSION 1
     POSITION_INDEPENDENT_CODE ON
@@ -31,7 +31,7 @@ if(UNIX AND NOT APPLE)
     else()
         target_include_directories(ZrcSdkWrapper PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}
-            ${CMAKE_SOURCE_DIR}/../../zrcsdkArm/include
+            "${CMAKE_SOURCE_DIR}/../../zrcsdk 2/include"
         )
     endif()
 else()
@@ -69,10 +69,9 @@ if(UNIX AND NOT APPLE)
             -march=armv8-a
         )
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
-        message(STATUS "Building for ARM32 architecture with soft-float ABI (matching ZRC SDK)")
+        message(STATUS "Building for ARM32 hard-float ABI (matching Crestron device)")
         target_compile_options(ZrcSdkWrapper PRIVATE
             -march=armv7-a
-            -mfloat-abi=soft
         )
     endif()
 elseif(APPLE)
@@ -98,7 +97,7 @@ if(UNIX AND NOT APPLE)
         set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdkArm64/libs")
     else()
         # For ARM32 Linux
-        set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdkArm/libs")
+        set(ZRCSDK_LIB_DIR "${CMAKE_SOURCE_DIR}/../../zrcsdk 2/libs/armhf")
     endif()
 elseif(APPLE)
     # For macOS development

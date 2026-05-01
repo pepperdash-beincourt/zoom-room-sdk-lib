@@ -73,9 +73,9 @@ done
 # Set build directory based on target
 if [ "$TARGET" == "arm" ]; then
     BUILD_DIR="$WRAPPER_DIR/build-arm"
-    TOOLCHAIN_FILE="$WRAPPER_DIR/arm-linux-softfloat-toolchain.cmake"
-    COMPILER_PREFIX="arm-linux-gnueabi"
-    echo -e "${YELLOW}Building for: ARM32 Linux soft-float (matching ZRC SDK ABI)${NC}"
+    TOOLCHAIN_FILE="$WRAPPER_DIR/arm-linux-toolchain.cmake"
+    COMPILER_PREFIX="arm-linux-gnueabihf"
+    echo -e "${YELLOW}Building for: ARM32 Linux hard-float (matching Crestron device ABI)${NC}"
 elif [ "$TARGET" == "arm64" ]; then
     BUILD_DIR="$WRAPPER_DIR/build-arm64"
     TOOLCHAIN_FILE="$WRAPPER_DIR/arm64-linux-toolchain.cmake"
@@ -98,20 +98,20 @@ fi
 
 # Check for ARM toolchain if cross-compiling
 if [ "$TARGET" == "arm" ]; then
-    if ! command -v arm-linux-gnueabi-gcc &> /dev/null; then
-        echo -e "${RED}ERROR: ARM32 soft-float cross-compiler not found!${NC}"
+    if ! command -v arm-linux-gnueabihf-gcc &> /dev/null; then
+        echo -e "${RED}ERROR: ARM32 hard-float cross-compiler not found!${NC}"
         echo ""
-        echo "Please install the ARM32 soft-float toolchain:"
+        echo "Please install the ARM32 hard-float toolchain:"
         echo ""
         echo "On macOS with Homebrew:"
         echo -e "  ${GREEN}brew tap messense/macos-cross-toolchains${NC}"
-        echo -e "  ${GREEN}brew install arm-unknown-linux-gnueabi${NC}"
+        echo -e "  ${GREEN}brew install arm-unknown-linux-gnueabihf${NC}"
         echo ""
-        echo "This soft-float toolchain matches the ABI of the ZRC SDK library."
+        echo "This hard-float toolchain matches the ABI of the Crestron device."
         echo ""
         exit 1
     fi
-    echo -e "${GREEN}✓ ARM32 soft-float toolchain found${NC}"
+    echo -e "${GREEN}✓ ARM32 hard-float toolchain found${NC}"
 elif [ "$TARGET" == "arm64" ]; then
     if ! command -v aarch64-linux-gnu-gcc &> /dev/null; then
         echo -e "${RED}ERROR: ARM64 cross-compiler not found!${NC}"
@@ -171,11 +171,11 @@ if [ $? -eq 0 ]; then
     
     # Find and display the output library
     if [ "$TARGET" == "arm" ]; then
-        LIB_FILE=$(find "$BUILD_DIR" -name "libZrcSdkWrapper.so*" -type f | head -n1)
+        LIB_FILE=$(find "$BUILD_DIR" -name "libzrcsdkwrapperpdt.so*" -type f | head -n1)
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        LIB_FILE=$(find "$BUILD_DIR" -name "libZrcSdkWrapper.dylib" -type f | head -n1)
+        LIB_FILE=$(find "$BUILD_DIR" -name "libzrcsdkwrapperpdt.dylib" -type f | head -n1)
     else
-        LIB_FILE=$(find "$BUILD_DIR" -name "libZrcSdkWrapper.so*" -type f | head -n1)
+        LIB_FILE=$(find "$BUILD_DIR" -name "libzrcsdkwrapperpdt.so*" -type f | head -n1)
     fi
     
     if [ -n "$LIB_FILE" ]; then

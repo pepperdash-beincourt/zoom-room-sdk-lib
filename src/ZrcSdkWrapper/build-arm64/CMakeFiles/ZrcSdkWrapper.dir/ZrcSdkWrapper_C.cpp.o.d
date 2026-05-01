@@ -1,7 +1,7 @@
 CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.cpp \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/stdc-predef.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/ZrcSdkWrapper_C.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/ZrcSdkWrapper_C.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/cstdint \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu/bits/c++config.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/aarch64-unknown-linux-gnu/bits/os_defines.h \
@@ -102,6 +102,7 @@ CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/_G_config.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/bits/stdio_lim.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/bits/sys_errlist.h \
+ /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/bits/stdio.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/cerrno \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/errno.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/bits/errno.h \
@@ -118,9 +119,9 @@ CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/tuple \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/cstring \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/sysroot/usr/include/string.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IZRCSDK.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ZRCSDKDefines.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ZRCSDKTypes.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IZRCSDK.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ZRCSDKDefines.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ZRCSDKTypes.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/vector \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/bits/stl_uninitialized.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/bits/stl_vector.h \
@@ -133,9 +134,9 @@ CMakeFiles/ZrcSdkWrapper.dir/ZrcSdkWrapper_C.cpp.o: \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/bits/stl_map.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/bits/stl_multimap.h \
  /opt/homebrew/Cellar/aarch64-unknown-linux-gnu/13.3.0/toolchain/aarch64-unknown-linux-gnu/include/c++/13.3.0/bits/erase_if.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IZoomRoomsService.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IMeetingService.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IPreMeetingService.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ServiceComponents/IMeetingAudioHelper.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ZRCSDKTypes.h \
- /Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ServiceComponents/IMeetingVideoHelper.h
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IZoomRoomsService.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IMeetingService.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/IPreMeetingService.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ServiceComponents/IMeetingAudioHelper.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ZRCSDKTypes.h \
+ /Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/../../zrcsdkArm64/include/ServiceComponents/IMeetingVideoHelper.h

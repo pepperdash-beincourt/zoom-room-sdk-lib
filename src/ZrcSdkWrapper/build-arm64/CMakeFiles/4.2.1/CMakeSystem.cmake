@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Darwin")
 set(CMAKE_HOST_SYSTEM_VERSION "25.2.0")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "arm64")
 
-include("/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/arm64-linux-toolchain.cmake")
+include("/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/arm64-linux-toolchain.cmake")
 
 set(CMAKE_SYSTEM "Linux")
 set(CMAKE_SYSTEM_NAME "Linux")

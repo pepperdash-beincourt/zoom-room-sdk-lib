@@ -7,8 +7,8 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/CMakeLists.txt"
-  "/Users/awelker/source/repos/zrcSdkTest/src/ZrcSdkWrapper/arm64-linux-toolchain.cmake"
+  "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/CMakeLists.txt"
+  "/Users/awelker/source/repos/zoom-sdk-test/src/ZrcSdkWrapper/arm64-linux-toolchain.cmake"
   "CMakeFiles/4.2.1/CMakeCXXCompiler.cmake"
   "CMakeFiles/4.2.1/CMakeSystem.cmake"
   "/opt/homebrew/share/cmake/Modules/CMakeCXXCompiler.cmake.in"
