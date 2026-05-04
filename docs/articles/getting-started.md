@@ -12,7 +12,7 @@
 Add the package to your Crestron project:
 
 ```
-dotnet add package PepperDash.Zoom.ZrcSdk
+dotnet add package PepperDash.ZoomRoom.Sdk
 ```
 
 The NuGet package bundles the compiled C wrapper (`libzrcsdkwrapperpdt.so`) as a
@@ -22,7 +22,7 @@ The proprietary `libZRCSdk.so` must be separately installed on the device.
 ## Basic Setup
 
 ```csharp
-using PepperDash.Zoom.ZrcSdk;
+using PepperDash.ZoomRoom.Sdk;
 
 var sdk = new ZrcSdk();
 

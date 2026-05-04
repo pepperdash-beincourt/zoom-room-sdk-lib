@@ -1,4 +1,4 @@
-# PepperDash.Zoom.ZrcSdk
+# PepperDash.ZoomRoom.Sdk
 
 C# P/Invoke wrapper for the Zoom Rooms Controller SDK, targeting Crestron ARM32 Linux devices.
 
@@ -6,4 +6,4 @@ C# P/Invoke wrapper for the Zoom Rooms Controller SDK, targeting Crestron ARM32 
 - [Pairing a Room](articles/pairing.md)
 - [Meeting Control](articles/meeting-control.md)
 - [Crestron Integration](articles/control-system.md)
-- [API Reference](api/index.md)
+- [API Reference](api/PepperDash.ZoomRoom.Sdk.yml)
