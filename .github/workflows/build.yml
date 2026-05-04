@@ -26,7 +26,8 @@ jobs:
   testZoomRoomSdkLibrary:
     runs-on: ubuntu-latest
     permissions:
-      checks: write
+      contents: read  # required by actions/checkout
+      checks: write   # required by dorny/test-reporter
     steps:
       # ---------------------------
       - name: Checkout repo
