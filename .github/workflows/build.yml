@@ -25,6 +25,8 @@ env:
 jobs:
   testZoomRoomSdkLibrary:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
     steps:
       # ---------------------------
       - name: Checkout repo
@@ -33,20 +35,19 @@ jobs:
       # ---------------------------
       - name: Run Tests
         run: |
-          echo '## Test Results' >> "$GITHUB_STEP_SUMMARY"
-
           dotnet test src/ZoomRoomSdk.Tests/ZoomRoomSdk.Tests.csproj \
             --configuration "$BUILD_TYPE" \
-            --logger "console;verbosity=normal" \
-            | tee test-output.log
-          test_exit=${PIPESTATUS[0]}
+            --logger "trx;LogFileName=test-results.trx"
 
-          if [ $test_exit -eq 0 ]; then
-            echo '**TESTS PASSED**' >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo '**TESTS FAILED**' >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
+      # ---------------------------
+      - name: Test Report
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: ZoomRoomSdk Tests
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
+          fail-on-error: true
 
   buildZoomRoomSdkLibrary:
     runs-on: ubuntu-latest
