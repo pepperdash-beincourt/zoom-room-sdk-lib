@@ -22,7 +22,7 @@ echo -e "${GREEN}========================================${NC}"
 
 # Parse command line arguments
 BUILD_TYPE="Release"
-TARGET="arm64"
+TARGET="arm"
 CLEAN=false
 
 while [[ $# -gt 0 ]]; do
@@ -43,10 +43,6 @@ while [[ $# -gt 0 ]]; do
             TARGET="arm"
             shift
             ;;
-        --arm64)
-            TARGET="arm64"
-            shift
-            ;;
         --clean)
             CLEAN=true
             shift
@@ -57,8 +53,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --debug         Build in Debug mode (default: Release)"
             echo "  --release       Build in Release mode"
             echo "  --native        Build for native platform (macOS)"
-            echo "  --arm           Build for ARM32 Linux (older Crestron)"
-            echo "  --arm64         Build for ARM64 Linux (Crestron 4-series - default)"
+            echo "  --arm           Build for ARM32 Linux (Crestron device - default)"
             echo "  --clean         Clean build directories before building"
             echo "  --help          Show this help message"
             exit 0
@@ -73,14 +68,9 @@ done
 # Set build directory based on target
 if [ "$TARGET" == "arm" ]; then
     BUILD_DIR="$WRAPPER_DIR/build-arm"
-    TOOLCHAIN_FILE="$WRAPPER_DIR/arm-linux-softfloat-toolchain.cmake"
-    COMPILER_PREFIX="arm-linux-gnueabi"
-    echo -e "${YELLOW}Building for: ARM32 Linux soft-float (matching ZRC SDK ABI)${NC}"
-elif [ "$TARGET" == "arm64" ]; then
-    BUILD_DIR="$WRAPPER_DIR/build-arm64"
-    TOOLCHAIN_FILE="$WRAPPER_DIR/arm64-linux-toolchain.cmake"
-    COMPILER_PREFIX="aarch64-linux-gnu"
-    echo -e "${YELLOW}Building for: ARM64 Linux (Crestron 4-series)${NC}"
+    TOOLCHAIN_FILE="$WRAPPER_DIR/arm-linux-toolchain.cmake"
+    COMPILER_PREFIX="arm-linux-gnueabihf"
+    echo -e "${YELLOW}Building for: ARM32 Linux hard-float (matching Crestron device ABI)${NC}"
 else
     BUILD_DIR="$WRAPPER_DIR/build"
     TOOLCHAIN_FILE=""
@@ -98,36 +88,23 @@ fi
 
 # Check for ARM toolchain if cross-compiling
 if [ "$TARGET" == "arm" ]; then
-    if ! command -v arm-linux-gnueabi-gcc &> /dev/null; then
-        echo -e "${RED}ERROR: ARM32 soft-float cross-compiler not found!${NC}"
+    if ! command -v arm-linux-gnueabihf-gcc &> /dev/null; then
+        echo -e "${RED}ERROR: ARM32 hard-float cross-compiler not found!${NC}"
         echo ""
-        echo "Please install the ARM32 soft-float toolchain:"
-        echo ""
-        echo "On macOS with Homebrew:"
-        echo -e "  ${GREEN}brew tap messense/macos-cross-toolchains${NC}"
-        echo -e "  ${GREEN}brew install arm-unknown-linux-gnueabi${NC}"
-        echo ""
-        echo "This soft-float toolchain matches the ABI of the ZRC SDK library."
-        echo ""
-        exit 1
-    fi
-    echo -e "${GREEN}✓ ARM32 soft-float toolchain found${NC}"
-elif [ "$TARGET" == "arm64" ]; then
-    if ! command -v aarch64-linux-gnu-gcc &> /dev/null; then
-        echo -e "${RED}ERROR: ARM64 cross-compiler not found!${NC}"
-        echo ""
-        echo "Please install the ARM64 toolchain:"
-        echo ""
-        echo "On macOS with Homebrew:"
-        echo -e "  ${GREEN}brew tap messense/macos-cross-toolchains${NC}"
-        echo -e "  ${GREEN}brew install aarch64-unknown-linux-gnu${NC}"
+        echo "Please install the ARM32 hard-float toolchain:"
         echo ""
         echo "On Ubuntu/Debian:"
-        echo -e "  ${GREEN}sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu${NC}"
+        echo -e "  ${GREEN}sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf${NC}"
+        echo ""
+        echo "On macOS with Homebrew:"
+        echo -e "  ${GREEN}brew tap messense/macos-cross-toolchains${NC}"
+        echo -e "  ${GREEN}brew install arm-unknown-linux-gnueabihf${NC}"
+        echo ""
+        echo "This hard-float toolchain matches the ABI of the Crestron device."
         echo ""
         exit 1
     fi
-    echo -e "${GREEN}✓ ARM64 toolchain found${NC}"
+    echo -e "${GREEN}✓ ARM32 hard-float toolchain found${NC}"
 fi
 
 # Check for CMake
@@ -146,7 +123,7 @@ cd "$BUILD_DIR"
 # Configure with CMake
 echo ""
 echo -e "${YELLOW}Configuring build...${NC}"
-if [ "$TARGET" == "arm" ] || [ "$TARGET" == "arm64" ]; then
+if [ "$TARGET" == "arm" ]; then
     cmake "$WRAPPER_DIR" \
         -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN_FILE" \
         -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
@@ -159,7 +136,7 @@ fi
 # Build
 echo ""
 echo -e "${YELLOW}Building...${NC}"
-cmake --build . --config "$BUILD_TYPE" -j$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
+cmake --build . --config "$BUILD_TYPE" -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
 # Check if build succeeded
 if [ $? -eq 0 ]; then
@@ -171,11 +148,11 @@ if [ $? -eq 0 ]; then
     
     # Find and display the output library
     if [ "$TARGET" == "arm" ]; then
-        LIB_FILE=$(find "$BUILD_DIR" -name "libZrcSdkWrapper.so*" -type f | head -n1)
+        LIB_FILE=$(find "$BUILD_DIR" -name "libzrcsdkwrapperpdt.so*" -type f | head -n1)
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        LIB_FILE=$(find "$BUILD_DIR" -name "libZrcSdkWrapper.dylib" -type f | head -n1)
+        LIB_FILE=$(find "$BUILD_DIR" -name "libzrcsdkwrapperpdt.dylib" -type f | head -n1)
     else
-        LIB_FILE=$(find "$BUILD_DIR" -name "libZrcSdkWrapper.so*" -type f | head -n1)
+        LIB_FILE=$(find "$BUILD_DIR" -name "libzrcsdkwrapperpdt.so*" -type f | head -n1)
     fi
     
     if [ -n "$LIB_FILE" ]; then

@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ZoomRoomSdk/ZoomRoomSdk.csproj" />
+    <Project Path="src/ZoomRoomSdk.Tests/ZoomRoomSdk.Tests.csproj" />
+  </Folder>
+</Solution>

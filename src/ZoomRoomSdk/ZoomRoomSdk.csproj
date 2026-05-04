@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet package metadata -->
+    <PackageId>PepperDash.ZoomRoom.Sdk</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>PepperDash Engineering</Authors>
+    <Company>PepperDash Technology</Company>
+    <Description>C# P/Invoke wrapper for the Zoom Rooms Controller SDK (ZRC SDK), targeting Crestron control systems running ARM32 Linux.</Description>
+    <PackageTags>zoom;zrcsdk;crestron;simpsharp;zoom-rooms;arm</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/PepperDash-Engineering/zoom-sdk-testing</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>  
+
+  <!-- README included in the NuGet package -->
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- ARM32 native wrapper library: included in the package at runtimes/linux-arm/native/
+       and copied to the output directory so the PoC project can run without extra config. -->
+  <ItemGroup>
+    <Content Include="native/linux-arm/libzrcsdkwrapperpdt.so"
+             PackagePath="runtimes/linux-arm/native/"
+             CopyToOutputDirectory="PreserveNewest"
+             Pack="true" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,49 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": ["src/ZrcSdkLib/ZrcSdkLib.csproj"],
+          "src": ".."
+        }
+      ],
+      "dest": "api",
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": ["api/**.yml", "api/index.md"]
+      },
+      {
+        "files": ["articles/**.md", "articles/**/toc.yml", "toc.yml", "*.md"]
+      }
+    ],
+    "resource": [
+      {
+        "files": ["images/**"]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": ["default", "modern"],
+    "postProcessors": [],
+    "globalMetadata": {
+      "_appTitle": "PepperDash.Zoom.ZrcSdk",
+      "_appName": "PepperDash.Zoom.ZrcSdk",
+      "_appFooter": "© PepperDash Technology",
+      "_enableSearch": true,
+      "_gitContribute": {
+        "repo": "https://github.com/PepperDash-Engineering/zoom-sdk-testing",
+        "branch": "main",
+        "path": "docs"
+      }
+    },
+    "sitemap": {
+      "baseUrl": "https://PepperDash-Engineering.github.io/zoom-sdk-testing"
+    }
+  }
+}

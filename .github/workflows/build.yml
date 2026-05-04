@@ -1,0 +1,228 @@
+name: Zoom Room Library Build
+
+on:
+  workflow_call:
+    inputs:
+      newVersion:
+        description: 'New version?'
+        required: true
+        type: string
+      version:
+        description: 'The version of the file to build and push.'
+        required: true
+        type: string
+      tag:
+        description: 'The tag of the image to build and push.'
+        required: true
+        type: string
+      channel:
+        description: 'The channel of the image to build and push.'
+        required: true
+        type: string
+      
+env:
+  BUILD_TYPE: ${{ inputs.channel == '' && 'Release' || 'Debug' }}
+jobs:
+  testZoomRoomSdkLibrary:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # required by actions/checkout and tag cleanup on failure
+      checks: write    # required by dorny/test-reporter
+    steps:
+      # ---------------------------
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      # ---------------------------
+      - name: Run Tests
+        run: |
+          dotnet test src/ZoomRoomSdk.Tests/ZoomRoomSdk.Tests.csproj \
+            --configuration "$BUILD_TYPE" \
+            --logger "trx;LogFileName=test-results.trx"
+
+      # ---------------------------
+      - name: Test Report
+        if: always()
+        uses: dorny/test-reporter@v3
+        with:
+          name: ZoomRoomSdk Tests
+          path: '**/test-results.trx'
+          reporter: dotnet-trx
+          fail-on-error: true
+
+      # ---------------------------
+      - name: Clean up after failed tests
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '## Test Failed Clean up' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Tests failed before the build ran. Cleaning up the tag created by GetVersion.' >> "$GITHUB_STEP_SUMMARY"
+
+          # Delete the release if it exists
+          echo "Checking for release with tag '${{ inputs.tag }}'..."
+          release_json=$(gh api repos/${{ github.repository }}/releases/tags/${{ inputs.tag }} 2>/dev/null)
+          if [ $? -eq 0 ]; then
+            release_id=$(echo "$release_json" | jq -r '.id')
+            release_name=$(echo "$release_json" | jq -r '.name')
+            echo "Deleting release: $release_name (ID: $release_id)"
+            gh api -X DELETE repos/${{ github.repository }}/releases/$release_id
+            echo "Deleted release \`$release_name\`" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No release found for tag '${{ inputs.tag }}', skipping delete."
+          fi
+
+          # Delete the tag from remote if it exists
+          if git ls-remote --tags origin '${{ inputs.tag }}' | grep -q '${{ inputs.tag }}'; then
+            echo "Deleting tag '${{ inputs.tag }}' from remote..."
+            if git push origin --delete '${{ inputs.tag }}'; then
+              echo "Deleted tag \`${{ inputs.tag }}\` from remote." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Failed to delete tag '${{ inputs.tag }}' from remote."
+            fi
+          else
+            echo "Tag '${{ inputs.tag }}' does not exist on remote, skipping delete."
+          fi
+
+          exit 1
+
+  buildZoomRoomSdkLibrary:
+    runs-on: ubuntu-latest
+    needs: testZoomRoomSdkLibrary
+    steps:
+      # ---------------------------
+      - name: Checkout repo
+        uses: actions/checkout@v6           
+      
+      - name: Install ARM32 cross-compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf cmake
+
+      # ---------------------------
+      - name: Build native ARM32 wrapper
+        run: |
+          chmod +x src/ZrcSdkWrapper/build.sh
+          src/ZrcSdkWrapper/build.sh --arm --release --clean
+          cp src/ZrcSdkWrapper/build-arm/libzrcsdkwrapperpdt.so.1.0.0 \
+             src/ZoomRoomSdk/native/linux-arm/libzrcsdkwrapperpdt.so
+
+      # ---------------------------
+      - name: Build Solution
+        id: build
+        run: |
+          echo '## Build Solution' >> "$GITHUB_STEP_SUMMARY"
+
+          # dotnet build includes restore
+          dotnet build PepperDash.ZoomRoom.Sdk.slnx \
+            -p:Platform="Any CPU" \
+            -p:Configuration="$BUILD_TYPE" \
+            -p:Version="${{ inputs.version }}" \
+            -p:IncludeSourceRevisionInInformationalVersion=false \
+            -m \
+            | tee build-output.log
+          build_exit=${PIPESTATUS[0]}
+
+          if [ $build_exit -eq 0 ]; then
+            echo '**BUILD SUCCESS**' >> "$GITHUB_STEP_SUMMARY"
+            echo "- **Configuration**: $BUILD_TYPE" >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Version**: ${{ inputs.version }}' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Solution**: PepperDash.ZoomRoom.Sdk.slnx' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '**BUILD FAILED**' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Check the step logs above for detailed error information.' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          
+      # ---------------------------
+      - name: Upload Build Output
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-output-log
+          path: build-output.log
+          retention-days: 30
+      
+      
+      # ---------------------------
+      - name: Clean up after failed build
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '## Build Failed Clean up' >> "$GITHUB_STEP_SUMMARY"
+          echo 'The build output above shows the specific errors that caused the build to fail.' >> "$GITHUB_STEP_SUMMARY"
+
+          # Delete the release if it exists
+          echo "Checking for release with tag '${{ inputs.tag }}'..."
+          release_json=$(gh api repos/${{ github.repository }}/releases/tags/${{ inputs.tag }} 2>/dev/null)
+          if [ $? -eq 0 ]; then
+            release_id=$(echo "$release_json" | jq -r '.id')
+            release_name=$(echo "$release_json" | jq -r '.name')
+            echo "Deleting release: $release_name (ID: $release_id)"
+            gh api -X DELETE repos/${{ github.repository }}/releases/$release_id
+            echo "Deleted release \`$release_name\`" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No release found for tag '${{ inputs.tag }}', skipping delete."
+          fi
+
+          # Delete the tag from remote if it exists
+          if git ls-remote --tags origin '${{ inputs.tag }}' | grep -q '${{ inputs.tag }}'; then
+            echo "Deleting tag '${{ inputs.tag }}' from remote..."
+            if git push origin --delete '${{ inputs.tag }}'; then
+              echo "Deleted tag \`${{ inputs.tag }}\` from remote." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Failed to delete tag '${{ inputs.tag }}' from remote."
+            fi
+          else
+            echo "Tag '${{ inputs.tag }}' does not exist on remote, skipping delete."
+          fi
+
+          exit 1
+      
+      # ---------------------------
+      # Create the release on the source repo  
+      - name: Get release notes
+        if: success() && inputs.newVersion == 'true'
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: change-log
+
+      # ---------------------------
+      # Upload the release to the source repo
+      - name: Upload Release
+        if: success() && inputs.newVersion == 'true'
+        continue-on-error: true
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          prerelease: ${{ inputs.channel != '' }}
+          tag: ${{ inputs.tag }}
+          commit: ${{ github.sha }}
+          bodyFile: ./CHANGELOG.md
+      
+      # ---------------------------
+      # Publish to GitHub Packages NuGet feed
+      - name: Publish to GitHub Package Registry
+        if: success() && inputs.newVersion == 'true'
+        continue-on-error: true
+        run: |
+          feed_url="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          echo '## Publish to GitHub Package Registry' >> "$GITHUB_STEP_SUMMARY"
+
+          find src -name '*.nupkg' | while read -r pkg; do
+            echo "Pushing $(basename "$pkg") to GitHub feed..."
+            if ! dotnet nuget push "$pkg" \
+              --source "$feed_url" \
+              --api-key '${{ secrets.GITHUB_TOKEN }}' \
+              --skip-duplicate; then
+              echo "***ERROR*** Failed to push $(basename "$pkg") to GitHub feed" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+          done
+      

@@ -1,0 +1,8 @@
+- name: Getting Started
+  href: getting-started.md
+- name: Pairing a Room
+  href: pairing.md
+- name: Meeting Control
+  href: meeting-control.md
+- name: Crestron Integration
+  href: control-system.md
