@@ -7,7 +7,7 @@ The recommended pattern for Crestron `ControlSystem` integration:
 ```csharp
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
-using PepperDash.Zoom.ZrcSdk;
+using PepperDash.ZoomRoom.Sdk;
 
 namespace MyApp;
 

@@ -61,3 +61,7 @@ nunit-*.xml
 src/ZrcSdkWrapper/build/
 src/ZrcSdkWrapper/build-arm/
 src/ZrcSdkWrapper/build-arm64/
+
+# DocFX generated output
+docs/_site/
+docs/api/

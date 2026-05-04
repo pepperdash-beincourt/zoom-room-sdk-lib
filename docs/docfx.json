@@ -3,7 +3,7 @@
     {
       "src": [
         {
-          "files": ["src/ZrcSdkLib/ZrcSdkLib.csproj"],
+          "files": ["src/ZoomRoomSdk/ZoomRoomSdk.csproj"],
           "src": ".."
         }
       ],
@@ -32,18 +32,18 @@
     "template": ["default", "modern"],
     "postProcessors": [],
     "globalMetadata": {
-      "_appTitle": "PepperDash.Zoom.ZrcSdk",
-      "_appName": "PepperDash.Zoom.ZrcSdk",
+      "_appTitle": "PepperDash.ZoomRoom.Sdk",
+      "_appName": "PepperDash.ZoomRoom.Sdk",
       "_appFooter": "© PepperDash Technology",
       "_enableSearch": true,
       "_gitContribute": {
-        "repo": "https://github.com/PepperDash-Engineering/zoom-sdk-testing",
+        "repo": "https://github.com/PepperDash-Engineering/zoom-room-sdk-lib",
         "branch": "main",
         "path": "docs"
       }
     },
     "sitemap": {
-      "baseUrl": "https://PepperDash-Engineering.github.io/zoom-sdk-testing"
+      "baseUrl": "https://PepperDash-Engineering.github.io/zoom-room-sdk-lib"
     }
   }
 }
