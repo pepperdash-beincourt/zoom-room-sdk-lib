@@ -64,4 +64,5 @@ src/ZrcSdkWrapper/build-arm64/
 
 # DocFX generated output
 docs/_site/
-docs/api/
+docs/api/*.yml
+docs/api/.manifest
