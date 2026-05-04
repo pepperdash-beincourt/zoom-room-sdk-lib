@@ -74,6 +74,26 @@ jobs:
 
           
       # ---------------------------
+      - name: Run Tests
+        id: test
+        run: |
+          echo '## Test Results' >> "$GITHUB_STEP_SUMMARY"
+
+          dotnet test src/ZoomRoomSdk.Tests/ZoomRoomSdk.Tests.csproj \
+            --no-build \
+            --configuration "$BUILD_TYPE" \
+            --logger "console;verbosity=normal" \
+            | tee test-output.log
+          test_exit=${PIPESTATUS[0]}
+
+          if [ $test_exit -eq 0 ]; then
+            echo '**TESTS PASSED**' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '**TESTS FAILED**' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      # ---------------------------
       - name: Upload Build Output
         if: always()
         uses: actions/upload-artifact@v7

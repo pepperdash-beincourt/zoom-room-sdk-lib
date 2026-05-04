@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Crestron.SimplSharp;
 
-namespace ZrcSdkTest
+namespace ZrcSdkExample
 {
     /// <summary>
     /// Provides shell command execution capabilities on Crestron 4-series processors

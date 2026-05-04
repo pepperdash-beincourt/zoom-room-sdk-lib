@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>ZrcSdkExample</AssemblyName>
+    <RootNamespace>ZrcSdkExample</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
@@ -13,13 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZoomRoomSdk\ZoomRoomSdk.csproj" />
-  </ItemGroup>
-
-  <!-- Files moved to ZrcSdkLib -->
-  <ItemGroup>
-    <Compile Remove="ZrcSdk.cs" />
-    <Compile Remove="ZrcSdkPInvoke.cs" />
+    <ProjectReference Include="..\..\src\ZoomRoomSdk\ZoomRoomSdk.csproj" />
   </ItemGroup>
 
 </Project>

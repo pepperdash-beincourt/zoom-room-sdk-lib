@@ -1,18 +1,6 @@
 <Solution>
-  <Configurations>
-    <Platform Name="Any CPU" />
-    <Platform Name="x64" />
-    <Platform Name="x86" />
-  </Configurations>
   <Folder Name="/src/">
-    <Project Path="src/ZoomRoomSdk/ZoomRoomSdk.csproj">
-      <BuildType Solution="*|x64" Project="?" />
-      <BuildType Solution="*|x86" Project="?" />
-      <Platform Solution="*|x64" Project="?" />
-      <Platform Solution="*|x86" Project="?" />
-      <Build Solution="*|x64" Project="false" />
-      <Build Solution="*|x86" Project="false" />
-    </Project>
-    <Project Path="src/ZrcSdkTest/ZrcSdkTest.csproj" />
+    <Project Path="src/ZoomRoomSdk/ZoomRoomSdk.csproj" />
+    <Project Path="src/ZoomRoomSdk.Tests/ZoomRoomSdk.Tests.csproj" />
   </Folder>
 </Solution>

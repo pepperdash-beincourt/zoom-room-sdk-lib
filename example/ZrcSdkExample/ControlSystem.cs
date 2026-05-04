@@ -4,7 +4,7 @@ using Crestron.SimplSharpPro;
 using PepperDash.ZoomRoom.Sdk;
 using System;
 
-namespace ZrcSdkTest;
+namespace ZrcSdkExample;
 
 public class ControlSystem:CrestronControlSystem
 {

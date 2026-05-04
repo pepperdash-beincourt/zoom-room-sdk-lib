@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Crestron.SimplSharp;
 
-namespace ZrcSdkTest
+namespace ZrcSdkExample
 {
     public static class LibraryDiagnostics
     {
