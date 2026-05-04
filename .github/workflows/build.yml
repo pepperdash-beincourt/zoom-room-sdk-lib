@@ -50,7 +50,7 @@ jobs:
           echo '## Build Solution' >> "$GITHUB_STEP_SUMMARY"
 
           # dotnet build includes restore
-          dotnet build PepperDash.ZoomRoom.Sdk.sln \
+          dotnet build PepperDash.ZoomRoom.Sdk.slnx \
             -p:Platform="Any CPU" \
             -p:Configuration="$BUILD_TYPE" \
             -p:Version="${{ inputs.version }}" \
@@ -63,7 +63,7 @@ jobs:
             echo '**BUILD SUCCESS**' >> "$GITHUB_STEP_SUMMARY"
             echo "- **Configuration**: $BUILD_TYPE" >> "$GITHUB_STEP_SUMMARY"
             echo '- **Version**: ${{ inputs.version }}' >> "$GITHUB_STEP_SUMMARY"
-            echo '- **Solution**: PepperDash.ZoomRoom.Sdk.sln' >> "$GITHUB_STEP_SUMMARY"
+            echo '- **Solution**: PepperDash.ZoomRoom.Sdk.slnx' >> "$GITHUB_STEP_SUMMARY"
             echo '- **Build Log**: [Download build-output-log.zip](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})' >> "$GITHUB_STEP_SUMMARY"
           else
             echo '**BUILD FAILED**' >> "$GITHUB_STEP_SUMMARY"
