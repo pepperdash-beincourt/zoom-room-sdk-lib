@@ -26,8 +26,8 @@ jobs:
   testZoomRoomSdkLibrary:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # required by actions/checkout
-      checks: write   # required by dorny/test-reporter
+      contents: write  # required by actions/checkout and tag cleanup on failure
+      checks: write    # required by dorny/test-reporter
     steps:
       # ---------------------------
       - name: Checkout repo
@@ -49,6 +49,42 @@ jobs:
           path: '**/test-results.trx'
           reporter: dotnet-trx
           fail-on-error: true
+
+      # ---------------------------
+      - name: Clean up after failed tests
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '## Test Failed Clean up' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Tests failed before the build ran. Cleaning up the tag created by GetVersion.' >> "$GITHUB_STEP_SUMMARY"
+
+          # Delete the release if it exists
+          echo "Checking for release with tag '${{ inputs.tag }}'..."
+          release_json=$(gh api repos/${{ github.repository }}/releases/tags/${{ inputs.tag }} 2>/dev/null)
+          if [ $? -eq 0 ]; then
+            release_id=$(echo "$release_json" | jq -r '.id')
+            release_name=$(echo "$release_json" | jq -r '.name')
+            echo "Deleting release: $release_name (ID: $release_id)"
+            gh api -X DELETE repos/${{ github.repository }}/releases/$release_id
+            echo "Deleted release \`$release_name\`" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No release found for tag '${{ inputs.tag }}', skipping delete."
+          fi
+
+          # Delete the tag from remote if it exists
+          if git ls-remote --tags origin '${{ inputs.tag }}' | grep -q '${{ inputs.tag }}'; then
+            echo "Deleting tag '${{ inputs.tag }}' from remote..."
+            if git push origin --delete '${{ inputs.tag }}'; then
+              echo "Deleted tag \`${{ inputs.tag }}\` from remote." >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Failed to delete tag '${{ inputs.tag }}' from remote."
+            fi
+          else
+            echo "Tag '${{ inputs.tag }}' does not exist on remote, skipping delete."
+          fi
+
+          exit 1
 
   buildZoomRoomSdkLibrary:
     runs-on: ubuntu-latest
