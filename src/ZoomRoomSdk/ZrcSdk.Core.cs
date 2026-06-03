@@ -117,7 +117,7 @@ public partial class ZrcSdk : IDisposable
         if (_cachedWrapperHandle != IntPtr.Zero)
             return _cachedWrapperHandle;
 
-        var libPath = "/usr/lib/libzrcsdkwrapperpdt.so";
+        var libPath = ResolveWrapperPath();
         if (!File.Exists(libPath))
             throw new DllNotFoundException($"libzrcsdkwrapperpdt.so not found at {libPath}");
 
@@ -153,8 +153,30 @@ public partial class ZrcSdk : IDisposable
 
     private static string? _overrideLibraryPath;
 
+    private const string WrapperFileName = "libzrcsdkwrapperpdt.so";
+    private const string DefaultWrapperDirectory = "/usr/lib";
+
     /// <summary>
-    /// Overrides the directory searched for <c>libzrcsdkwrapperpdt.so</c>.
+    /// Resolves the full path to <c>libzrcsdkwrapperpdt.so</c>. Honors the directory set via
+    /// <see cref="SetLibraryPath"/> (if it contains the wrapper); otherwise falls back to
+    /// <c>/usr/lib</c>. The host can stage the wrapper in a writable location and point the
+    /// SDK at it, which is required on firmware where <c>/usr/lib</c> is read-only.
+    /// </summary>
+    private static string ResolveWrapperPath()
+    {
+        if (!string.IsNullOrEmpty(_overrideLibraryPath))
+        {
+            var overridePath = Path.Combine(_overrideLibraryPath, WrapperFileName);
+            if (File.Exists(overridePath))
+                return overridePath;
+        }
+
+        return Path.Combine(DefaultWrapperDirectory, WrapperFileName);
+    }
+
+    /// <summary>
+    /// Overrides the directory searched for <c>libzrcsdkwrapperpdt.so</c>. When set, the
+    /// resolver looks here first and falls back to <c>/usr/lib</c> if the wrapper is not present.
     /// Call before constructing any <see cref="ZrcSdk"/> instance.
     /// </summary>
     public static void SetLibraryPath(string directoryPath) =>
