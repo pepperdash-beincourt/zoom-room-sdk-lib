@@ -9,6 +9,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetVideoOrder(IntPtr handle, int videoOrderType);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_UpdateVideoLayoutStyle(IntPtr handle, int style);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetFollowingHostOrder(IntPtr handle, int follow);
 
     partial void InitializeLayoutCallbacks() { /* no native callbacks for layout */ }
@@ -30,6 +32,17 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_SetVideoOrder(_handle, videoOrderType);
+    }
+
+    /// <summary>
+    /// Sets the meeting video layout style (Gallery / Speaker / Thumbnail / Content-only / Dynamic).
+    /// This is distinct from <see cref="SetVideoOrder"/>, which only changes participant tile ordering.
+    /// </summary>
+    /// <param name="videoLayoutStyle">VideoLayoutStyle enum value (Gallery=1, Speaker=2, Thumbnail=3, ContentOnly=4, DynamicLayout=6).</param>
+    public int UpdateVideoLayoutStyle(int videoLayoutStyle)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_UpdateVideoLayoutStyle(_handle, videoLayoutStyle);
     }
 
     /// <summary>Toggles following the host's video order. Returns -2 if not supported by this SDK version.</summary>

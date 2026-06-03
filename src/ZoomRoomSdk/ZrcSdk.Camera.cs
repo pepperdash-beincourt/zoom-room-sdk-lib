@@ -7,6 +7,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_ControlCamera(IntPtr handle, string deviceID, int action, int type, string? panTilt);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ControlUserCamera(IntPtr handle, int userID, int action, int type);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_RespondRemoteCameraControl(IntPtr handle, int userID, int accept);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetFarEndCameraControlRequestCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
@@ -37,6 +39,19 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_ControlCamera(_handle, deviceID, action, type, panTilt) == 0;
+    }
+
+    /// <summary>
+    /// Controls a far-end (participant) camera. The target participant must have granted
+    /// far-end camera control to this room first.
+    /// </summary>
+    /// <param name="userID">Target participant userID.</param>
+    /// <param name="action">CameraControlAction enum value (MoveUp=0, MoveDown, MoveLeft, MoveRight, ZoomIn, ZoomOut).</param>
+    /// <param name="type">CameraControlType enum value (Start=0, Continue, Stop).</param>
+    public bool ControlUserCamera(int userID, int action, int type)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ControlUserCamera(_handle, userID, action, type) == 0;
     }
 
     /// <summary>

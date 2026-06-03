@@ -263,6 +263,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnpinShare(ZrcSdkHandle handle, 
 // ── Layout extensions ─────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handle, int32_t videoOrderType);
+// style: VideoLayoutStyle enum (Gallery=1, Speaker=2, Thumbnail=3, ContentOnly=4, DynamicLayout=6)
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UpdateVideoLayoutStyle(ZrcSdkHandle handle, int32_t style);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetFollowingHostOrder(ZrcSdkHandle handle, int follow);
 
 // ── Recording extensions ──────────────────────────────────────────────────────
@@ -302,6 +304,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignClosedCaption(ZrcSdkHandle
 // ── Camera control ────────────────────────────────────────────────────────────
 // action: CameraControlAction enum, type: CameraControlType enum
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlCamera(ZrcSdkHandle handle, const char* deviceID, int32_t action, int32_t type, const char* panTilt);
+// Far-end (participant) camera control. userID: target participant; action: CameraControlAction; type: CameraControlType (Start/Continue/Stop)
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlUserCamera(ZrcSdkHandle handle, int32_t userID, int32_t action, int32_t type);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept);
 
 // ── Phone Call ────────────────────────────────────────────────────────────────

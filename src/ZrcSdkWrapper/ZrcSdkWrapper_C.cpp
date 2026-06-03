@@ -1789,6 +1789,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handl
     return (int)pL->SelectVideoOrder((VideoOrderType)videoOrderType);
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UpdateVideoLayoutStyle(ZrcSdkHandle handle, int32_t style)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
+    if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
+    return (int)pL->UpdateVideoLayoutStyle((VideoLayoutStyle)style);
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetFollowingHostOrder(ZrcSdkHandle handle, int follow)
 {
     if (!handle) return -1;
@@ -2065,6 +2076,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlCamera(ZrcSdkHandle handl
     if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
     std::string panTiltStr = panTilt ? std::string(panTilt) : std::string();
     return (int)pCam->ControlLocalCamera(std::string(deviceID), (CameraControlAction)action, (CameraControlType)type, panTiltStr);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlUserCamera(ZrcSdkHandle handle, int32_t userID, int32_t action, int32_t type)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    ICameraControlHelper* pCam = pMS->GetCameraControlHelper();
+    if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
+    return (int)pCam->ControlUserCamera(userID, (CameraControlAction)action, (CameraControlType)type);
 }
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept)
