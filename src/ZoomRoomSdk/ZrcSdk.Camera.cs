@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using PepperDash.ZoomRoom.Sdk.EventArgs;
 
 namespace PepperDash.ZoomRoom.Sdk;
 
@@ -14,6 +15,25 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_RespondRemoteCameraControl(IntPtr handle, int userID, int accept);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetFarEndCameraControlRequestCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetCameraList(IntPtr handle, [Out] ZrcDeviceNative[]? outDevices, int maxCount);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetCurrentCamera(IntPtr handle, out ZrcDeviceNative outDevice);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_SetCurrentCamera(IntPtr handle, string deviceID);
+
+    // Flat camera/device struct (must mirror ZrcDevice in ZrcSdkWrapper_C.h exactly).
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    private struct ZrcDeviceNative
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string id;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string name;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string displayName;
+        public int isSelected;
+    }
+
+    private const int MaxCameraList = 16;
 
     private SdkEventCallbackDelegate? _farEndCameraControlCallbackDelegate;
 
@@ -53,6 +73,58 @@ public partial class ZrcSdk
         ThrowIfDisposed();
         return ZrcSdk_ChangeSmartCameraMode(_handle, mask, deviceID ?? string.Empty) == 0;
     }
+
+    /// <summary>
+    /// Enumerates the room's local cameras (device list). Synchronous getter on the setting service.
+    /// </summary>
+    /// <returns>The cameras, or an empty array on error / no cameras.</returns>
+    public CameraDevice[] GetCameras()
+    {
+        ThrowIfDisposed();
+        var buffer = new ZrcDeviceNative[MaxCameraList];
+        int count = ZrcSdk_GetCameraList(_handle, buffer, MaxCameraList);
+        if (count <= 0) return Array.Empty<CameraDevice>();
+        if (count > MaxCameraList) count = MaxCameraList;
+        var result = new CameraDevice[count];
+        for (int i = 0; i < count; i++) result[i] = ToCameraDevice(buffer[i]);
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the currently selected/active camera.
+    /// </summary>
+    /// <param name="camera">The active camera when this returns <see langword="true"/>.</param>
+    /// <returns><see langword="true"/> if a current camera was retrieved.</returns>
+    public bool TryGetCurrentCamera(out CameraDevice? camera)
+    {
+        ThrowIfDisposed();
+        if (ZrcSdk_GetCurrentCamera(_handle, out var native) == 0)
+        {
+            camera = ToCameraDevice(native);
+            return true;
+        }
+        camera = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Selects the active local camera by device ID. Returns <see langword="false"/> if the
+    /// device ID is not found or the SDK rejects the request.
+    /// </summary>
+    public bool SetCurrentCamera(string deviceID)
+    {
+        ThrowIfDisposed();
+        if (string.IsNullOrEmpty(deviceID)) return false;
+        return ZrcSdk_SetCurrentCamera(_handle, deviceID) == 0;
+    }
+
+    private static CameraDevice ToCameraDevice(ZrcDeviceNative n) => new CameraDevice
+    {
+        Id          = n.id ?? string.Empty,
+        Name        = n.name ?? string.Empty,
+        DisplayName = string.IsNullOrEmpty(n.displayName) ? (n.name ?? string.Empty) : n.displayName,
+        IsSelected  = n.isSelected != 0,
+    };
 
     /// <summary>
     /// Controls a far-end (participant) camera. The target participant must have granted

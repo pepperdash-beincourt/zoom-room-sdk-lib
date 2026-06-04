@@ -395,6 +395,16 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowCaption(ZrcSdkHandle handle,
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableLiveTranscription(ZrcSdkHandle handle, int enable);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignClosedCaption(ZrcSdkHandle handle, int32_t userID, int assign);
 
+// ── Device flat struct ──────────────────────────────────────────────────────────
+// Flattened representation of the SDK Device struct (camera/microphone/speaker entry).
+// Strings are null-terminated; isSelected is 1 when this is the active device.
+typedef struct ZrcDevice {
+    char    id[256];                // Device ID
+    char    name[256];              // Device name
+    char    displayName[256];       // Display name for UI
+    int32_t isSelected;             // 1 = currently selected/active
+} ZrcDevice;
+
 // ── Camera control ────────────────────────────────────────────────────────────
 // action: CameraControlAction enum, type: CameraControlType enum
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlCamera(ZrcSdkHandle handle, const char* deviceID, int32_t action, int32_t type, const char* panTilt);
@@ -403,6 +413,13 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlUserCamera(ZrcSdkHandle h
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept);
 // Smart/auto camera framing mode. mask: SmartCameraMask (Manual=1, SpeakerFocus=2, GroupFocus=4, MultiFocus=8, SmartGallery=16, Director=32, PresenterFocus=64). deviceID empty = main camera.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeSmartCameraMode(ZrcSdkHandle handle, int32_t mask, const char* deviceID);
+// Camera device list / selection (ISettingService). All return <0 on error.
+// GetCameraList fills up to maxCount entries and returns the total camera count (may exceed maxCount).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCameraList(ZrcSdkHandle handle, ZrcDevice* outDevices, int maxCount);
+// GetCurrentCamera fills outDevice with the active camera; returns 0 on success.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCurrentCamera(ZrcSdkHandle handle, ZrcDevice* outDevice);
+// SetCurrentCamera selects the active camera by device ID; returns 0 on success.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle handle, const char* deviceID);
 
 // ── Phone Call ────────────────────────────────────────────────────────────────
 // SIP call wrapping. Command methods that take a callID look up the cached SIPCallInfo; pass an

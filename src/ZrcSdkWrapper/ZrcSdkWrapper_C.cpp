@@ -2415,6 +2415,65 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeSmartCameraMode(ZrcSdkHand
     return (int)pCam->ChangeSmartCameraMode((SmartCameraMask)mask, deviceID ? std::string(deviceID) : std::string());
 }
 
+// Helper: flatten an SDK Device to the C ZrcDevice struct.
+static void FlattenDevice(const Device& src, ZrcDevice& dst)
+{
+    memset(&dst, 0, sizeof(ZrcDevice));
+    strncpy_safe(dst.id,          src.id,          sizeof(dst.id));
+    strncpy_safe(dst.name,        src.name,        sizeof(dst.name));
+    strncpy_safe(dst.displayName, src.displayName, sizeof(dst.displayName));
+    dst.isSelected = src.isSelected ? 1 : 0;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCameraList(ZrcSdkHandle handle, ZrcDevice* outDevices, int maxCount)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    std::vector<Device> cameras;
+    int rc = (int)inst->pSettingService->GetCameraList(cameras);
+    if (rc != 0) return rc < 0 ? rc : -rc;  // surface SDK error as negative
+    if (outDevices && maxCount > 0)
+    {
+        int n = (int)cameras.size();
+        if (n > maxCount) n = maxCount;
+        for (int i = 0; i < n; ++i) FlattenDevice(cameras[i], outDevices[i]);
+    }
+    return (int)cameras.size();
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCurrentCamera(ZrcSdkHandle handle, ZrcDevice* outDevice)
+{
+    if (!handle || !outDevice) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    Device cam;
+    int rc = (int)inst->pSettingService->GetCurrentCamera(cam);
+    if (rc == 0) FlattenDevice(cam, *outDevice);
+    return rc;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle handle, const char* deviceID)
+{
+    if (!handle || !deviceID) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    // SetCurrentCamera takes a full Device; resolve the matching entry from the camera list by ID.
+    std::vector<Device> cameras;
+    if ((int)inst->pSettingService->GetCameraList(cameras) != 0) return -1;
+    std::string wanted(deviceID);
+    for (const auto& cam : cameras)
+    {
+        if (cam.id == wanted)
+            return (int)inst->pSettingService->SetCurrentCamera(cam);
+    }
+    inst->RaiseErrorEvent("SetCurrentCamera: device ID not found", -2);
+    return -2;
+}
+
 // ─── Meeting Control Extensions ───────────────────────────────────────────────
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LockMeeting(ZrcSdkHandle handle, int lock)
