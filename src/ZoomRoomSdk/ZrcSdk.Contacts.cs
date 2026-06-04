@@ -72,6 +72,8 @@ public partial class ZrcSdk
     public bool SubscribeContacts(int startIndex, int count, bool searchSip = false)
     {
         ThrowIfDisposed();
+        // Native treats these as uint32_t; negatives would wrap to huge values. Fail predictably.
+        if (startIndex < 0 || count < 0) return false;
         return ZrcSdk_SubscribeContacts(_handle, startIndex, count, searchSip ? 1 : 0) == 0;
     }
 

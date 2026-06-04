@@ -2,7 +2,7 @@ namespace PepperDash.ZoomRoom.Sdk.EventArgs;
 
 /// <summary>
 /// Event arguments for directory/phonebook contact list updates received from the Zoom Room.
-/// Raised in response to a contact subscription (<see cref="ZrcSdk.SubscribeContacts"/>).
+/// Raised in response to a contact subscription (<see cref="PepperDash.ZoomRoom.Sdk.ZrcSdk.SubscribeContacts"/>).
 /// </summary>
 public sealed class ContactListEventArgs : System.EventArgs
 {

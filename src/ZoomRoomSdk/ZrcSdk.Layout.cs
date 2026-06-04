@@ -137,14 +137,14 @@ public partial class ZrcSdk
 }
 
 /// <summary>Event args for <see cref="ZrcSdk.VideoPageStatusChanged"/>.</summary>
-public class VideoPageStatusEventArgs : System.EventArgs
+public sealed class VideoPageStatusEventArgs : System.EventArgs
 {
     /// <summary><see langword="true"/> if the video view is on the first page.</summary>
-    public bool IsInFirstPage           { get; set; }
+    public bool IsInFirstPage           { get; init; }
     /// <summary><see langword="true"/> if the video view is on the last page.</summary>
-    public bool IsInLastPage            { get; set; }
+    public bool IsInLastPage            { get; init; }
     /// <summary>Current page video type (PageVideoType: GalleryView=0, ThumbnailView=1, DynamicLayoutView=2).</summary>
-    public int  PageVideoType           { get; set; }
+    public int  PageVideoType           { get; init; }
     /// <summary>Number of video tiles on the current page.</summary>
-    public int  VideoCountInCurrentPage { get; set; }
+    public int  VideoCountInCurrentPage { get; init; }
 }

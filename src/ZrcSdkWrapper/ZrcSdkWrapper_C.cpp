@@ -594,8 +594,8 @@ struct ZrcSdkInstance
         , feacApprovedCallback(nullptr), feacApprovedUserData(nullptr)
         , feacDeclinedCallback(nullptr), feacDeclinedUserData(nullptr)
         , allowAttendeesVideoCallback(nullptr), allowAttendeesVideoUserData(nullptr)
-        , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
         , videoPageStatusCallback(nullptr), videoPageStatusUserData(nullptr)
+        , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
         , boStatusChangedCallback(nullptr), boStatusChangedUserData(nullptr)
         , boRoomListCallback(nullptr), boRoomListUserData(nullptr)
         , inSilentModeCallback(nullptr), inSilentModeUserData(nullptr)
@@ -1320,8 +1320,9 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, 
         inst->pZoomRoomsServiceSink = new ZrcZoomRoomsServiceSink(inst);
         inst->pZoomRoomsService->RegisterSink(inst->pZoomRoomsServiceSink);
 
-        // Setting service: speaker/output volume get/set. No sink registered (ISettingServiceSink
-        // has ~40 callbacks); volume feedback is driven optimistically by the host after set/get.
+        // Setting service: speaker/output volume get/set and camera device list/selection. No sink
+        // registered: ISettingServiceSink has ~40 callbacks, so volume and camera-selection feedback
+        // are driven by the host (read on connect / after set), not by SDK push notifications.
         inst->pSettingService = inst->pZoomRoomsService->GetSettingService();
 
         inst->pPreMeetingService = inst->pZoomRoomsService->GetPreMeetingService();
@@ -2566,7 +2567,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_DeclineSIPCall(ZrcSdkHandle hand
 {
     if (!handle) return -1;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (!inst->pPhoneCallService) return -1;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pPhoneCallService) { inst->RaiseErrorEvent("Phone Call Service not available", -1); return -1; }
     SIPCallInfo info;
     if (!FindSIPCall(inst, callID, info)) return -2; // no matching active call
     return (int)inst->pPhoneCallService->DeclineIncomingSIPCall(info);
@@ -2576,7 +2578,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TerminateSIPCall(ZrcSdkHandle ha
 {
     if (!handle) return -1;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (!inst->pPhoneCallService) return -1;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pPhoneCallService) { inst->RaiseErrorEvent("Phone Call Service not available", -1); return -1; }
     SIPCallInfo info;
     if (!FindSIPCall(inst, callID, info)) return -2;
     return (int)inst->pPhoneCallService->HangupSIPCall(info);
@@ -2586,7 +2589,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_HoldSIPCall(ZrcSdkHandle handle,
 {
     if (!handle) return -1;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (!inst->pPhoneCallService) return -1;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pPhoneCallService) { inst->RaiseErrorEvent("Phone Call Service not available", -1); return -1; }
     SIPCallInfo info;
     if (!FindSIPCall(inst, callID, info)) return -2;
     return (int)inst->pPhoneCallService->HoldSIPCall(info);
@@ -2596,7 +2600,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnholdSIPCall(ZrcSdkHandle handl
 {
     if (!handle) return -1;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (!inst->pPhoneCallService) return -1;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pPhoneCallService) { inst->RaiseErrorEvent("Phone Call Service not available", -1); return -1; }
     SIPCallInfo info;
     if (!FindSIPCall(inst, callID, info)) return -2;
     return (int)inst->pPhoneCallService->UnholdSIPCall(info);
@@ -2606,7 +2611,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendDTMFToSIPCall(ZrcSdkHandle h
 {
     if (!handle || !dtmf) return -1;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (!inst->pPhoneCallService) return -1;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pPhoneCallService) { inst->RaiseErrorEvent("Phone Call Service not available", -1); return -1; }
     SIPCallInfo info;
     if (!FindSIPCall(inst, callID, info)) return -2;
     return (int)inst->pPhoneCallService->SendDTMFToSIPCall(std::string(dtmf), info);
@@ -2631,6 +2637,7 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SubscribeContacts(ZrcSdkHandle h
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
     if (!inst->pContactHelper) { inst->RaiseErrorEvent("Contact Helper not available", -1); return -1; }
+    if (startIndex < 0 || count < 0) { inst->RaiseErrorEvent("SubscribeContacts: startIndex/count must be non-negative", -1); return -1; }
     return (int)inst->pContactHelper->Subscribe((uint32_t)startIndex, (uint32_t)count, isSearchSip != 0);
 }
 

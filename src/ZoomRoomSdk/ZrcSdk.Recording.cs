@@ -93,12 +93,12 @@ public partial class ZrcSdk
 }
 
 /// <summary>Event args for <see cref="ZrcSdk.MeetingRecordingInfoChanged"/>.</summary>
-public class MeetingRecordingInfoEventArgs : System.EventArgs
+public sealed class MeetingRecordingInfoEventArgs : System.EventArgs
 {
     /// <summary><see langword="true"/> if the meeting is being recorded.</summary>
-    public bool IsMeetingBeingRecorded { get; set; }
+    public bool IsMeetingBeingRecorded { get; init; }
     /// <summary><see langword="true"/> if this room is allowed to start recording.</summary>
-    public bool CanIRecord             { get; set; }
+    public bool CanIRecord             { get; init; }
     /// <summary><see langword="true"/> if this room is currently recording.</summary>
-    public bool AmIRecording           { get; set; }
+    public bool AmIRecording           { get; init; }
 }

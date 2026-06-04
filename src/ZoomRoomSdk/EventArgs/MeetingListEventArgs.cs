@@ -2,7 +2,7 @@ namespace PepperDash.ZoomRoom.Sdk.EventArgs;
 
 /// <summary>
 /// Event arguments for scheduled-meeting (bookings/schedule) list updates received from the
-/// Zoom Room. Raised in response to a meeting list request (<see cref="ZrcSdk.ListMeeting"/>).
+/// Zoom Room. Raised in response to a meeting list request (<see cref="PepperDash.ZoomRoom.Sdk.ZrcSdk.ListMeeting"/>).
 /// </summary>
 public sealed class MeetingListEventArgs : System.EventArgs
 {
