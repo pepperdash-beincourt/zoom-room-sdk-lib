@@ -6,6 +6,8 @@ public partial class ZrcSdk
 {
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_ControlCamera(IntPtr handle, string deviceID, int action, int type, string? panTilt);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_ChangeSmartCameraMode(IntPtr handle, int mask, string deviceID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_ControlUserCamera(IntPtr handle, int userID, int action, int type);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -39,6 +41,17 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_ControlCamera(_handle, deviceID, action, type, panTilt) == 0;
+    }
+
+    /// <summary>
+    /// Sets the smart/auto camera framing mode for a local camera.
+    /// </summary>
+    /// <param name="mask">SmartCameraMask enum value (Manual=1, SpeakerFocus=2, GroupFocus=4, MultiFocus=8, SmartGallery=16, Director=32, PresenterFocus=64).</param>
+    /// <param name="deviceID">Camera device ID; empty string targets the main (near-end) camera.</param>
+    public bool ChangeSmartCameraMode(int mask, string deviceID = "")
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ChangeSmartCameraMode(_handle, mask, deviceID ?? string.Empty) == 0;
     }
 
     /// <summary>

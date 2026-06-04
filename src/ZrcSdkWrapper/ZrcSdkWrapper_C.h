@@ -366,6 +366,9 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ResponseToRecordingRequest(ZrcSd
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RaiseHand(ZrcSdkHandle handle);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LowerHand(ZrcSdkHandle handle);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LowerHandForUser(ZrcSdkHandle handle, int32_t userID);
+// Host actions on a participant (IParticipantHelper).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ExpelUser(ZrcSdkHandle handle, int32_t userID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignHost(ZrcSdkHandle handle, int32_t userID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionFeedback(ZrcSdkHandle handle, int32_t feedbackType);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ClearAllFeedback(ZrcSdkHandle handle);
@@ -398,6 +401,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlCamera(ZrcSdkHandle handl
 // Far-end (participant) camera control. userID: target participant; action: CameraControlAction; type: CameraControlType (Start/Continue/Stop)
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlUserCamera(ZrcSdkHandle handle, int32_t userID, int32_t action, int32_t type);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept);
+// Smart/auto camera framing mode. mask: SmartCameraMask (Manual=1, SpeakerFocus=2, GroupFocus=4, MultiFocus=8, SmartGallery=16, Director=32, PresenterFocus=64). deviceID empty = main camera.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeSmartCameraMode(ZrcSdkHandle handle, int32_t mask, const char* deviceID);
 
 // ── Phone Call ────────────────────────────────────────────────────────────────
 // SIP call wrapping. Command methods that take a callID look up the cached SIPCallInfo; pass an

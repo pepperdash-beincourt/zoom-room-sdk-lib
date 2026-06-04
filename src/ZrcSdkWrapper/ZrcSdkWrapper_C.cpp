@@ -2149,6 +2149,28 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LowerHandForUser(ZrcSdkHandle ha
     return -2; // not implemented
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ExpelUser(ZrcSdkHandle handle, int32_t userID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IParticipantHelper* pPart = pMS->GetParticipantHelper();
+    if (!pPart) { inst->RaiseErrorEvent("Participant Helper not available", -1); return -1; }
+    return (int)pPart->ExpelUser(userID);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignHost(ZrcSdkHandle handle, int32_t userID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IParticipantHelper* pPart = pMS->GetParticipantHelper();
+    if (!pPart) { inst->RaiseErrorEvent("Participant Helper not available", -1); return -1; }
+    return (int)pPart->AssignHost(userID);
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji)
 {
     if (!handle || !emoji) return -1;
@@ -2379,6 +2401,18 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSd
     ICameraControlHelper* pCam = pMS->GetCameraControlHelper();
     if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
     return (int)pCam->RespondRemoteCameraControlFromUser(userID, accept != 0);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeSmartCameraMode(ZrcSdkHandle handle, int32_t mask, const char* deviceID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    ICameraControlHelper* pCam = pMS->GetCameraControlHelper();
+    if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
+    // Empty deviceID targets the main (near-end) camera.
+    return (int)pCam->ChangeSmartCameraMode((SmartCameraMask)mask, deviceID ? std::string(deviceID) : std::string());
 }
 
 // ─── Meeting Control Extensions ───────────────────────────────────────────────

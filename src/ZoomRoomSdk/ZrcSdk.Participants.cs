@@ -91,6 +91,16 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetParticipantListCallback(
         IntPtr handle, ZrcParticipantListCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ExpelUser(IntPtr handle, int userID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_AssignHost(IntPtr handle, int userID);
+
+    /// <summary>Removes (expels) a participant from the meeting. Host only.</summary>
+    public bool ExpelUser(int userID) { ThrowIfDisposed(); return ZrcSdk_ExpelUser(_handle, userID) == 0; }
+
+    /// <summary>Assigns the host role to a participant. Host only.</summary>
+    public bool AssignHost(int userID) { ThrowIfDisposed(); return ZrcSdk_AssignHost(_handle, userID) == 0; }
 
     // ── Delegates ──────────────────────────────────────────────────────────────
 
