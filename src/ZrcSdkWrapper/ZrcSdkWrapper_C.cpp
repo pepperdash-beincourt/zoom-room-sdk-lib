@@ -26,6 +26,7 @@
 #include "ServiceComponents/IMeetingChatHelper.h"
 #include "ServiceComponents/IClosedCaptionHelper.h"
 #include "ServiceComponents/ICameraControlHelper.h"
+#include "ServiceComponents/IThirdPartyMeetingHelper.h"
 
 using namespace ZRCSDK;
 
@@ -2347,6 +2348,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendDTMFToSIPCall(ZrcSdkHandle h
     SIPCallInfo info;
     if (!FindSIPCall(inst, callID, info)) return -2;
     return (int)inst->pPhoneCallService->SendDTMFToSIPCall(std::string(dtmf), info);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CallOutPSTNUser(ZrcSdkHandle handle, const char* phoneNumber, int cancelCall, int hasVoicePrompt)
+{
+    if (!handle || !phoneNumber) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pMeetingService) { inst->RaiseErrorEvent("Meeting Service not available", -1); return -1; }
+    IThirdPartyMeetingHelper* pTPM = inst->pMeetingService->GetThirdPartyMeetingHelper();
+    if (!pTPM) { inst->RaiseErrorEvent("Third Party Meeting Helper not available", -1); return -1; }
+    return (int)pTPM->CallOutPSTNUser(std::string(phoneNumber), cancelCall != 0, hasVoicePrompt != 0);
 }
 
 // ─── Cloud Recording ──────────────────────────────────────────────────────────

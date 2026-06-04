@@ -30,6 +30,8 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_HoldSIPCall(IntPtr handle, string callID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_UnholdSIPCall(IntPtr handle, string callID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_CallOutPSTNUser(IntPtr handle, string phoneNumber, int cancelCall, int hasVoicePrompt);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetSIPCallStatusCallback(IntPtr handle, ZrcSIPCallCallbackDelegate? cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -71,6 +73,17 @@ public partial class ZrcSdk
 
     /// <summary>Resumes a held SIP call.</summary>
     public bool UnholdSIPCall(string callID) { ThrowIfDisposed(); return ZrcSdk_UnholdSIPCall(_handle, callID) == 0; }
+
+    /// <summary>
+    /// Dials out a PSTN phone number into the current meeting via the third-party meeting helper.
+    /// <paramref name="cancelCall"/> cancels an in-progress call-out; <paramref name="hasVoicePrompt"/>
+    /// rings the call on the Zoom Room.
+    /// </summary>
+    public bool CallOutPSTNUser(string phoneNumber, bool cancelCall = false, bool hasVoicePrompt = false)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_CallOutPSTNUser(_handle, phoneNumber, cancelCall ? 1 : 0, hasVoicePrompt ? 1 : 0) == 0;
+    }
 
     private void OnSIPCallStatusCallback(IntPtr callPtr, IntPtr userData)
     {
