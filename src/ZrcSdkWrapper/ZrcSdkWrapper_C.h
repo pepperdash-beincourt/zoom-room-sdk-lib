@@ -348,11 +348,14 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlUserCamera(ZrcSdkHandle h
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept);
 
 // ── Phone Call ────────────────────────────────────────────────────────────────
-// SIP call wrapping
+// SIP call wrapping. Command methods that take a callID look up the cached SIPCallInfo; pass an
+// empty/null callID to target the single active call. Return -2 if no matching call is cached.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CallSIP(ZrcSdkHandle handle, const char* uri);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_DeclineSIPCall(ZrcSdkHandle handle, const char* callID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TerminateSIPCall(ZrcSdkHandle handle, const char* callID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_HoldSIPCall(ZrcSdkHandle handle, const char* callID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnholdSIPCall(ZrcSdkHandle handle, const char* callID);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendDTMFToSIPCall(ZrcSdkHandle handle, const char* dtmf, const char* callID);
 
 // ── Meeting Control extensions ────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LockMeeting(ZrcSdkHandle handle, int lock);

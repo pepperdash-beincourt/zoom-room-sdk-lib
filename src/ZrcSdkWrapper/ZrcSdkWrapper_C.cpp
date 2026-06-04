@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <string>
 #include <cstring>
+#include <map>
+#include <mutex>
 #include <sys/stat.h>
 #include "IZRCSDK.h"
 #include "IZoomRoomsService.h"
@@ -440,6 +442,10 @@ struct ZrcSdkInstance
     ZrcControlSystemHelperSink* pControlSystemHelperSink;
     IPhoneCallService*          pPhoneCallService;
     ZrcPhoneCallServiceSink*    pPhoneCallServiceSink;
+    // Active SIP calls keyed by callID. The SDK's hangup/hold/DTMF take a SIPCallInfo (not a callID),
+    // so we cache the info from the status notifications and look it up by callID for command calls.
+    std::map<std::string, SIPCallInfo> sipCalls;
+    std::mutex                  sipCallsMutex;
 
     int participantCount;
 
@@ -1064,6 +1070,7 @@ void ZrcCameraControlHelperSink::OnFarEndCameraControlNotification(const FarEndC
 void ZrcPhoneCallServiceSink::OnReceiveIncomingSIPCallNotification(const SIPCallInfo& call)
 {
     if (!owner) return;
+    { std::lock_guard<std::mutex> lk(owner->sipCallsMutex); owner->sipCalls[call.callID] = call; }
     ZrcSIPCall flat;
     FlattenSIPCall(call, flat);
     owner->RaiseSIPCallEvent(&flat);
@@ -1072,6 +1079,7 @@ void ZrcPhoneCallServiceSink::OnReceiveIncomingSIPCallNotification(const SIPCall
 void ZrcPhoneCallServiceSink::OnTerminateSIPCallNotification(SIPCallTerminateReason /*reason*/, const SIPCallInfo& call)
 {
     if (!owner) return;
+    { std::lock_guard<std::mutex> lk(owner->sipCallsMutex); owner->sipCalls.erase(call.callID); }
     ZrcSIPCall flat;
     FlattenSIPCall(call, flat);
     owner->RaiseSIPCallEvent(&flat);
@@ -1080,6 +1088,7 @@ void ZrcPhoneCallServiceSink::OnTerminateSIPCallNotification(SIPCallTerminateRea
 void ZrcPhoneCallServiceSink::OnUpdateSIPCallStatusNotification(const SIPCallInfo& call)
 {
     if (!owner) return;
+    { std::lock_guard<std::mutex> lk(owner->sipCallsMutex); owner->sipCalls[call.callID] = call; }
     ZrcSIPCall flat;
     FlattenSIPCall(call, flat);
     owner->RaiseSIPCallEvent(&flat);
@@ -2263,29 +2272,81 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableMeetingQA(ZrcSdkHandle han
 
 // ─── Phone / SIP ─────────────────────────────────────────────────────────────
 
-ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_DeclineSIPCall(ZrcSdkHandle handle, const char* /*callID*/)
+// Look up a cached SIPCallInfo by callID. If callID is null/empty and exactly one call is active,
+// returns that one (the EPI tracks a single active call). Returns false if not found.
+static bool FindSIPCall(ZrcSdkInstance* inst, const char* callID, SIPCallInfo& out)
 {
-    // The SDK uses SIPCallInfo reference — we don't store it here, so this is a stub
-    (void)handle;
-    return -2; // requires stored SIPCallInfo — not supported without call state tracking
+    if (!inst) return false;
+    std::lock_guard<std::mutex> lk(inst->sipCallsMutex);
+    std::string id = callID ? callID : "";
+    if (!id.empty())
+    {
+        auto it = inst->sipCalls.find(id);
+        if (it == inst->sipCalls.end()) return false;
+        out = it->second;
+        return true;
+    }
+    if (inst->sipCalls.size() == 1) { out = inst->sipCalls.begin()->second; return true; }
+    return false;
 }
 
-ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TerminateSIPCall(ZrcSdkHandle handle, const char* /*callID*/)
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CallSIP(ZrcSdkHandle handle, const char* uri)
 {
-    (void)handle;
-    return -2;
+    if (!handle || !uri) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pPhoneCallService) { inst->RaiseErrorEvent("Phone Call Service not available", -1); return -1; }
+    return (int)inst->pPhoneCallService->CallSIP(std::string(uri));
 }
 
-ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_HoldSIPCall(ZrcSdkHandle handle, const char* /*callID*/)
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_DeclineSIPCall(ZrcSdkHandle handle, const char* callID)
 {
-    (void)handle;
-    return -2;
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->pPhoneCallService) return -1;
+    SIPCallInfo info;
+    if (!FindSIPCall(inst, callID, info)) return -2; // no matching active call
+    return (int)inst->pPhoneCallService->DeclineIncomingSIPCall(info);
 }
 
-ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnholdSIPCall(ZrcSdkHandle handle, const char* /*callID*/)
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TerminateSIPCall(ZrcSdkHandle handle, const char* callID)
 {
-    (void)handle;
-    return -2;
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->pPhoneCallService) return -1;
+    SIPCallInfo info;
+    if (!FindSIPCall(inst, callID, info)) return -2;
+    return (int)inst->pPhoneCallService->HangupSIPCall(info);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_HoldSIPCall(ZrcSdkHandle handle, const char* callID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->pPhoneCallService) return -1;
+    SIPCallInfo info;
+    if (!FindSIPCall(inst, callID, info)) return -2;
+    return (int)inst->pPhoneCallService->HoldSIPCall(info);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnholdSIPCall(ZrcSdkHandle handle, const char* callID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->pPhoneCallService) return -1;
+    SIPCallInfo info;
+    if (!FindSIPCall(inst, callID, info)) return -2;
+    return (int)inst->pPhoneCallService->UnholdSIPCall(info);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendDTMFToSIPCall(ZrcSdkHandle handle, const char* dtmf, const char* callID)
+{
+    if (!handle || !dtmf) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->pPhoneCallService) return -1;
+    SIPCallInfo info;
+    if (!FindSIPCall(inst, callID, info)) return -2;
+    return (int)inst->pPhoneCallService->SendDTMFToSIPCall(std::string(dtmf), info);
 }
 
 // ─── Cloud Recording ──────────────────────────────────────────────────────────

@@ -21,6 +21,10 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_DeclineSIPCall(IntPtr handle, string callID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_CallSIP(IntPtr handle, string uri);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_SendDTMFToSIPCall(IntPtr handle, string dtmf, string? callID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_TerminateSIPCall(IntPtr handle, string callID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_HoldSIPCall(IntPtr handle, string callID);
@@ -47,7 +51,16 @@ public partial class ZrcSdk
         ZrcSdk_SetSIPServiceStatusCallback(_handle, _sipServiceStatusCallbackDelegate, IntPtr.Zero);
     }
 
-    /// <summary>Declines an incoming SIP call. Returns false if not supported (requires stored call state).</summary>
+    /// <summary>Places an outbound SIP call to the given URI / number.</summary>
+    public bool CallSIP(string uri) { ThrowIfDisposed(); return ZrcSdk_CallSIP(_handle, uri) == 0; }
+
+    /// <summary>
+    /// Sends DTMF digits to an active SIP call. Pass the call's <c>callID</c>, or null/empty to
+    /// target the single active call.
+    /// </summary>
+    public bool SendDTMFToSIPCall(string dtmf, string? callID = null) { ThrowIfDisposed(); return ZrcSdk_SendDTMFToSIPCall(_handle, dtmf, callID) == 0; }
+
+    /// <summary>Declines an incoming SIP call. Pass the call's <c>callID</c> (or null/empty for the single active call).</summary>
     public bool DeclineSIPCall(string callID) { ThrowIfDisposed(); return ZrcSdk_DeclineSIPCall(_handle, callID) == 0; }
 
     /// <summary>Terminates an active SIP call.</summary>
