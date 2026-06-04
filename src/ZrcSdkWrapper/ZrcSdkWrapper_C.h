@@ -118,6 +118,16 @@ typedef struct ZrcSharingStatus {
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcSharingStatusCallback)(const ZrcSharingStatus* status, void* userData);
 
+// ── Video page status flat struct ─────────────────────────────────────────────
+typedef struct ZrcVideoPageStatus {
+    int32_t isInFirstPage;            // 1 = on the first page
+    int32_t isInLastPage;             // 1 = on the last page
+    int32_t pageVideoType;            // PageVideoType enum
+    int32_t videoCountInCurrentPage;
+} ZrcVideoPageStatus;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcVideoPageStatusCallback)(const ZrcVideoPageStatus* status, void* userData);
+
 // ── Chat message flat struct ──────────────────────────────────────────────────
 typedef struct ZrcChatMessage {
     char    messageID[128];
@@ -264,6 +274,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LaunchSharingMeeting(ZrcSdkHandl
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SwitchFromLocalPresentationToNormalMeeting(ZrcSdkHandle handle);
 // show: 1 = show instruction, 0 = hide. instructionState: SharingInstructionDisplayState (Desktop/IOS/WhiteboardCamera).
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowSharingInstruction(ZrcSdkHandle handle, int32_t show, int32_t instructionState);
+// HDMI ("black magic") cable share. isStart: 1 = start, 0 = stop. isViewLocally: 1 = also show locally.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShareBlackMagic(ZrcSdkHandle handle, int32_t isStart, int32_t isViewLocally);
 
 // ── Layout extensions ─────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType);
@@ -277,6 +289,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlVideoPosition(ZrcSdkHandl
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TurnVideoPage(ZrcSdkHandle handle, int32_t forward, int32_t pageVideoType);
 // type: ThumbnailsPositionType.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeThumbnailsPosition(ZrcSdkHandle handle, int32_t type);
+// Single-screen "swap content with thumbnail": floatingShare 1 = float the share (show video full), 0 = full share.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SwitchToFloatingShareForSingleScreen(ZrcSdkHandle handle, int32_t floatingShare);
 
 // ── Recording extensions ──────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowUserRecording(ZrcSdkHandle handle, int32_t userID, int allow);
@@ -380,6 +394,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFEACDeclinedCallback(ZrcSdkH
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAllowAttendeesVideoCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // Share
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSharingStatusCallback(ZrcSdkHandle handle, ZrcSharingStatusCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoPageStatusCallback(ZrcSdkHandle handle, ZrcVideoPageStatusCallback callback, void* userData);
 // Breakout Room
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=BO_STATUS
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBORoomListCallback(ZrcSdkHandle handle, ZrcBORoomListCallback callback, void* userData);

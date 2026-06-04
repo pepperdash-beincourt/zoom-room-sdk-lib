@@ -24,6 +24,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_ShowSharingInstruction(IntPtr handle, int show, int instructionState);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ShareBlackMagic(IntPtr handle, int isStart, int isViewLocally);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetSharingStatusCallback(IntPtr handle, ZrcSharingStatusCallbackDelegate? cb, IntPtr userData);
 
     private ZrcSharingStatusCallbackDelegate? _sharingStatusCallbackDelegate;
@@ -71,6 +73,17 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_ShowSharingInstruction(_handle, show ? 1 : 0, instructionState) == 0;
+    }
+
+    /// <summary>
+    /// Starts or stops an HDMI ("black magic") cable share from this Zoom Room.
+    /// </summary>
+    /// <param name="isStart"><see langword="true"/> to start the HDMI share; <see langword="false"/> to stop it.</param>
+    /// <param name="isViewLocally"><see langword="true"/> to also display the HDMI source locally.</param>
+    public bool ShareBlackMagic(bool isStart, bool isViewLocally)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ShareBlackMagic(_handle, isStart ? 1 : 0, isViewLocally ? 1 : 0) == 0;
     }
 
     private void OnSharingStatusCallback(IntPtr statusPtr, IntPtr userData)

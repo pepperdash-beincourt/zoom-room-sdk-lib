@@ -242,7 +242,7 @@ public:
     explicit ZrcMeetingViewLayoutHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
     void OnUpdateWallviewStyleNotification(const WallViewStyleStatus& status) override {}
     void OnUpdateVideoThumbInfo(const VideoThumbInfo& info) override {}
-    void OnUpdateVideoPageStatusNotification(const VideoPageStatus& status) override {}
+    void OnUpdateVideoPageStatusNotification(const VideoPageStatus& status) override;
     void OnUpdateIsNonVideoParticipantsShowedNotification(bool show) override {}
     void OnUpdateShowUpTo49PerPageInGallery(bool show) override {}
     void OnAutoSwitchSpeakerNotification(bool a, bool b) override {}
@@ -467,6 +467,8 @@ struct ZrcSdkInstance
     SdkEventCallback feacDeclinedCallback;           void* feacDeclinedUserData;
     // Video extended
     SdkEventCallback allowAttendeesVideoCallback;   void* allowAttendeesVideoUserData;
+    // Layout
+    ZrcVideoPageStatusCallback videoPageStatusCallback; void* videoPageStatusUserData;
     // Share
     ZrcSharingStatusCallback sharingStatusCallback; void* sharingStatusUserData;
     // Breakout room
@@ -533,6 +535,7 @@ struct ZrcSdkInstance
         , feacDeclinedCallback(nullptr), feacDeclinedUserData(nullptr)
         , allowAttendeesVideoCallback(nullptr), allowAttendeesVideoUserData(nullptr)
         , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
+        , videoPageStatusCallback(nullptr), videoPageStatusUserData(nullptr)
         , boStatusChangedCallback(nullptr), boStatusChangedUserData(nullptr)
         , boRoomListCallback(nullptr), boRoomListUserData(nullptr)
         , inSilentModeCallback(nullptr), inSilentModeUserData(nullptr)
@@ -575,6 +578,7 @@ struct ZrcSdkInstance
     void RaiseFEACDeclinedEvent(int32_t userID, const char* name){ Raise(feacDeclinedCallback, feacDeclinedUserData, name, (int)userID); }
     void RaiseAllowAttendeesVideoEvent(int allow)           { Raise(allowAttendeesVideoCallback, allowAttendeesVideoUserData, "", allow); }
     void RaiseSharingStatusEvent(const ZrcSharingStatus* s) { if (sharingStatusCallback) sharingStatusCallback(s, sharingStatusUserData); }
+    void RaiseVideoPageStatusEvent(const ZrcVideoPageStatus* s) { if (videoPageStatusCallback) videoPageStatusCallback(s, videoPageStatusUserData); }
     void RaiseBOStatusChangedEvent(int status)              { Raise(boStatusChangedCallback, boStatusChangedUserData, "", status); }
     void RaiseInSilentModeEvent(int inSilent)               { Raise(inSilentModeCallback, inSilentModeUserData, "", inSilent); }
     void RaiseReactionStatusEvent(int feedback)             { Raise(reactionStatusCallback, reactionStatusUserData, "", feedback); }
@@ -946,6 +950,17 @@ void ZrcMeetingShareHelperSink::OnSharingStatusNotification(const SharingStatus&
     s.canShareToBO   = status.canShareToBO ? 1 : 0;
     s.isSharingToBO  = status.isSharingToBO ? 1 : 0;
     owner->RaiseSharingStatusEvent(&s);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnUpdateVideoPageStatusNotification(const VideoPageStatus& status)
+{
+    if (!owner) return;
+    ZrcVideoPageStatus s;
+    s.isInFirstPage           = status.isInFirstPage ? 1 : 0;
+    s.isInLastPage            = status.isInLastPage ? 1 : 0;
+    s.pageVideoType           = (int32_t)status.pageVideoType;
+    s.videoCountInCurrentPage = status.videoCountInCurrentPage;
+    owner->RaiseVideoPageStatusEvent(&s);
 }
 
 void ZrcMeetingControlHelperSink::OnUpdateMeetingLockStatus(bool locked)
@@ -1798,6 +1813,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowSharingInstruction(ZrcSdkHan
     return (int)pSh->ShowSharingInstruction(show != 0, (SharingInstructionDisplayState)instructionState);
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShareBlackMagic(ZrcSdkHandle handle, int32_t isStart, int32_t isViewLocally)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingShareHelper* pSh = pMS->GetMeetingShareHelper();
+    if (!pSh) { inst->RaiseErrorEvent("Share Helper not available", -1); return -1; }
+    return (int)pSh->ShareBlackMagic(isStart != 0, isViewLocally != 0);
+}
+
 // ─── Layout Extensions ────────────────────────────────────────────────────────
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType)
@@ -1876,6 +1902,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeThumbnailsPosition(ZrcSdkH
     IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
     if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
     return (int)pL->ChangeThumbnailsPosition((ThumbnailsPositionType)type);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SwitchToFloatingShareForSingleScreen(ZrcSdkHandle handle, int32_t floatingShare)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
+    if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
+    return (int)pL->SwitchToFloatingShareForSingleScreen(floatingShare != 0);
 }
 
 // ─── Recording Extensions ────────────────────────────────────────────────────
@@ -2388,6 +2425,13 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSharingStatusCallback(ZrcSdk
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     inst->sharingStatusCallback = callback;
     inst->sharingStatusUserData = userData;
+}
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoPageStatusCallback(ZrcSdkHandle handle, ZrcVideoPageStatusCallback callback, void* userData)
+{
+    if (!handle) return;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    inst->videoPageStatusCallback = callback;
+    inst->videoPageStatusUserData = userData;
 }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(boStatusChanged, callback, userData); }
