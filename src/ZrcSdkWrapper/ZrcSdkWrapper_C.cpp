@@ -421,6 +421,7 @@ struct ZrcSdkInstance
     ZrcZoomRoomsServiceSink*    pZoomRoomsServiceSink;
     IPreMeetingService*         pPreMeetingService;
     ZrcPreMeetingServiceSink*   pPreMeetingServiceSink;
+    ISettingService*            pSettingService;
     IMeetingService*            pMeetingService;
     ZrcMeetingServiceSink*      pMeetingServiceSink;
     ZrcMeetingAudioHelperSink*      pAudioHelperSink;
@@ -501,6 +502,7 @@ struct ZrcSdkInstance
         : pNativeSDK(nullptr), bInitialized(false)
         , pSdkSink(nullptr), pZoomRoomsService(nullptr), pZoomRoomsServiceSink(nullptr)
         , pPreMeetingService(nullptr), pPreMeetingServiceSink(nullptr)
+        , pSettingService(nullptr)
         , pMeetingService(nullptr), pMeetingServiceSink(nullptr)
         , pAudioHelperSink(nullptr), pVideoHelperSink(nullptr), pShareHelperSink(nullptr)
         , pViewLayoutHelperSink(nullptr), pMeetingControlHelperSink(nullptr)
@@ -1164,6 +1166,10 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, 
         inst->pZoomRoomsServiceSink = new ZrcZoomRoomsServiceSink(inst);
         inst->pZoomRoomsService->RegisterSink(inst->pZoomRoomsServiceSink);
 
+        // Setting service: speaker/output volume get/set. No sink registered (ISettingServiceSink
+        // has ~40 callbacks); volume feedback is driven optimistically by the host after set/get.
+        inst->pSettingService = inst->pZoomRoomsService->GetSettingService();
+
         inst->pPreMeetingService = inst->pZoomRoomsService->GetPreMeetingService();
         if (inst->pPreMeetingService)
         {
@@ -1822,6 +1828,29 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShareBlackMagic(ZrcSdkHandle han
     IMeetingShareHelper* pSh = pMS->GetMeetingShareHelper();
     if (!pSh) { inst->RaiseErrorEvent("Share Helper not available", -1); return -1; }
     return (int)pSh->ShareBlackMagic(isStart != 0, isViewLocally != 0);
+}
+
+// ─── Setting (output/speaker volume) Extensions ───────────────────────────────
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetSpeakerVolume(ZrcSdkHandle handle, float* outVolume)
+{
+    if (!handle || !outVolume) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    float v = 0.0f;
+    int rc = (int)inst->pSettingService->GetSpeakerVolume(v);
+    *outVolume = v;
+    return rc;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetSpeakerVolume(ZrcSdkHandle handle, float volume)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    return (int)inst->pSettingService->SetSpeakerVolume(volume);
 }
 
 // ─── Layout Extensions ────────────────────────────────────────────────────────

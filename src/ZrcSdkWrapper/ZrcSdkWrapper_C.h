@@ -277,6 +277,11 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowSharingInstruction(ZrcSdkHan
 // HDMI ("black magic") cable share. isStart: 1 = start, 0 = stop. isViewLocally: 1 = also show locally.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShareBlackMagic(ZrcSdkHandle handle, int32_t isStart, int32_t isViewLocally);
 
+// ── Setting (output/speaker volume) extensions ────────────────────────────────
+// Room speaker (audio output) volume. Float value as defined by the SDK (host maps to its own scale).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetSpeakerVolume(ZrcSdkHandle handle, float* outVolume);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetSpeakerVolume(ZrcSdkHandle handle, float volume);
+
 // ── Layout extensions ─────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handle, int32_t videoOrderType);
