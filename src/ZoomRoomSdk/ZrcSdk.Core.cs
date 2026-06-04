@@ -242,6 +242,8 @@ public partial class ZrcSdk : IDisposable
     private static extern int ZrcSdk_LeaveMeeting(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_EndMeeting(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_AnswerMeetingInvite(IntPtr handle, int accept);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_SendMeetingPassword(IntPtr handle, string password);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]

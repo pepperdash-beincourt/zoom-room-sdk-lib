@@ -98,7 +98,7 @@ public:
     void OnMeetingEndedNotification(const MeetingErrorInfo& errorInfo) override;
     void OnReceiveMeetingInviteNotification(const MeetingInvitationInfo& invitation) override;
     void OnAnswerMeetingInviteResponse(int32_t result, const MeetingInvitationInfo& invitation, bool accepted) override {}
-    void OnTreatedMeetingInviteNotification(const MeetingInvitationInfo& invitation, bool accepted) override {}
+    void OnTreatedMeetingInviteNotification(const MeetingInvitationInfo& invitation, bool accepted) override;
     void OnStartMeetingWithHostKeyResult(int32_t result) override;
     void OnUpdateDataCenterRegionNotification(const DataCenterRegion& dcRegion) override {}
     void OnUpdateE2ESecurityCode(const E2ESecurityCode& code) override {}
@@ -482,6 +482,11 @@ struct ZrcSdkInstance
     // so we cache the info from the status notifications and look it up by callID for command calls.
     std::map<std::string, SIPCallInfo> sipCalls;
     std::mutex                  sipCallsMutex;
+    // Last received meeting invite. AnswerMeetingInvite takes the full MeetingInvitationInfo (not a
+    // meeting number), so we cache it from OnReceiveMeetingInviteNotification and answer with it.
+    MeetingInvitationInfo       lastMeetingInvite;
+    bool                        hasMeetingInvite;
+    std::mutex                  meetingInviteMutex;
 
     int participantCount;
 
@@ -561,6 +566,7 @@ struct ZrcSdkInstance
         , pPhoneCallService(nullptr), pPhoneCallServiceSink(nullptr)
         , pContactHelper(nullptr), pContactHelperSink(nullptr)
         , pMeetingListHelper(nullptr), pMeetingListHelperSink(nullptr)
+        , hasMeetingInvite(false)
         , participantCount(0)
         , initializedCallback(nullptr), initializedUserData(nullptr)
         , meetingStateChangedCallback(nullptr), meetingStateChangedUserData(nullptr)
@@ -881,7 +887,22 @@ void ZrcMeetingServiceSink::OnMeetingEndedNotification(const MeetingErrorInfo& e
 
 void ZrcMeetingServiceSink::OnReceiveMeetingInviteNotification(const MeetingInvitationInfo& invitation)
 {
-    if (owner) owner->RaiseMeetingInviteEvent(invitation.callerName.c_str());
+    if (!owner) return;
+    // Cache the full invite so AnswerMeetingInvite (accept/decline) can answer it by struct.
+    {
+        std::lock_guard<std::mutex> lk(owner->meetingInviteMutex);
+        owner->lastMeetingInvite = invitation;
+        owner->hasMeetingInvite = true;
+    }
+    owner->RaiseMeetingInviteEvent(invitation.callerName.c_str());
+}
+
+void ZrcMeetingServiceSink::OnTreatedMeetingInviteNotification(const MeetingInvitationInfo& invitation, bool accepted)
+{
+    if (!owner) return;
+    // The invite was answered (here or elsewhere) — clear the cache to avoid acting on a stale invite.
+    std::lock_guard<std::mutex> lk(owner->meetingInviteMutex);
+    owner->hasMeetingInvite = false;
 }
 
 void ZrcMeetingServiceSink::OnStartMeetingWithHostKeyResult(int32_t result)
@@ -2472,6 +2493,24 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle ha
     }
     inst->RaiseErrorEvent("SetCurrentCamera: device ID not found", -2);
     return -2;
+}
+
+// Accept (accept != 0) or decline an incoming meeting invite using the cached MeetingInvitationInfo
+// from the last OnReceiveMeetingInviteNotification. Returns -2 if there is no pending invite.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AnswerMeetingInvite(ZrcSdkHandle handle, int accept)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    MeetingInvitationInfo invite;
+    {
+        std::lock_guard<std::mutex> lk(inst->meetingInviteMutex);
+        if (!inst->hasMeetingInvite) { inst->RaiseErrorEvent("No pending meeting invite", -2); return -2; }
+        invite = inst->lastMeetingInvite;
+        inst->hasMeetingInvite = false;  // consume it
+    }
+    return (int)pMS->AnswerMeetingInvite(invite, accept != 0);
 }
 
 // ─── Meeting Control Extensions ───────────────────────────────────────────────

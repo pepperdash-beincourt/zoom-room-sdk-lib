@@ -128,6 +128,17 @@ public partial class ZrcSdk
         return ZrcSdk_LeaveMeeting(_handle) == 0;
     }
 
+    /// <summary>
+    /// Accepts (<paramref name="accept"/> = true) or declines an incoming meeting invite, using the
+    /// invite delivered by the last <see cref="MeetingInvite"/> event. Returns <see langword="false"/>
+    /// if there is no pending invite or the SDK rejects the answer.
+    /// </summary>
+    public bool AnswerMeetingInvite(bool accept)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_AnswerMeetingInvite(_handle, accept ? 1 : 0) == 0;
+    }
+
     /// <summary>Sends the meeting password when prompted by <see cref="MeetingNeedsPassword"/>.</summary>
     public bool SendMeetingPassword(string password)
     {
