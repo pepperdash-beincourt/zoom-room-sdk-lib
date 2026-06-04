@@ -458,6 +458,7 @@ struct ZrcSdkInstance
     SdkEventCallback participantCountCallback;      void* participantCountUserData;
     SdkEventCallback hostChangedCallback;           void* hostChangedUserData;
     SdkEventCallback recordingStatusCallback;       void* recordingStatusUserData;
+    ZrcMeetingRecordingInfoCallback meetingRecordingInfoCallback; void* meetingRecordingInfoUserData;
     SdkEventCallback controlSystemEnabledCallback;  void* controlSystemEnabledUserData;
     ZrcParticipantListCallback participantListCallback; void* participantListUserData;
     // Audio extended
@@ -528,6 +529,7 @@ struct ZrcSdkInstance
         , participantCountCallback(nullptr), participantCountUserData(nullptr)
         , hostChangedCallback(nullptr), hostChangedUserData(nullptr)
         , recordingStatusCallback(nullptr), recordingStatusUserData(nullptr)
+        , meetingRecordingInfoCallback(nullptr), meetingRecordingInfoUserData(nullptr)
         , controlSystemEnabledCallback(nullptr), controlSystemEnabledUserData(nullptr)
         , participantListCallback(nullptr), participantListUserData(nullptr)
         , allowAttendeesUnmuteCallback(nullptr), allowAttendeesUnmuteUserData(nullptr)
@@ -571,6 +573,7 @@ struct ZrcSdkInstance
     void RaiseParticipantCountEvent(int count)                    { Raise(participantCountCallback, participantCountUserData, "", count); }
     void RaiseHostChangedEvent(int amIHost)                       { Raise(hostChangedCallback, hostChangedUserData, "", amIHost); }
     void RaiseRecordingStatusEvent(int isRecording)               { Raise(recordingStatusCallback, recordingStatusUserData, "", isRecording); }
+    void RaiseMeetingRecordingInfoEvent(const ZrcMeetingRecordingInfo* s) { if (meetingRecordingInfoCallback) meetingRecordingInfoCallback(s, meetingRecordingInfoUserData); }
     void RaiseControlSystemEnabledEvent(int enabled)              { Raise(controlSystemEnabledCallback, controlSystemEnabledUserData, "", enabled); }
     // Extended raise helpers
     void RaiseAllowAttendeesUnmuteEvent(int allow)          { Raise(allowAttendeesUnmuteCallback, allowAttendeesUnmuteUserData, "", allow); }
@@ -862,7 +865,13 @@ void ZrcParticipantHelperSink::OnHostChangedNotification(int32_t /*hostUserID*/,
 
 void ZrcRecordingHelperSink::OnUpdateMeetingRecordingInfo(const MeetingRecordingInfo& recordingInfo)
 {
-    if (owner) owner->RaiseRecordingStatusEvent(recordingInfo.isMeetingBeingRecorded ? 1 : 0);
+    if (!owner) return;
+    owner->RaiseRecordingStatusEvent(recordingInfo.isMeetingBeingRecorded ? 1 : 0);
+    ZrcMeetingRecordingInfo info;
+    info.isMeetingBeingRecorded = recordingInfo.isMeetingBeingRecorded ? 1 : 0;
+    info.canIRecord             = recordingInfo.canIRecord ? 1 : 0;
+    info.amIRecording           = recordingInfo.amIRecording ? 1 : 0;
+    owner->RaiseMeetingRecordingInfoEvent(&info);
 }
 
 void ZrcRecordingHelperSink::OnSetMeetingRecordingResult(int32_t result, const std::string& /*recordingNotificationEmail*/,
@@ -2423,6 +2432,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetHostChangedCallback(ZrcSdkHa
     { SET_CB(hostChanged, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(recordingStatus, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingRecordingInfoCallback(ZrcSdkHandle handle, ZrcMeetingRecordingInfoCallback callback, void* userData)
+    { SET_CB(meetingRecordingInfo, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetControlSystemEnabledCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(controlSystemEnabled, callback, userData); }
 

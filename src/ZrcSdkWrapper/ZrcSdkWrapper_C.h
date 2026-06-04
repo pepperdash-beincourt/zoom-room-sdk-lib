@@ -128,6 +128,15 @@ typedef struct ZrcVideoPageStatus {
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcVideoPageStatusCallback)(const ZrcVideoPageStatus* status, void* userData);
 
+// ── Meeting recording info flat struct ────────────────────────────────────────
+typedef struct ZrcMeetingRecordingInfo {
+    int32_t isMeetingBeingRecorded;   // 1 = meeting is being recorded
+    int32_t canIRecord;               // 1 = this room can start recording
+    int32_t amIRecording;             // 1 = this room is recording
+} ZrcMeetingRecordingInfo;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingRecordingInfoCallback)(const ZrcMeetingRecordingInfo* info, void* userData);
+
 // ── Chat message flat struct ──────────────────────────────────────────────────
 typedef struct ZrcChatMessage {
     char    messageID[128];
@@ -382,6 +391,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetParticipantCountCallback(Zrc
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetHostChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // errorCode=1 if meeting is being recorded
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingRecordingInfoCallback(ZrcSdkHandle handle, ZrcMeetingRecordingInfoCallback callback, void* userData);
 // errorCode=1 if ZRCS enabled
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetControlSystemEnabledCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // Generic error / instant meeting started
