@@ -119,7 +119,15 @@ public partial class ZrcSdk : IDisposable
 
         var libPath = ResolveWrapperPath();
         if (!File.Exists(libPath))
-            throw new DllNotFoundException($"libzrcsdkwrapperpdt.so not found at {libPath}");
+        {
+            // Report every location that was searched so a misconfigured SetLibraryPath is obvious.
+            var searched = string.IsNullOrEmpty(_overrideLibraryPath)
+                ? Path.Combine(DefaultWrapperDirectory, WrapperFileName)
+                : $"{Path.Combine(_overrideLibraryPath, WrapperFileName)} and {Path.Combine(DefaultWrapperDirectory, WrapperFileName)}";
+            throw new DllNotFoundException(
+                $"{WrapperFileName} not found. Searched: {searched}. " +
+                "Set the wrapper directory with ZrcSdk.SetLibraryPath(dir) (the directory must contain the file).");
+        }
 
         var libBytes = File.ReadAllBytes(libPath);
         int memfd = syscall(SYS_memfd_create, "zrcsdkwrapperpdt", MFD_CLOEXEC);
