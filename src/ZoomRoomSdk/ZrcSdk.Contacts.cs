@@ -68,32 +68,35 @@ public partial class ZrcSdk
     /// <param name="startIndex">Zero-based start index into the directory.</param>
     /// <param name="count">Number of contacts to request (the SDK suggests ~50 per page).</param>
     /// <param name="searchSip">When <see langword="true"/>, searches SIP contacts.</param>
-    public int SubscribeContacts(int startIndex, int count, bool searchSip = false)
+    /// <returns><see langword="true"/> if the SDK accepted the request.</returns>
+    public bool SubscribeContacts(int startIndex, int count, bool searchSip = false)
     {
         ThrowIfDisposed();
-        return ZrcSdk_SubscribeContacts(_handle, startIndex, count, searchSip ? 1 : 0);
+        return ZrcSdk_SubscribeContacts(_handle, startIndex, count, searchSip ? 1 : 0) == 0;
     }
 
     /// <summary>
     /// Invites the given IM contacts (by contact ID) into the CURRENT meeting.
     /// </summary>
     /// <param name="contactIDs">Contact IDs to invite.</param>
-    public int InviteAttendees(string[] contactIDs)
+    /// <returns><see langword="true"/> if the SDK accepted the request.</returns>
+    public bool InviteAttendees(string[] contactIDs)
     {
         ThrowIfDisposed();
-        if (contactIDs == null || contactIDs.Length == 0) return -1;
-        return ZrcSdk_InviteAttendees(_handle, contactIDs, contactIDs.Length);
+        if (contactIDs == null || contactIDs.Length == 0) return false;
+        return ZrcSdk_InviteAttendees(_handle, contactIDs, contactIDs.Length) == 0;
     }
 
     /// <summary>
     /// Starts a NEW meeting with the given IM contacts (by contact ID).
     /// </summary>
     /// <param name="contactIDs">Contact IDs to meet with.</param>
-    public int MeetWithImUsers(string[] contactIDs)
+    /// <returns><see langword="true"/> if the SDK accepted the request.</returns>
+    public bool MeetWithImUsers(string[] contactIDs)
     {
         ThrowIfDisposed();
-        if (contactIDs == null || contactIDs.Length == 0) return -1;
-        return ZrcSdk_MeetWithIMUsers(_handle, contactIDs, contactIDs.Length);
+        if (contactIDs == null || contactIDs.Length == 0) return false;
+        return ZrcSdk_MeetWithIMUsers(_handle, contactIDs, contactIDs.Length) == 0;
     }
 
     // ── Callback handlers ──────────────────────────────────────────────────────
