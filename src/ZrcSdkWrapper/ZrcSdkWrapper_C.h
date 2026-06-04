@@ -109,6 +109,28 @@ typedef void (ZRCSDKWRAPPER_CALL *ZrcParticipantListCallback)(
     int sessionType,
     void* userData);
 
+// ── Contact flat struct ────────────────────────────────────────────────────────
+// Flattened representation of the SDK Contact struct (directory/phonebook entry).
+// All strings are null-terminated; presenceStatus/buddyType are the raw SDK enum ints.
+typedef struct ZrcContact {
+    char    contactID[256];
+    char    screenName[256];
+    char    firstName[128];
+    char    lastName[128];
+    char    email[256];
+    char    phoneNumber[128];
+    char    sipPhoneNumber[128];
+    int32_t presenceStatus;         // IMPresenceStatus enum
+    int32_t buddyType;              // IMBuddyType enum
+} ZrcContact;
+
+// Callback type for contact list updates.
+// contacts: array of count ZrcContact values (caller-owned, valid only during callback)
+typedef void (ZRCSDKWRAPPER_CALL *ZrcContactListCallback)(
+    const ZrcContact* contacts,
+    int count,
+    void* userData);
+
 // ── Sharing status flat struct ────────────────────────────────────────────────
 typedef struct ZrcSharingStatus {
     int32_t sharingState;           // SharingState enum
@@ -255,6 +277,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetParticipantCount(ZrcSdkHandle
 // ── Event Callback Setters ────────────────────────────────────────────────────
 // Participant list (Init / Join / Leave / Update)
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData);
+// Contact list (directory / phonebook subscription results)
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetContactListCallback(ZrcSdkHandle handle, ZrcContactListCallback callback, void* userData);
 
 // ── Audio extensions ──────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteUserAudio(ZrcSdkHandle handle, int32_t userID, int mute);
@@ -360,6 +384,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendDTMFToSIPCall(ZrcSdkHandle h
 // PSTN dial-out (adds a PSTN number to the current meeting via the third-party meeting helper).
 // cancelCall != 0 cancels an in-progress call-out; hasVoicePrompt != 0 rings on the Zoom Room.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CallOutPSTNUser(ZrcSdkHandle handle, const char* phoneNumber, int cancelCall, int hasVoicePrompt);
+
+// ── Contacts / Directory ──────────────────────────────────────────────────────
+// Subscribe to a range of directory contacts; results arrive via the contact-list callback.
+// startIndex/count page the directory (count ~50 suggested); isSearchSip != 0 searches SIP contacts.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SubscribeContacts(ZrcSdkHandle handle, int startIndex, int count, int isSearchSip);
+
+// ── Invite by contact ID ──────────────────────────────────────────────────────
+// InviteAttendees adds the given IM contacts to the CURRENT meeting; MeetWithIMUsers starts a NEW
+// meeting with them. contactIDs is an array of count null-terminated UTF-8 contact-ID strings.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_InviteAttendees(ZrcSdkHandle handle, const char** contactIDs, int count);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MeetWithIMUsers(ZrcSdkHandle handle, const char** contactIDs, int count);
 
 // ── Meeting Control extensions ────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LockMeeting(ZrcSdkHandle handle, int lock);

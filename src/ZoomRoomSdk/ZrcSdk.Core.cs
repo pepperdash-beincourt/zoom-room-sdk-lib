@@ -47,6 +47,7 @@ public partial class ZrcSdk : IDisposable
     partial void InitializeVideoCallbacks();
     partial void InitializeRecordingCallbacks();
     partial void InitializeParticipantCallbacks();
+    partial void InitializeContactsCallbacks();
     partial void InitializeLayoutCallbacks();
     partial void InitializeShareCallbacks();
     partial void InitializeZrcsCallbacks();
@@ -339,6 +340,7 @@ public partial class ZrcSdk : IDisposable
         InitializeVideoCallbacks();
         InitializeRecordingCallbacks();
         InitializeParticipantCallbacks();
+        InitializeContactsCallbacks();
         InitializeLayoutCallbacks();
         InitializeShareCallbacks();
         InitializeZrcsCallbacks();
