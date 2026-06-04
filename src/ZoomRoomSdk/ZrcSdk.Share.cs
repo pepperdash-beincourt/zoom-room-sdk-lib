@@ -18,6 +18,12 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_StopShare(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_LaunchSharingMeeting(IntPtr handle, int isInLocalShare, int displayState);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SwitchFromLocalPresentationToNormalMeeting(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ShowSharingInstruction(IntPtr handle, int show, int instructionState);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetSharingStatusCallback(IntPtr handle, ZrcSharingStatusCallbackDelegate? cb, IntPtr userData);
 
     private ZrcSharingStatusCallbackDelegate? _sharingStatusCallbackDelegate;
@@ -36,6 +42,35 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_StopShare(_handle) == 0;
+    }
+
+    /// <summary>
+    /// Launches a sharing-only ("local presentation") meeting.
+    /// </summary>
+    /// <param name="isInLocalShare"><see langword="true"/> to start a local presentation; <see langword="false"/> to start a sharing meeting.</param>
+    /// <param name="displayState">SharingInstructionDisplayState enum value (None=0, Desktop, IOS, WhiteboardCamera).</param>
+    public bool LaunchSharingMeeting(bool isInLocalShare, int displayState)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_LaunchSharingMeeting(_handle, isInLocalShare ? 1 : 0, displayState) == 0;
+    }
+
+    /// <summary>Switches an active local presentation into a normal Zoom meeting.</summary>
+    public bool SwitchFromLocalPresentationToNormalMeeting()
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_SwitchFromLocalPresentationToNormalMeeting(_handle) == 0;
+    }
+
+    /// <summary>
+    /// Shows or hides the wireless-share instruction overlay (AirPlay / HDMI / direct-share codes).
+    /// </summary>
+    /// <param name="show"><see langword="true"/> to show the instruction overlay; <see langword="false"/> to hide it.</param>
+    /// <param name="instructionState">SharingInstructionDisplayState enum value (None=0, Desktop, IOS, WhiteboardCamera).</param>
+    public bool ShowSharingInstruction(bool show, int instructionState)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ShowSharingInstruction(_handle, show ? 1 : 0, instructionState) == 0;
     }
 
     private void OnSharingStatusCallback(IntPtr statusPtr, IntPtr userData)

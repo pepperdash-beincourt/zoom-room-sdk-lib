@@ -1765,6 +1765,39 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnpinShare(ZrcSdkHandle handle, 
     return -2; // UnpinShare requires ShareSource struct — not directly supported
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LaunchSharingMeeting(ZrcSdkHandle handle, int32_t isInLocalShare, int32_t displayState)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingShareHelper* pSh = pMS->GetMeetingShareHelper();
+    if (!pSh) { inst->RaiseErrorEvent("Share Helper not available", -1); return -1; }
+    return (int)pSh->LaunchSharingMeeting(isInLocalShare != 0, (SharingInstructionDisplayState)displayState);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SwitchFromLocalPresentationToNormalMeeting(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingShareHelper* pSh = pMS->GetMeetingShareHelper();
+    if (!pSh) { inst->RaiseErrorEvent("Share Helper not available", -1); return -1; }
+    return (int)pSh->SwitchFromLocalPresentationToNormalMeeting();
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowSharingInstruction(ZrcSdkHandle handle, int32_t show, int32_t instructionState)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingShareHelper* pSh = pMS->GetMeetingShareHelper();
+    if (!pSh) { inst->RaiseErrorEvent("Share Helper not available", -1); return -1; }
+    return (int)pSh->ShowSharingInstruction(show != 0, (SharingInstructionDisplayState)instructionState);
+}
+
 // ─── Layout Extensions ────────────────────────────────────────────────────────
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType)
@@ -1810,6 +1843,39 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetFollowingHostOrder(ZrcSdkHand
     if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
     (void)follow;
     return -2; // SetFollowingHostOrder not available in this SDK version
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlVideoPosition(ZrcSdkHandle handle, int32_t position, int32_t size)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
+    if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
+    return (int)pL->ControlVideoPosition((VideoThumbPosition)position, (VideoThumbSize)size);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TurnVideoPage(ZrcSdkHandle handle, int32_t forward, int32_t pageVideoType)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
+    if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
+    return (int)pL->TurnVideoPage(forward != 0, (PageVideoType)pageVideoType);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeThumbnailsPosition(ZrcSdkHandle handle, int32_t type)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
+    if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
+    return (int)pL->ChangeThumbnailsPosition((ThumbnailsPositionType)type);
 }
 
 // ─── Recording Extensions ────────────────────────────────────────────────────

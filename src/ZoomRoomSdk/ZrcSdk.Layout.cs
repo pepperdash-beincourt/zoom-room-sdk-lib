@@ -12,6 +12,12 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_UpdateVideoLayoutStyle(IntPtr handle, int style);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetFollowingHostOrder(IntPtr handle, int follow);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ControlVideoPosition(IntPtr handle, int position, int size);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_TurnVideoPage(IntPtr handle, int forward, int pageVideoType);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ChangeThumbnailsPosition(IntPtr handle, int type);
 
     partial void InitializeLayoutCallbacks() { /* no native callbacks for layout */ }
 
@@ -50,5 +56,33 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_SetFollowingHostOrder(_handle, follow ? 1 : 0);
+    }
+
+    /// <summary>
+    /// Sets the self-view PiP position and size.
+    /// </summary>
+    /// <param name="position">VideoThumbPosition enum value (Center=0, Up, Right, UpRight, Down, DownRight, Left, UpLeft, DownLeft).</param>
+    /// <param name="size">VideoThumbSize enum value (Off=0 hides the PiP, 1x=1, 2x=2, 3x=3, Stripe=4).</param>
+    public int ControlVideoPosition(int position, int size)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ControlVideoPosition(_handle, position, size);
+    }
+
+    /// <summary>Pages the video gallery/thumbnail/dynamic view forward or backward.</summary>
+    /// <param name="forward"><see langword="true"/> to page to the next page; <see langword="false"/> for the previous page.</param>
+    /// <param name="pageVideoType">PageVideoType enum value (GalleryView=0, ThumbnailView=1, DynamicLayoutView=2).</param>
+    public int TurnVideoPage(bool forward, int pageVideoType)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_TurnVideoPage(_handle, forward ? 1 : 0, pageVideoType);
+    }
+
+    /// <summary>Changes the thumbnail strip position (used to swap content with the participant thumbnails).</summary>
+    /// <param name="type">ThumbnailsPositionType enum value.</param>
+    public int ChangeThumbnailsPosition(int type)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ChangeThumbnailsPosition(_handle, type);
     }
 }

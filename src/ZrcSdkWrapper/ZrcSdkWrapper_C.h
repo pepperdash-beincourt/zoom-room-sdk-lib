@@ -259,6 +259,11 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StartShare(ZrcSdkHandle handle, 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StopShare(ZrcSdkHandle handle);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_PinShare(ZrcSdkHandle handle, int32_t shareSourceID, int32_t screenIndex);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UnpinShare(ZrcSdkHandle handle, int32_t shareSourceID, int32_t screenIndex);
+// Sharing-only ("local presentation") meeting. isInLocalShare: 1 = local presentation, 0 = sharing meeting. displayState: SharingInstructionDisplayState.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LaunchSharingMeeting(ZrcSdkHandle handle, int32_t isInLocalShare, int32_t displayState);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SwitchFromLocalPresentationToNormalMeeting(ZrcSdkHandle handle);
+// show: 1 = show instruction, 0 = hide. instructionState: SharingInstructionDisplayState (Desktop/IOS/WhiteboardCamera).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ShowSharingInstruction(ZrcSdkHandle handle, int32_t show, int32_t instructionState);
 
 // ── Layout extensions ─────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType);
@@ -266,6 +271,12 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handl
 // style: VideoLayoutStyle enum (Gallery=1, Speaker=2, Thumbnail=3, ContentOnly=4, DynamicLayout=6)
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UpdateVideoLayoutStyle(ZrcSdkHandle handle, int32_t style);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetFollowingHostOrder(ZrcSdkHandle handle, int follow);
+// Self-view PiP. position: VideoThumbPosition; size: VideoThumbSize (Off=0 hides the PiP / 1x/2x/3x/Stripe).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlVideoPosition(ZrcSdkHandle handle, int32_t position, int32_t size);
+// forward: 1 = next page, 0 = previous. pageVideoType: PageVideoType (GalleryView=0/ThumbnailView=1/DynamicLayoutView=2).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_TurnVideoPage(ZrcSdkHandle handle, int32_t forward, int32_t pageVideoType);
+// type: ThumbnailsPositionType.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeThumbnailsPosition(ZrcSdkHandle handle, int32_t type);
 
 // ── Recording extensions ──────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowUserRecording(ZrcSdkHandle handle, int32_t userID, int allow);
