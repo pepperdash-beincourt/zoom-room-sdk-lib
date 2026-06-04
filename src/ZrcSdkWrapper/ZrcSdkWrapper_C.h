@@ -131,6 +131,32 @@ typedef void (ZRCSDKWRAPPER_CALL *ZrcContactListCallback)(
     int count,
     void* userData);
 
+// ── Meeting (booking/schedule) flat struct ─────────────────────────────────────
+// Flattened representation of the SDK MeetingItem struct (calendar/schedule entry).
+// All strings are null-terminated; startTime/endTime are ISO-8601 (e.g. "2017-03-15T11:30:00-07:00").
+typedef struct ZrcMeetingItem {
+    char    meetingNumber[128];
+    char    meetingName[256];
+    char    hostName[256];
+    char    startTime[64];
+    char    endTime[64];
+    char    meetingDomain[256];
+    int32_t scheduledFrom;          // MeetingScheduleFrom enum (-1 if N/A)
+    int32_t isPrivate;
+    int32_t isAllDayEvent;
+    int32_t isCheckedIn;
+    int32_t isInstantMeeting;
+} ZrcMeetingItem;
+
+// Callback type for meeting (schedule) list updates.
+// result:   ListMeetingResult enum value (0 = success)
+// meetings: array of count ZrcMeetingItem values (caller-owned, valid only during callback)
+typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingListCallback)(
+    int result,
+    const ZrcMeetingItem* meetings,
+    int count,
+    void* userData);
+
 // ── Sharing status flat struct ────────────────────────────────────────────────
 typedef struct ZrcSharingStatus {
     int32_t sharingState;           // SharingState enum
@@ -279,6 +305,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetParticipantCount(ZrcSdkHandle
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData);
 // Contact list (directory / phonebook subscription results)
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetContactListCallback(ZrcSdkHandle handle, ZrcContactListCallback callback, void* userData);
+// Meeting (booking/schedule) list
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingListCallback(ZrcSdkHandle handle, ZrcMeetingListCallback callback, void* userData);
 
 // ── Audio extensions ──────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteUserAudio(ZrcSdkHandle handle, int32_t userID, int mute);
@@ -395,6 +423,11 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SubscribeContacts(ZrcSdkHandle h
 // meeting with them. contactIDs is an array of count null-terminated UTF-8 contact-ID strings.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_InviteAttendees(ZrcSdkHandle handle, const char** contactIDs, int count);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MeetWithIMUsers(ZrcSdkHandle handle, const char** contactIDs, int count);
+
+// ── Bookings / Schedule ───────────────────────────────────────────────────────
+// Requests the current list of scheduled meetings (calendar bookings); results arrive via the
+// meeting-list callback. Returns 0 on accepted request.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ListMeeting(ZrcSdkHandle handle);
 
 // ── Meeting Control extensions ────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LockMeeting(ZrcSdkHandle handle, int lock);

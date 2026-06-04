@@ -28,6 +28,7 @@
 #include "ServiceComponents/ICameraControlHelper.h"
 #include "ServiceComponents/IThirdPartyMeetingHelper.h"
 #include "ServiceComponents/IContactHelper.h"
+#include "ServiceComponents/IMeetingListHelper.h"
 
 using namespace ZRCSDK;
 
@@ -209,6 +210,20 @@ public:
     void OnStartReceivingLegacyRoomList(bool isSelfRooms) override {}
     void OnAddLegacyRooms(const std::vector<LegacyRoomSystem>& roomList, bool isSelfRooms) override {}
     void OnFinishReceivingLegacyRoomList(bool isSelfRooms) override {}
+};
+
+// ─── IMeetingListHelperSink — bookings / schedule events ─────────────────────
+class ZrcMeetingListHelperSink : public IMeetingListHelperSink
+{
+public:
+    ZrcSdkInstance* owner;
+    explicit ZrcMeetingListHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
+    void OnUpdateMeetingList(ListMeetingResult result, const std::vector<MeetingItem>& meetingList) override;
+    void OnUpdatedScheduleCalendarEventNotification(ScheduleCalendarEventResult scheduleResult) override {}
+    void OnUpdatedDeleteCalendarEventNotification(DeleteCalendarEventResult deleteResult) override {}
+    void OnShowUpcomingMeetingAlertResult(int32_t result, const MeetingItem& meetingItem) override {}
+    void OnCloseUpcomingMeetingAlertResult(int32_t result) override {}
+    void OnMeetingWillReleaseAutomatically(const MeetingItem& meetingItem) override {}
 };
 
 // ─── IMeetingVideoHelperSink ──────────────────────────────────────────────────
@@ -461,6 +476,8 @@ struct ZrcSdkInstance
     ZrcPhoneCallServiceSink*    pPhoneCallServiceSink;
     IContactHelper*             pContactHelper;
     ZrcContactHelperSink*       pContactHelperSink;
+    IMeetingListHelper*         pMeetingListHelper;
+    ZrcMeetingListHelperSink*   pMeetingListHelperSink;
     // Active SIP calls keyed by callID. The SDK's hangup/hold/DTMF take a SIPCallInfo (not a callID),
     // so we cache the info from the status notifications and look it up by callID for command calls.
     std::map<std::string, SIPCallInfo> sipCalls;
@@ -488,6 +505,8 @@ struct ZrcSdkInstance
     ZrcParticipantListCallback participantListCallback; void* participantListUserData;
     // Contacts / directory
     ZrcContactListCallback contactListCallback;     void* contactListUserData;
+    // Bookings / schedule
+    ZrcMeetingListCallback meetingListCallback;     void* meetingListUserData;
     // Audio extended
     SdkEventCallback allowAttendeesUnmuteCallback;  void* allowAttendeesUnmuteUserData;
     SdkEventCallback askUnmuteByHostCallback;        void* askUnmuteByHostUserData;
@@ -541,6 +560,7 @@ struct ZrcSdkInstance
         , pRecordingHelperSink(nullptr), pControlSystemHelperSink(nullptr)
         , pPhoneCallService(nullptr), pPhoneCallServiceSink(nullptr)
         , pContactHelper(nullptr), pContactHelperSink(nullptr)
+        , pMeetingListHelper(nullptr), pMeetingListHelperSink(nullptr)
         , participantCount(0)
         , initializedCallback(nullptr), initializedUserData(nullptr)
         , meetingStateChangedCallback(nullptr), meetingStateChangedUserData(nullptr)
@@ -561,6 +581,7 @@ struct ZrcSdkInstance
         , controlSystemEnabledCallback(nullptr), controlSystemEnabledUserData(nullptr)
         , participantListCallback(nullptr), participantListUserData(nullptr)
         , contactListCallback(nullptr), contactListUserData(nullptr)
+        , meetingListCallback(nullptr), meetingListUserData(nullptr)
         , allowAttendeesUnmuteCallback(nullptr), allowAttendeesUnmuteUserData(nullptr)
         , askUnmuteByHostCallback(nullptr), askUnmuteByHostUserData(nullptr)
         , feacRequestCallback(nullptr), feacRequestUserData(nullptr)
@@ -632,6 +653,7 @@ struct ZrcSdkInstance
     void RaiseParticipantListEvent(const std::vector<MeetingParticipant>& participants,
                                    int total, bool needCleanUp, ConfSessionType session);
     void RaiseContactListEvent(const std::vector<Contact>& contacts);
+    void RaiseMeetingListEvent(int result, const std::vector<MeetingItem>& meetings);
 };
 
 // ─── Sink implementations ─────────────────────────────────────────────────────
@@ -763,6 +785,38 @@ void ZrcContactHelperSink::OnImUpdateContactNotification(const std::vector<Conta
 void ZrcContactHelperSink::OnDynamicContactListNotification(const DynamicContactListInfo& info)
 {
     if (owner) owner->RaiseContactListEvent(info.contacts);
+}
+
+// Helper: flatten a C++ MeetingItem to the C ZrcMeetingItem struct.
+static void FlattenMeetingItem(const MeetingItem& src, ZrcMeetingItem& dst)
+{
+    memset(&dst, 0, sizeof(ZrcMeetingItem));
+    strncpy_safe(dst.meetingNumber, src.meetingNumber, sizeof(dst.meetingNumber));
+    strncpy_safe(dst.meetingName,   src.meetingName,   sizeof(dst.meetingName));
+    strncpy_safe(dst.hostName,      src.hostName,      sizeof(dst.hostName));
+    strncpy_safe(dst.startTime,     src.startTime,     sizeof(dst.startTime));
+    strncpy_safe(dst.endTime,       src.endTime,       sizeof(dst.endTime));
+    strncpy_safe(dst.meetingDomain, src.meetingDomain, sizeof(dst.meetingDomain));
+    dst.scheduledFrom    = (int32_t)src.scheduledFrom;
+    dst.isPrivate        = src.isPrivate ? 1 : 0;
+    dst.isAllDayEvent    = src.isAllDayEvent ? 1 : 0;
+    dst.isCheckedIn      = src.isCheckedIn ? 1 : 0;
+    dst.isInstantMeeting = src.isInstantMeeting ? 1 : 0;
+}
+
+void ZrcSdkInstance::RaiseMeetingListEvent(int result, const std::vector<MeetingItem>& meetings)
+{
+    if (!meetingListCallback) return;
+    std::vector<ZrcMeetingItem> flat(meetings.size());
+    for (size_t i = 0; i < meetings.size(); ++i)
+        FlattenMeetingItem(meetings[i], flat[i]);
+    meetingListCallback(result, flat.empty() ? nullptr : flat.data(),
+                        (int)flat.size(), meetingListUserData);
+}
+
+void ZrcMeetingListHelperSink::OnUpdateMeetingList(ListMeetingResult result, const std::vector<MeetingItem>& meetingList)
+{
+    if (owner) owner->RaiseMeetingListEvent((int)result, meetingList);
 }
 
 void ZrcZoomRoomsServiceSink::OnPairRoomResult(int32_t result)
@@ -1193,6 +1247,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle)
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     if (inst->bInitialized) ZrcSdk_Uninitialize(handle);
     delete inst->pContactHelperSink;
+    delete inst->pMeetingListHelperSink;
     delete inst->pPhoneCallServiceSink;
     delete inst->pCameraControlHelperSink;
     delete inst->pClosedCaptionHelperSink;
@@ -1365,6 +1420,14 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, 
             {
                 inst->pRecordingHelperSink = new ZrcRecordingHelperSink(inst);
                 pRec->RegisterSink(inst->pRecordingHelperSink);
+            }
+
+            IMeetingListHelper* pMeetingList = inst->pMeetingService->GetMeetingListHelper();
+            if (pMeetingList)
+            {
+                inst->pMeetingListHelper = pMeetingList;
+                inst->pMeetingListHelperSink = new ZrcMeetingListHelperSink(inst);
+                pMeetingList->RegisterSink(inst->pMeetingListHelperSink);
             }
         }
 
@@ -2472,6 +2535,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MeetWithIMUsers(ZrcSdkHandle han
     return (int)inst->pMeetingService->MeetWithIMUsers(ToStringVector(contactIDs, count));
 }
 
+// ─── Bookings / Schedule ──────────────────────────────────────────────────────
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ListMeeting(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pMeetingListHelper) { inst->RaiseErrorEvent("Meeting List Helper not available", -1); return -1; }
+    return (int)inst->pMeetingListHelper->ListMeeting();
+}
+
 // ─── Cloud Recording ──────────────────────────────────────────────────────────
 
 static IRecordingHelper* GetRecordingHelper(ZrcSdkInstance* inst)
@@ -2635,6 +2709,14 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetContactListCallback(ZrcSdkHa
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     inst->contactListCallback = callback;
     inst->contactListUserData = userData;
+}
+
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingListCallback(ZrcSdkHandle handle, ZrcMeetingListCallback callback, void* userData)
+{
+    if (!handle) return;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    inst->meetingListCallback = callback;
+    inst->meetingListUserData = userData;
 }
 
 // ─── Extended Event Callback Setters ─────────────────────────────────────────
