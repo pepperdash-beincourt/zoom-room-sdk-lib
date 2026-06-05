@@ -111,30 +111,17 @@ public partial class ZrcSdk
         });
     }
 
-    private static ContactInfo[] MarshalContacts(IntPtr ptr, int count)
-    {
-        if (ptr == IntPtr.Zero || count <= 0)
-            return Array.Empty<ContactInfo>();
-
-        var result = new ContactInfo[count];
-        int stride = Marshal.SizeOf<ZrcContactNative>();
-
-        for (int i = 0; i < count; i++)
+    private static ContactInfo[] MarshalContacts(IntPtr ptr, int count) =>
+        MarshalNativeArray<ZrcContactNative, ContactInfo>(ptr, count, native => new ContactInfo
         {
-            var native = Marshal.PtrToStructure<ZrcContactNative>(ptr + i * stride);
-            result[i] = new ContactInfo
-            {
-                ContactID      = native.contactID ?? string.Empty,
-                ScreenName     = native.screenName ?? string.Empty,
-                FirstName      = native.firstName ?? string.Empty,
-                LastName       = native.lastName ?? string.Empty,
-                Email          = native.email ?? string.Empty,
-                PhoneNumber    = native.phoneNumber ?? string.Empty,
-                SipPhoneNumber = native.sipPhoneNumber ?? string.Empty,
-                PresenceStatus = native.presenceStatus,
-                BuddyType      = native.buddyType,
-            };
-        }
-        return result;
-    }
+            ContactID      = native.contactID ?? string.Empty,
+            ScreenName     = native.screenName ?? string.Empty,
+            FirstName      = native.firstName ?? string.Empty,
+            LastName       = native.lastName ?? string.Empty,
+            Email          = native.email ?? string.Empty,
+            PhoneNumber    = native.phoneNumber ?? string.Empty,
+            SipPhoneNumber = native.sipPhoneNumber ?? string.Empty,
+            PresenceStatus = native.presenceStatus,
+            BuddyType      = native.buddyType,
+        });
 }

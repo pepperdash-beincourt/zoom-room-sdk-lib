@@ -81,32 +81,19 @@ public partial class ZrcSdk
         });
     }
 
-    private static MeetingItemInfo[] MarshalMeetings(IntPtr ptr, int count)
-    {
-        if (ptr == IntPtr.Zero || count <= 0)
-            return Array.Empty<MeetingItemInfo>();
-
-        var result = new MeetingItemInfo[count];
-        int stride = Marshal.SizeOf<ZrcMeetingItemNative>();
-
-        for (int i = 0; i < count; i++)
+    private static MeetingItemInfo[] MarshalMeetings(IntPtr ptr, int count) =>
+        MarshalNativeArray<ZrcMeetingItemNative, MeetingItemInfo>(ptr, count, native => new MeetingItemInfo
         {
-            var native = Marshal.PtrToStructure<ZrcMeetingItemNative>(ptr + i * stride);
-            result[i] = new MeetingItemInfo
-            {
-                MeetingNumber    = native.meetingNumber ?? string.Empty,
-                MeetingName      = native.meetingName ?? string.Empty,
-                HostName         = native.hostName ?? string.Empty,
-                StartTime        = native.startTime ?? string.Empty,
-                EndTime          = native.endTime ?? string.Empty,
-                MeetingDomain    = native.meetingDomain ?? string.Empty,
-                ScheduledFrom    = native.scheduledFrom,
-                IsPrivate        = native.isPrivate != 0,
-                IsAllDayEvent    = native.isAllDayEvent != 0,
-                IsCheckedIn      = native.isCheckedIn != 0,
-                IsInstantMeeting = native.isInstantMeeting != 0,
-            };
-        }
-        return result;
-    }
+            MeetingNumber    = native.meetingNumber ?? string.Empty,
+            MeetingName      = native.meetingName ?? string.Empty,
+            HostName         = native.hostName ?? string.Empty,
+            StartTime        = native.startTime ?? string.Empty,
+            EndTime          = native.endTime ?? string.Empty,
+            MeetingDomain    = native.meetingDomain ?? string.Empty,
+            ScheduledFrom    = native.scheduledFrom,
+            IsPrivate        = native.isPrivate != 0,
+            IsAllDayEvent    = native.isAllDayEvent != 0,
+            IsCheckedIn      = native.isCheckedIn != 0,
+            IsInstantMeeting = native.isInstantMeeting != 0,
+        });
 }

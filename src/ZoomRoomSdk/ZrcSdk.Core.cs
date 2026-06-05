@@ -468,4 +468,23 @@ public partial class ZrcSdk : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
+    /// <summary>
+    /// Marshals a native contiguous array of <typeparamref name="TNative"/> structs (as delivered by an
+    /// SDK callback) into a managed <typeparamref name="TManaged"/> array via <paramref name="project"/>.
+    /// Single source of the null/zero-count guard and stride/PtrToStructure loop shared by the
+    /// contact-list and meeting-list marshalers.
+    /// </summary>
+    private static TManaged[] MarshalNativeArray<TNative, TManaged>(
+        IntPtr ptr, int count, Func<TNative, TManaged> project) where TNative : struct
+    {
+        if (ptr == IntPtr.Zero || count <= 0)
+            return Array.Empty<TManaged>();
+
+        var result = new TManaged[count];
+        int stride = Marshal.SizeOf<TNative>();
+        for (int i = 0; i < count; i++)
+            result[i] = project(Marshal.PtrToStructure<TNative>(ptr + i * stride));
+        return result;
+    }
 }

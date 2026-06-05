@@ -84,7 +84,13 @@ public partial class ZrcSdk
         var buffer = new ZrcDeviceNative[MaxCameraList];
         int count = ZrcSdk_GetCameraList(_handle, buffer, MaxCameraList);
         if (count <= 0) return Array.Empty<CameraDevice>();
-        if (count > MaxCameraList) count = MaxCameraList;
+        if (count > MaxCameraList)
+        {
+            // The buffer is bounded at MaxCameraList; surface the truncation rather than silently
+            // dropping cameras so an over-capacity room is diagnosable.
+            Console.WriteLine($"Warning: ZRC SDK reported {count} cameras; truncating to {MaxCameraList}.");
+            count = MaxCameraList;
+        }
         var result = new CameraDevice[count];
         for (int i = 0; i < count; i++) result[i] = ToCameraDevice(buffer[i]);
         return result;

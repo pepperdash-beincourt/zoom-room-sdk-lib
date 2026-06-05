@@ -1267,8 +1267,11 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle)
     if (!handle) return;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     if (inst->bInitialized) ZrcSdk_Uninitialize(handle);
-    delete inst->pContactHelperSink;
-    delete inst->pMeetingListHelperSink;
+    // Sinks were deregistered from their helpers in ZrcSdk_Uninitialize (above) before the SDK
+    // singleton was destroyed, so these deletes cannot race a live SDK callback. Null after delete
+    // to stay safe against any re-entrant teardown.
+    delete inst->pContactHelperSink;     inst->pContactHelperSink = nullptr;
+    delete inst->pMeetingListHelperSink; inst->pMeetingListHelperSink = nullptr;
     delete inst->pPhoneCallServiceSink;
     delete inst->pCameraControlHelperSink;
     delete inst->pClosedCaptionHelperSink;
@@ -1482,9 +1485,23 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Uninitialize(ZrcSdkHandle handl
         try
         {
             inst->bInitialized = false;
+
+            // Deregister our sinks while the SDK singleton (and the owning helpers) are still alive,
+            // so no queued callback can fire on a sink we are about to delete in ZrcSdk_Destroy. The
+            // SDK holds the sink pointer directly, so nulling our copy alone would not prevent a
+            // dangling call — the sink must be deregistered from the helper first.
+            if (inst->pContactHelper && inst->pContactHelperSink)
+                inst->pContactHelper->DeregisterSink(inst->pContactHelperSink);
+            if (inst->pMeetingListHelper && inst->pMeetingListHelperSink)
+                inst->pMeetingListHelper->DeregisterSink(inst->pMeetingListHelperSink);
+
             inst->pNativeSDK->ForceFlushLog();  // flush credential cache and logs to disk
             IZRCSDK::DestroyInstance();          // cleanly shut down SDK singleton
             inst->pNativeSDK = nullptr;
+
+            // Helper pointers are owned by the now-destroyed SDK; clear them so nothing reuses them.
+            inst->pContactHelper = nullptr;
+            inst->pMeetingListHelper = nullptr;
         }
         catch (...) {}
     }
