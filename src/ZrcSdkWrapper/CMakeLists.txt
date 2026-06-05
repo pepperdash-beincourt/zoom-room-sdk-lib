@@ -45,6 +45,16 @@ if(UNIX AND NOT APPLE)
         pthread
         dl
     )
+    # Statically link the C++ runtime so this .so does not depend on the device's
+    # libstdc++ GLIBCXX version. Crestron 4-series firmware ships an older libstdc++
+    # (~GLIBCXX_3.4.21) than the CI cross-compile toolchain links against, which made
+    # the wrapper fail to dlopen with "GLIBCXX_3.4.29 not found" (see PR #4). With
+    # -fvisibility=hidden (above) the embedded libstdc++ symbols stay internal to this
+    # .so, so they don't clash with the ZRC SDK libraries.
+    target_link_options(ZrcSdkWrapper PRIVATE
+        -static-libstdc++
+        -static-libgcc
+    )
 elseif(APPLE)
     # macOS-specific settings for development/testing
     target_compile_options(ZrcSdkWrapper PRIVATE
