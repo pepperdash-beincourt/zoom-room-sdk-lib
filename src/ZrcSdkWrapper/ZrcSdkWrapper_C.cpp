@@ -1499,9 +1499,13 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Uninitialize(ZrcSdkHandle handl
             IZRCSDK::DestroyInstance();          // cleanly shut down SDK singleton
             inst->pNativeSDK = nullptr;
 
-            // Helper pointers are owned by the now-destroyed SDK; clear them so nothing reuses them.
+            // Helper/service pointers are owned by the now-destroyed SDK; clear them so nothing
+            // reuses dangling memory (entrypoints also gate on bInitialized, but don't rely on it).
             inst->pContactHelper = nullptr;
             inst->pMeetingListHelper = nullptr;
+            inst->pSettingService = nullptr;
+            inst->pMeetingService = nullptr;
+            inst->pPreMeetingService = nullptr;
         }
         catch (...) {}
     }
@@ -2502,7 +2506,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle ha
     if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
     // SetCurrentCamera takes a full Device; resolve the matching entry from the camera list by ID.
     std::vector<Device> cameras;
-    if ((int)inst->pSettingService->GetCameraList(cameras) != 0) return -1;
+    int listRc = (int)inst->pSettingService->GetCameraList(cameras);
+    if (listRc != 0) { inst->RaiseErrorEvent("SetCurrentCamera: GetCameraList failed", listRc); return listRc < 0 ? listRc : -listRc; }
     std::string wanted(deviceID);
     for (const auto& cam : cameras)
     {
@@ -2526,9 +2531,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AnswerMeetingInvite(ZrcSdkHandle
         std::lock_guard<std::mutex> lk(inst->meetingInviteMutex);
         if (!inst->hasMeetingInvite) { inst->RaiseErrorEvent("No pending meeting invite", -2); return -2; }
         invite = inst->lastMeetingInvite;
-        inst->hasMeetingInvite = false;  // consume it
     }
-    return (int)pMS->AnswerMeetingInvite(invite, accept != 0);
+    int rc = (int)pMS->AnswerMeetingInvite(invite, accept != 0);
+    // Consume the invite only on success, so a failed answer can be retried. Guard against a new
+    // invite arriving in the meantime by matching the meeting number before clearing.
+    if (rc == 0)
+    {
+        std::lock_guard<std::mutex> lk(inst->meetingInviteMutex);
+        if (inst->hasMeetingInvite && inst->lastMeetingInvite.meetingNumber == invite.meetingNumber)
+            inst->hasMeetingInvite = false;
+    }
+    return rc;
 }
 
 // ─── Meeting Control Extensions ───────────────────────────────────────────────
@@ -2667,8 +2680,10 @@ static std::vector<std::string> ToStringVector(const char** items, int count)
     if (items && count > 0)
     {
         vec.reserve((size_t)count);
+        // Skip null/empty contact IDs — the SDK expects valid strings, and empties would
+        // produce invalid invite targets.
         for (int i = 0; i < count; ++i)
-            vec.emplace_back(items[i] ? items[i] : "");
+            if (items[i] && items[i][0] != '\0') vec.emplace_back(items[i]);
     }
     return vec;
 }

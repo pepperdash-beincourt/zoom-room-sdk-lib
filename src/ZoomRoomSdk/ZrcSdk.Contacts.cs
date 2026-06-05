@@ -85,8 +85,19 @@ public partial class ZrcSdk
     public bool InviteAttendees(string[] contactIDs)
     {
         ThrowIfDisposed();
-        if (contactIDs == null || contactIDs.Length == 0) return false;
-        return ZrcSdk_InviteAttendees(_handle, contactIDs, contactIDs.Length) == 0;
+        var ids = FilterContactIds(contactIDs);
+        if (ids.Length == 0) return false;
+        return ZrcSdk_InviteAttendees(_handle, ids, ids.Length) == 0;
+    }
+
+    // Drop null/blank contact IDs before marshaling — the SDK expects valid strings.
+    private static string[] FilterContactIds(string[] ids)
+    {
+        if (ids == null) return Array.Empty<string>();
+        var list = new System.Collections.Generic.List<string>(ids.Length);
+        foreach (var id in ids)
+            if (!string.IsNullOrWhiteSpace(id)) list.Add(id);
+        return list.ToArray();
     }
 
     /// <summary>
@@ -97,8 +108,9 @@ public partial class ZrcSdk
     public bool MeetWithImUsers(string[] contactIDs)
     {
         ThrowIfDisposed();
-        if (contactIDs == null || contactIDs.Length == 0) return false;
-        return ZrcSdk_MeetWithIMUsers(_handle, contactIDs, contactIDs.Length) == 0;
+        var ids = FilterContactIds(contactIDs);
+        if (ids.Length == 0) return false;
+        return ZrcSdk_MeetWithIMUsers(_handle, ids, ids.Length) == 0;
     }
 
     // ── Callback handlers ──────────────────────────────────────────────────────
