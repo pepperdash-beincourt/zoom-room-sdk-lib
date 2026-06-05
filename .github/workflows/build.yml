@@ -107,7 +107,7 @@ jobs:
             set -e
             export DEBIAN_FRONTEND=noninteractive
             apt-get update
-            apt-get install -y g++-arm-linux-gnueabihf cmake make
+            apt-get install -y g++-arm-linux-gnueabihf cmake make file
             chmod +x src/ZrcSdkWrapper/build.sh
             src/ZrcSdkWrapper/build.sh --arm --release --clean'
           cp src/ZrcSdkWrapper/build-arm/libzrcsdkwrapperpdt.so.1.0.0 \
