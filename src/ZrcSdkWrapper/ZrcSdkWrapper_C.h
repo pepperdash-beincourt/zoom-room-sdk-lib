@@ -131,6 +131,17 @@ typedef void (ZRCSDKWRAPPER_CALL *ZrcContactListCallback)(
     int count,
     void* userData);
 
+// ── Incoming meeting-invite flat struct ────────────────────────────────────────
+// Flattened MeetingInvitationInfo for an inbound invite. meetingNumber is stringified (int64).
+typedef struct ZrcMeetingInvite {
+    char callerName[256];
+    char callerContactID[256];
+    char meetingID[128];
+    char meetingNumber[32];
+} ZrcMeetingInvite;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingInviteCallback)(const ZrcMeetingInvite* invite, void* userData);
+
 // ── Meeting (booking/schedule) flat struct ─────────────────────────────────────
 // Flattened representation of the SDK MeetingItem struct (calendar/schedule entry).
 // All strings are null-terminated; startTime/endTime are ISO-8601 (e.g. "2017-03-15T11:30:00-07:00").
@@ -479,7 +490,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetExitMeetingCallback(ZrcSdkHa
 // errorCode=1 if wrong password and retry, 0 otherwise
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingNeedsPasswordCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // message=callerName, errorCode=0
-ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, ZrcMeetingInviteCallback callback, void* userData);
 // errorCode=1 if muted
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAudioStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // errorCode=1 if mute on entry enabled

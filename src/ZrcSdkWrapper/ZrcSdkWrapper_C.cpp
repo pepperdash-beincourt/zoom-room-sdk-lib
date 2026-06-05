@@ -499,7 +499,7 @@ struct ZrcSdkInstance
     SdkEventCallback startPmiResultCallback;        void* startPmiResultUserData;
     SdkEventCallback exitMeetingCallback;           void* exitMeetingUserData;
     SdkEventCallback meetingNeedsPasswordCallback;  void* meetingNeedsPasswordUserData;
-    SdkEventCallback meetingInviteCallback;         void* meetingInviteUserData;
+    ZrcMeetingInviteCallback meetingInviteCallback; void* meetingInviteUserData;
     SdkEventCallback audioStatusCallback;           void* audioStatusUserData;
     SdkEventCallback muteOnEntryCallback;           void* muteOnEntryUserData;
     SdkEventCallback participantCountCallback;      void* participantCountUserData;
@@ -623,7 +623,7 @@ struct ZrcSdkInstance
     void RaiseStartPmiResultEvent(const char* num, int result)    { Raise(startPmiResultCallback, startPmiResultUserData, num, result); }
     void RaiseExitMeetingEvent(int result, int reason)            { Raise(exitMeetingCallback, exitMeetingUserData, "", result | (reason << 8)); }
     void RaiseMeetingNeedsPasswordEvent(int wrongAndRetry)        { Raise(meetingNeedsPasswordCallback, meetingNeedsPasswordUserData, "", wrongAndRetry); }
-    void RaiseMeetingInviteEvent(const char* callerName)          { Raise(meetingInviteCallback, meetingInviteUserData, callerName, 0); }
+    void RaiseMeetingInviteEvent(const MeetingInvitationInfo& invite);  // defined out-of-line (needs strncpy_safe)
     void RaiseAudioStatusEvent(int isMuted)                       { Raise(audioStatusCallback, audioStatusUserData, "", isMuted); }
     void RaiseMuteOnEntryEvent(int enabled)                       { Raise(muteOnEntryCallback, muteOnEntryUserData, "", enabled); }
     void RaiseParticipantCountEvent(int count)                    { Raise(participantCountCallback, participantCountUserData, "", count); }
@@ -885,6 +885,19 @@ void ZrcMeetingServiceSink::OnMeetingEndedNotification(const MeetingErrorInfo& e
     if (owner) owner->RaiseExitMeetingEvent(errorInfo.errorCode & 0xFF, 0);
 }
 
+// Flatten the SDK MeetingInvitationInfo into the C ZrcMeetingInvite and raise it.
+void ZrcSdkInstance::RaiseMeetingInviteEvent(const MeetingInvitationInfo& invite)
+{
+    if (!meetingInviteCallback) return;
+    ZrcMeetingInvite flat;
+    memset(&flat, 0, sizeof(flat));
+    strncpy_safe(flat.callerName,      invite.callerName,      sizeof(flat.callerName));
+    strncpy_safe(flat.callerContactID, invite.callerContactID, sizeof(flat.callerContactID));
+    strncpy_safe(flat.meetingID,       invite.meetingID,       sizeof(flat.meetingID));
+    strncpy_safe(flat.meetingNumber,   std::to_string(invite.meetingNumber), sizeof(flat.meetingNumber));
+    meetingInviteCallback(&flat, meetingInviteUserData);
+}
+
 void ZrcMeetingServiceSink::OnReceiveMeetingInviteNotification(const MeetingInvitationInfo& invitation)
 {
     if (!owner) return;
@@ -894,7 +907,7 @@ void ZrcMeetingServiceSink::OnReceiveMeetingInviteNotification(const MeetingInvi
         owner->lastMeetingInvite = invitation;
         owner->hasMeetingInvite = true;
     }
-    owner->RaiseMeetingInviteEvent(invitation.callerName.c_str());
+    owner->RaiseMeetingInviteEvent(invitation);
 }
 
 void ZrcMeetingServiceSink::OnTreatedMeetingInviteNotification(const MeetingInvitationInfo& invitation, bool accepted)
@@ -2849,7 +2862,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetExitMeetingCallback(ZrcSdkHa
     { SET_CB(exitMeeting, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingNeedsPasswordCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(meetingNeedsPassword, callback, userData); }
-ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, ZrcMeetingInviteCallback callback, void* userData)
     { SET_CB(meetingInvite, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAudioStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(audioStatus, callback, userData); }

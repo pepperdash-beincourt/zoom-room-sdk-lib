@@ -1,14 +1,27 @@
 namespace PepperDash.ZoomRoom.Sdk;
 
 using System.Runtime.InteropServices;
+using PepperDash.ZoomRoom.Sdk.EventArgs;
 
 public partial class ZrcSdk
 {
+    // Flat incoming-invite struct (must mirror ZrcMeetingInvite in ZrcSdkWrapper_C.h exactly).
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    private struct ZrcMeetingInviteNative
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string callerName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string callerContactID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)] public string meetingID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]  public string meetingNumber;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcMeetingInviteCallbackDelegate(IntPtr invitePtr, IntPtr userData);
     private SdkEventCallbackDelegate? _meetingStatusCallbackDelegate;
     private SdkEventCallbackDelegate? _startPmiResultCallbackDelegate;
     private SdkEventCallbackDelegate? _exitMeetingCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingNeedsPasswordCallbackDelegate;
-    private SdkEventCallbackDelegate? _meetingInviteCallbackDelegate;
+    private ZrcMeetingInviteCallbackDelegate? _meetingInviteCallbackDelegate;
     private SdkEventCallbackDelegate? _instantMeetingStartedCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingLockStatusCallbackDelegate;
 
@@ -49,10 +62,9 @@ public partial class ZrcSdk
     public event EventHandler<SdkEventArgs>? MeetingNeedsPassword;
 
     /// <summary>
-    /// Fired when an incoming meeting invitation arrives.
-    /// <see cref="SdkEventArgs.Message"/> contains the caller's name.
+    /// Fired when an incoming meeting invitation arrives, with caller and meeting details.
     /// </summary>
-    public event EventHandler<SdkEventArgs>? MeetingInvite;
+    public event EventHandler<MeetingInviteEventArgs>? MeetingInvite;
 
     /// <summary>
     /// Fired when an instant meeting starts.
@@ -182,8 +194,18 @@ public partial class ZrcSdk
     private void OnMeetingNeedsPasswordCallback(string message, int wrongAndRetry, IntPtr userData) =>
         MeetingNeedsPassword?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = wrongAndRetry });
 
-    private void OnMeetingInviteCallback(string message, int errorCode, IntPtr userData) =>
-        MeetingInvite?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = errorCode });
+    private void OnMeetingInviteCallback(IntPtr invitePtr, IntPtr userData)
+    {
+        if (invitePtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcMeetingInviteNative>(invitePtr);
+        MeetingInvite?.Invoke(this, new MeetingInviteEventArgs
+        {
+            CallerName      = n.callerName ?? string.Empty,
+            CallerContactId = n.callerContactID ?? string.Empty,
+            MeetingId       = n.meetingID ?? string.Empty,
+            MeetingNumber   = n.meetingNumber ?? string.Empty,
+        });
+    }
 
     private void OnInstantMeetingStartedCallback(string meetingNumber, int result, IntPtr userData) =>
         InstantMeetingStarted?.Invoke(this, new SdkEventArgs { Message = meetingNumber, ErrorCode = result });

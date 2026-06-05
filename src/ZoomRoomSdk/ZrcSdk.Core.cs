@@ -299,7 +299,7 @@ public partial class ZrcSdk : IDisposable
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingNeedsPasswordCallback(IntPtr handle, SdkEventCallbackDelegate cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void ZrcSdk_SetMeetingInviteCallback(IntPtr handle, SdkEventCallbackDelegate cb, IntPtr userData);
+    private static extern void ZrcSdk_SetMeetingInviteCallback(IntPtr handle, ZrcMeetingInviteCallbackDelegate cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetAudioStatusCallback(IntPtr handle, SdkEventCallbackDelegate cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
