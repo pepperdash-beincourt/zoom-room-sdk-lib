@@ -94,16 +94,22 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6           
       
-      - name: Install ARM32 cross-compiler
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf cmake
-
       # ---------------------------
-      - name: Build native ARM32 wrapper
+      # Build the native ARM32 wrapper in a PINNED ubuntu:20.04 container. Its cross toolchain
+      # (g++-arm-linux-gnueabihf = GCC 9 -> GLIBCXX_3.4.27, low GLIBC baseline) stays at/below the
+      # Crestron 4-series firmware ceiling (libstdc++ GLIBCXX_3.4.28, glibc GLIBC_2.30). The hosted
+      # runner's own toolchain drifted to GCC 11+ (GLIBCXX_3.4.29) after the org move, producing a
+      # wrapper the device can't dlopen. Pinning the container makes this reproducible and immune to
+      # runner drift. See PR #4.
+      - name: Build native ARM32 wrapper (pinned GCC 9 toolchain)
         run: |
-          chmod +x src/ZrcSdkWrapper/build.sh
-          src/ZrcSdkWrapper/build.sh --arm --release --clean
+          docker run --rm -v "$PWD:/src" -w /src ubuntu:20.04 bash -c '
+            set -e
+            export DEBIAN_FRONTEND=noninteractive
+            apt-get update
+            apt-get install -y g++-arm-linux-gnueabihf cmake make
+            chmod +x src/ZrcSdkWrapper/build.sh
+            src/ZrcSdkWrapper/build.sh --arm --release --clean'
           cp src/ZrcSdkWrapper/build-arm/libzrcsdkwrapperpdt.so.1.0.0 \
              src/ZoomRoomSdk/native/linux-arm/libzrcsdkwrapperpdt.so
 
