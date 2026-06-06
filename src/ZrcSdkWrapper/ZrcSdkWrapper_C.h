@@ -196,6 +196,21 @@ typedef struct ZrcMeetingRecordingInfo {
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingRecordingInfoCallback)(const ZrcMeetingRecordingInfo* info, void* userData);
 
+// ── Camera preset flat struct (max 3 slots; ZRC SDK preset index range is [0,1,2]) ────
+typedef struct ZrcCameraPreset {
+    int32_t index;        // preset slot index (0..2)
+    char    name[128];    // preset name (empty if unnamed)
+} ZrcCameraPreset;
+
+typedef struct ZrcCameraPresetInfo {
+    int32_t         defaultIndex;          // default preset index (-1 if none)
+    int32_t         supportedPresetCount;  // slots the current camera supports (<=3)
+    int32_t         presetCount;           // number of valid entries in presets[]
+    ZrcCameraPreset presets[3];            // saved presets
+} ZrcCameraPresetInfo;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcCameraPresetInfoCallback)(const ZrcCameraPresetInfo* info, void* userData);
+
 // ── Chat message flat struct ──────────────────────────────────────────────────
 typedef struct ZrcChatMessage {
     char    messageID[128];
@@ -426,6 +441,13 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ControlUserCamera(ZrcSdkHandle h
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RespondRemoteCameraControl(ZrcSdkHandle handle, int32_t userID, int accept);
 // Smart/auto camera framing mode. mask: SmartCameraMask (Manual=1, SpeakerFocus=2, GroupFocus=4, MultiFocus=8, SmartGallery=16, Director=32, PresenterFocus=64). deviceID empty = main camera.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeSmartCameraMode(ZrcSdkHandle handle, int32_t mask, const char* deviceID);
+// Camera presets. index range [0,1,2]. deviceID empty = main (near-end) camera. All return <0 on error.
+// Save current position to slot:
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraPreset(ZrcSdkHandle handle, uint32_t index, const char* deviceID);
+// Recall slot:
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GoToCameraPreset(ZrcSdkHandle handle, uint32_t index, const char* deviceID);
+// Name a slot:
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_NameCameraPreset(ZrcSdkHandle handle, uint32_t index, const char* name, const char* deviceID);
 // Camera device list / selection (ISettingService). All return <0 on error.
 // GetCameraList fills up to maxCount entries and returns the total camera count (may exceed maxCount).
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCameraList(ZrcSdkHandle handle, ZrcDevice* outDevices, int maxCount);
@@ -502,6 +524,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetHostChangedCallback(ZrcSdkHa
 // errorCode=1 if meeting is being recorded
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingRecordingInfoCallback(ZrcSdkHandle handle, ZrcMeetingRecordingInfoCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraPresetInfoCallback(ZrcSdkHandle handle, ZrcCameraPresetInfoCallback callback, void* userData);
 // errorCode=1 if ZRCS enabled
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetControlSystemEnabledCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // Generic error / instant meeting started

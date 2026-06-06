@@ -416,7 +416,7 @@ public:
     void OnFarEndCameraCameraControlResult(int32_t userID, CameraControlType type, bool success) override {}
     void OnTreatedCameraControlRequestNotification(bool accept, int32_t userID) override {}
     void OnMirrorVideoResult(const MirrorSelfVideoRes& res) override {}
-    void OnUpdateCameraPresetInfo(const CameraPresetInfo& info) override {}
+    void OnUpdateCameraPresetInfo(const CameraPresetInfo& info) override;
 };
 
 // ─── IPhoneCallServiceSink ────────────────────────────────────────────────────
@@ -506,6 +506,7 @@ struct ZrcSdkInstance
     SdkEventCallback hostChangedCallback;           void* hostChangedUserData;
     SdkEventCallback recordingStatusCallback;       void* recordingStatusUserData;
     ZrcMeetingRecordingInfoCallback meetingRecordingInfoCallback; void* meetingRecordingInfoUserData;
+    ZrcCameraPresetInfoCallback cameraPresetInfoCallback; void* cameraPresetInfoUserData;
     SdkEventCallback controlSystemEnabledCallback;  void* controlSystemEnabledUserData;
     ZrcParticipantListCallback participantListCallback; void* participantListUserData;
     // Contacts / directory
@@ -584,6 +585,7 @@ struct ZrcSdkInstance
         , hostChangedCallback(nullptr), hostChangedUserData(nullptr)
         , recordingStatusCallback(nullptr), recordingStatusUserData(nullptr)
         , meetingRecordingInfoCallback(nullptr), meetingRecordingInfoUserData(nullptr)
+        , cameraPresetInfoCallback(nullptr), cameraPresetInfoUserData(nullptr)
         , controlSystemEnabledCallback(nullptr), controlSystemEnabledUserData(nullptr)
         , participantListCallback(nullptr), participantListUserData(nullptr)
         , contactListCallback(nullptr), contactListUserData(nullptr)
@@ -630,6 +632,7 @@ struct ZrcSdkInstance
     void RaiseHostChangedEvent(int amIHost)                       { Raise(hostChangedCallback, hostChangedUserData, "", amIHost); }
     void RaiseRecordingStatusEvent(int isRecording)               { Raise(recordingStatusCallback, recordingStatusUserData, "", isRecording); }
     void RaiseMeetingRecordingInfoEvent(const ZrcMeetingRecordingInfo* s) { if (meetingRecordingInfoCallback) meetingRecordingInfoCallback(s, meetingRecordingInfoUserData); }
+    void RaiseCameraPresetInfoEvent(const ZrcCameraPresetInfo* s) { if (cameraPresetInfoCallback) cameraPresetInfoCallback(s, cameraPresetInfoUserData); }
     void RaiseControlSystemEnabledEvent(int enabled)              { Raise(controlSystemEnabledCallback, controlSystemEnabledUserData, "", enabled); }
     // Extended raise helpers
     void RaiseAllowAttendeesUnmuteEvent(int allow)          { Raise(allowAttendeesUnmuteCallback, allowAttendeesUnmuteUserData, "", allow); }
@@ -1212,6 +1215,26 @@ void ZrcClosedCaptionHelperSink::OnMessageAdd(const LTTCaptionMessage& msg)
 void ZrcCameraControlHelperSink::OnFarEndCameraControlNotification(const FarEndCameraControlInfo& info)
 {
     if (owner) owner->RaiseFarEndCameraControlEvent((int)info.userID);
+}
+
+void ZrcCameraControlHelperSink::OnUpdateCameraPresetInfo(const CameraPresetInfo& info)
+{
+    if (!owner) return;
+    ZrcCameraPresetInfo out;
+    memset(&out, 0, sizeof(out));
+    out.defaultIndex = info.defaultIndex;
+    out.supportedPresetCount = (int32_t)info.supportedPresetCount;
+    int n = 0;
+    for (const auto& kv : info.namedPresets)
+    {
+        if (n >= 3) break;
+        out.presets[n].index = (int32_t)kv.first;
+        strncpy(out.presets[n].name, kv.second.c_str(), sizeof(out.presets[n].name) - 1);
+        out.presets[n].name[sizeof(out.presets[n].name) - 1] = '\0';
+        ++n;
+    }
+    out.presetCount = n;
+    owner->RaiseCameraPresetInfoEvent(&out);
 }
 
 void ZrcPhoneCallServiceSink::OnReceiveIncomingSIPCallNotification(const SIPCallInfo& call)
@@ -2471,6 +2494,40 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ChangeSmartCameraMode(ZrcSdkHand
     return (int)pCam->ChangeSmartCameraMode((SmartCameraMask)mask, deviceID ? std::string(deviceID) : std::string());
 }
 
+// Camera presets. index range [0,1,2]; empty deviceID = main (near-end) camera.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraPreset(ZrcSdkHandle handle, uint32_t index, const char* deviceID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    ICameraControlHelper* pCam = pMS->GetCameraControlHelper();
+    if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
+    return (int)pCam->SetCameraPreset(index, deviceID ? std::string(deviceID) : std::string());
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GoToCameraPreset(ZrcSdkHandle handle, uint32_t index, const char* deviceID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    ICameraControlHelper* pCam = pMS->GetCameraControlHelper();
+    if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
+    return (int)pCam->GoToCameraPreset(index, deviceID ? std::string(deviceID) : std::string());
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_NameCameraPreset(ZrcSdkHandle handle, uint32_t index, const char* name, const char* deviceID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    ICameraControlHelper* pCam = pMS->GetCameraControlHelper();
+    if (!pCam) { inst->RaiseErrorEvent("Camera Helper not available", -1); return -1; }
+    return (int)pCam->NameCameraPreset(index, name ? std::string(name) : std::string(), deviceID ? std::string(deviceID) : std::string());
+}
+
 // Helper: flatten an SDK Device to the C ZrcDevice struct.
 static void FlattenDevice(const Device& src, ZrcDevice& dst)
 {
@@ -2876,6 +2933,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingStatusCallback(ZrcS
     { SET_CB(recordingStatus, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingRecordingInfoCallback(ZrcSdkHandle handle, ZrcMeetingRecordingInfoCallback callback, void* userData)
     { SET_CB(meetingRecordingInfo, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraPresetInfoCallback(ZrcSdkHandle handle, ZrcCameraPresetInfoCallback callback, void* userData)
+    { SET_CB(cameraPresetInfo, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetControlSystemEnabledCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(controlSystemEnabled, callback, userData); }
 
