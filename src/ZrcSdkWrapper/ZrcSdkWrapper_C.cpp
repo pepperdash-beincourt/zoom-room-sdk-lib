@@ -920,8 +920,11 @@ void ZrcMeetingServiceSink::OnTreatedMeetingInviteNotification(const MeetingInvi
 {
     if (!owner) return;
     // The invite was answered (here or elsewhere) — clear the cache to avoid acting on a stale invite.
+    // Match the meeting number before clearing so a newer invite that arrived between this callback
+    // and acquiring the mutex is not discarded (mirrors the guard in ZrcSdk_AnswerMeetingInvite).
     std::lock_guard<std::mutex> lk(owner->meetingInviteMutex);
-    owner->hasMeetingInvite = false;
+    if (owner->hasMeetingInvite && owner->lastMeetingInvite.meetingNumber == invitation.meetingNumber)
+        owner->hasMeetingInvite = false;
 }
 
 void ZrcMeetingServiceSink::OnStartMeetingWithHostKeyResult(int32_t result)
@@ -2766,7 +2769,7 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SubscribeContacts(ZrcSdkHandle h
 
 // ─── Invite by contact ID ─────────────────────────────────────────────────────
 
-// Marshal a C string array into a std::vector<std::string>; nulls become empty strings.
+// Marshal a C string array into a std::vector<std::string>; null/empty entries are skipped.
 static std::vector<std::string> ToStringVector(const char** items, int count)
 {
     std::vector<std::string> vec;
