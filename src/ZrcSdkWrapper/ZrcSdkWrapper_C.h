@@ -177,6 +177,23 @@ typedef struct ZrcSharingStatus {
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcSharingStatusCallback)(const ZrcSharingStatus* status, void* userData);
 
+// ── AirPlay / Black Magic status flat struct ──────────────────────────────────
+typedef struct ZrcAirPlayStatus {
+    int32_t instructionDisplayState;               // SharingInstructionDisplayState enum
+    char    wifiName[128];                         // Airplay server WiFi name (SSID)
+    char    serverName[256];                       // Airplay server name
+    char    password[64];                          // Airplay server password / code
+    char    directPresentationPairingCode[64];     // Direct presentation pairing code
+    char    directPresentationSharingKey[128];     // Laptop share key
+    int32_t isAirHostClientConnected;              // 1 = AirHost client connected
+    int32_t isBlackMagicConnected;                 // 1 = HDMI cable connected
+    int32_t isBlackMagicDataAvailable;             // 1 = HDMI data ready to share
+    int32_t isSharingBlackMagic;                   // 1 = HDMI currently sharing
+    int32_t isDirectPresentationConnected;         // 1 = direct presentation connected
+} ZrcAirPlayStatus;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcAirPlayStatusCallback)(const ZrcAirPlayStatus* status, void* userData);
+
 // ── Video page status flat struct ─────────────────────────────────────────────
 typedef struct ZrcVideoPageStatus {
     int32_t isInFirstPage;            // 1 = on the first page
@@ -542,6 +559,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFEACDeclinedCallback(ZrcSdkH
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAllowAttendeesVideoCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // Share
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSharingStatusCallback(ZrcSdkHandle handle, ZrcSharingStatusCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAirPlayStatusCallback(ZrcSdkHandle handle, ZrcAirPlayStatusCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoPageStatusCallback(ZrcSdkHandle handle, ZrcVideoPageStatusCallback callback, void* userData);
 // Breakout Room
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=BO_STATUS

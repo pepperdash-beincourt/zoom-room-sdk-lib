@@ -254,7 +254,7 @@ public:
     void OnShowSharingInstructionResult(int result, bool show, SharingInstructionDisplayState state) override {}
     void OnShareSettingNotification(const ShareSetting& setting) override {}
     void OnSharingStatusNotification(const SharingStatus& status) override;
-    void OnUpdateAirPlayBlackMagicStatus(const AirplayBlackMagicStatus& status) override {}
+    void OnUpdateAirPlayBlackMagicStatus(const AirplayBlackMagicStatus& status) override;
     void OnUpdateCameraSharingStatus(const CameraSharingStatus& status) override {}
     void OnSharingSourceNotification(const std::vector<ShareSource>& sources, const std::vector<ShareSource>& sources2) override {}
     void OnHDMI60FPSShareInfoNotification(bool a, bool b, HDMI60FPSShareDisableReason r) override {}
@@ -525,6 +525,7 @@ struct ZrcSdkInstance
     ZrcVideoPageStatusCallback videoPageStatusCallback; void* videoPageStatusUserData;
     // Share
     ZrcSharingStatusCallback sharingStatusCallback; void* sharingStatusUserData;
+    ZrcAirPlayStatusCallback airPlayStatusCallback; void* airPlayStatusUserData;
     // Breakout room
     SdkEventCallback boStatusChangedCallback;       void* boStatusChangedUserData;
     ZrcBORoomListCallback boRoomListCallback;        void* boRoomListUserData;
@@ -598,6 +599,7 @@ struct ZrcSdkInstance
         , allowAttendeesVideoCallback(nullptr), allowAttendeesVideoUserData(nullptr)
         , videoPageStatusCallback(nullptr), videoPageStatusUserData(nullptr)
         , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
+        , airPlayStatusCallback(nullptr), airPlayStatusUserData(nullptr)
         , boStatusChangedCallback(nullptr), boStatusChangedUserData(nullptr)
         , boRoomListCallback(nullptr), boRoomListUserData(nullptr)
         , inSilentModeCallback(nullptr), inSilentModeUserData(nullptr)
@@ -642,6 +644,7 @@ struct ZrcSdkInstance
     void RaiseFEACDeclinedEvent(int32_t userID, const char* name){ Raise(feacDeclinedCallback, feacDeclinedUserData, name, (int)userID); }
     void RaiseAllowAttendeesVideoEvent(int allow)           { Raise(allowAttendeesVideoCallback, allowAttendeesVideoUserData, "", allow); }
     void RaiseSharingStatusEvent(const ZrcSharingStatus* s) { if (sharingStatusCallback) sharingStatusCallback(s, sharingStatusUserData); }
+    void RaiseAirPlayStatusEvent(const ZrcAirPlayStatus* s) { if (airPlayStatusCallback) airPlayStatusCallback(s, airPlayStatusUserData); }
     void RaiseVideoPageStatusEvent(const ZrcVideoPageStatus* s) { if (videoPageStatusCallback) videoPageStatusCallback(s, videoPageStatusUserData); }
     void RaiseBOStatusChangedEvent(int status)              { Raise(boStatusChangedCallback, boStatusChangedUserData, "", status); }
     void RaiseInSilentModeEvent(int inSilent)               { Raise(inSilentModeCallback, inSilentModeUserData, "", inSilent); }
@@ -1118,6 +1121,26 @@ void ZrcMeetingShareHelperSink::OnSharingStatusNotification(const SharingStatus&
     s.isSharingToBO  = status.isSharingToBO ? 1 : 0;
     owner->RaiseSharingStatusEvent(&s);
 }
+
+void ZrcMeetingShareHelperSink::OnUpdateAirPlayBlackMagicStatus(const AirplayBlackMagicStatus& status)
+{
+    if (!owner) return;
+    ZrcAirPlayStatus s;
+    memset(&s, 0, sizeof(s));
+    s.instructionDisplayState       = (int32_t)status.instructionDisplayState;
+    strncpy_safe(s.wifiName,                       status.wifiName.c_str(),                       sizeof(s.wifiName));
+    strncpy_safe(s.serverName,                     status.serverName.c_str(),                     sizeof(s.serverName));
+    strncpy_safe(s.password,                       status.password.c_str(),                       sizeof(s.password));
+    strncpy_safe(s.directPresentationPairingCode,  status.directPresentationPairingCode.c_str(),  sizeof(s.directPresentationPairingCode));
+    strncpy_safe(s.directPresentationSharingKey,   status.directPresentationSharingKey.c_str(),   sizeof(s.directPresentationSharingKey));
+    s.isAirHostClientConnected      = status.isAirHostClientConnected ? 1 : 0;
+    s.isBlackMagicConnected         = status.isBlackMagicConnected ? 1 : 0;
+    s.isBlackMagicDataAvailable     = status.isBlackMagicDataAvailable ? 1 : 0;
+    s.isSharingBlackMagic           = status.isSharingBlackMagic ? 1 : 0;
+    s.isDirectPresentationConnected = status.isDirectPresentationConnected ? 1 : 0;
+    owner->RaiseAirPlayStatusEvent(&s);
+}
+
 
 void ZrcMeetingViewLayoutHelperSink::OnUpdateVideoPageStatusNotification(const VideoPageStatus& status)
 {
@@ -2982,6 +3005,13 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSharingStatusCallback(ZrcSdk
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     inst->sharingStatusCallback = callback;
     inst->sharingStatusUserData = userData;
+}
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAirPlayStatusCallback(ZrcSdkHandle handle, ZrcAirPlayStatusCallback callback, void* userData)
+{
+    if (!handle) return;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    inst->airPlayStatusCallback = callback;
+    inst->airPlayStatusUserData = userData;
 }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoPageStatusCallback(ZrcSdkHandle handle, ZrcVideoPageStatusCallback callback, void* userData)
 {
