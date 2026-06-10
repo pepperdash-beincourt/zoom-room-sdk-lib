@@ -105,7 +105,7 @@ public partial class ZrcSdk
     /// </summary>
     /// <param name="contactIDs">Contact IDs to meet with.</param>
     /// <returns><see langword="true"/> if the SDK accepted the request.</returns>
-    public bool MeetWithImUsers(string[] contactIDs)
+    public bool MeetWithIMUsers(string[] contactIDs)
     {
         ThrowIfDisposed();
         var ids = FilterContactIds(contactIDs);

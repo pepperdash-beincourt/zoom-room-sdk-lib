@@ -68,6 +68,7 @@ public partial class ZrcSdk : IDisposable
     private const string DllName = "zrcsdkwrapperpdt";
 
     private static IntPtr _cachedWrapperHandle = IntPtr.Zero;
+    private static readonly object _wrapperHandleLock = new();
 
     private const int    RTLD_NOW    = 2;
     private const int    RTLD_LAZY   = 1;
@@ -119,45 +120,51 @@ public partial class ZrcSdk : IDisposable
         if (_cachedWrapperHandle != IntPtr.Zero)
             return _cachedWrapperHandle;
 
-        var libPath = ResolveWrapperPath();
-        if (!File.Exists(libPath))
+        lock (_wrapperHandleLock)
         {
-            // Report every location that was searched so a misconfigured SetLibraryPath is obvious.
-            var searched = string.IsNullOrEmpty(_overrideLibraryPath)
-                ? Path.Combine(DefaultWrapperDirectory, WrapperFileName)
-                : $"{Path.Combine(_overrideLibraryPath, WrapperFileName)} and {Path.Combine(DefaultWrapperDirectory, WrapperFileName)}";
-            throw new DllNotFoundException(
-                $"{WrapperFileName} not found. Searched: {searched}. " +
-                "Set the wrapper directory with ZrcSdk.SetLibraryPath(dir) (the directory must contain the file).");
-        }
+            if (_cachedWrapperHandle != IntPtr.Zero)
+                return _cachedWrapperHandle;
 
-        var libBytes = File.ReadAllBytes(libPath);
-        int memfd = syscall(SYS_memfd_create, "zrcsdkwrapperpdt", MFD_CLOEXEC);
-        if (memfd < 0)
-            throw new DllNotFoundException($"memfd_create failed (errno={Marshal.GetLastWin32Error()})");
-
-        try
-        {
-            var written = write(memfd, libBytes, (IntPtr)libBytes.Length);
-            if (written.ToInt64() != libBytes.Length)
-                throw new DllNotFoundException($"memfd write incomplete: {written}/{libBytes.Length}");
-
-            var procPath = $"/proc/self/fd/{memfd}";
-            dlerror();
-            var handle = dlopen(procPath, RTLD_LAZY | RTLD_GLOBAL);
-            if (handle == IntPtr.Zero)
+            var libPath = ResolveWrapperPath();
+            if (!File.Exists(libPath))
             {
-                var errPtr = dlerror();
-                var errMsg = errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "unknown";
-                throw new DllNotFoundException($"Failed to dlopen via memfd ({procPath}): {errMsg}");
+                // Report every location that was searched so a misconfigured SetLibraryPath is obvious.
+                var searched = string.IsNullOrEmpty(_overrideLibraryPath)
+                    ? Path.Combine(DefaultWrapperDirectory, WrapperFileName)
+                    : $"{Path.Combine(_overrideLibraryPath, WrapperFileName)} and {Path.Combine(DefaultWrapperDirectory, WrapperFileName)}";
+                throw new DllNotFoundException(
+                    $"{WrapperFileName} not found. Searched: {searched}. " +
+                    "Set the wrapper directory with ZrcSdk.SetLibraryPath(dir) (the directory must contain the file).");
             }
 
-            _cachedWrapperHandle = handle;
-            return handle;
-        }
-        finally
-        {
-            close(memfd);
+            var libBytes = File.ReadAllBytes(libPath);
+            int memfd = syscall(SYS_memfd_create, "zrcsdkwrapperpdt", MFD_CLOEXEC);
+            if (memfd < 0)
+                throw new DllNotFoundException($"memfd_create failed (errno={Marshal.GetLastWin32Error()})");
+
+            try
+            {
+                var written = write(memfd, libBytes, (IntPtr)libBytes.Length);
+                if (written.ToInt64() != libBytes.Length)
+                    throw new DllNotFoundException($"memfd write incomplete: {written}/{libBytes.Length}");
+
+                var procPath = $"/proc/self/fd/{memfd}";
+                dlerror();
+                var handle = dlopen(procPath, RTLD_LAZY | RTLD_GLOBAL);
+                if (handle == IntPtr.Zero)
+                {
+                    var errPtr = dlerror();
+                    var errMsg = errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "unknown";
+                    throw new DllNotFoundException($"Failed to dlopen via memfd ({procPath}): {errMsg}");
+                }
+
+                _cachedWrapperHandle = handle;
+                return handle;
+            }
+            finally
+            {
+                close(memfd);
+            }
         }
     }
 
