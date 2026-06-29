@@ -664,8 +664,9 @@ struct ZrcSdkInstance
     void RaiseZRCSDeviceListEvent(ControlSystemUpdateDeviceType type, const ControlSystemDeviceList& list);
     void RaiseZRCSSceneListEvent(const std::vector<ControlSystemSceneInfo>& scenes);
 
+    // eventType: 0=join, 1=initialize (full replace), 2=leave, 3=update
     void RaiseParticipantListEvent(const std::vector<MeetingParticipant>& participants,
-                                   int total, bool needCleanUp, ConfSessionType session);
+                                   int total, int eventType, ConfSessionType session);
     void RaiseContactListEvent(const std::vector<Contact>& contacts);
     void RaiseMeetingListEvent(int result, const std::vector<MeetingItem>& meetings);
 };
@@ -755,14 +756,14 @@ static void FlattenParticipant(const MeetingParticipant& src, ZrcParticipant& ds
 }
 
 void ZrcSdkInstance::RaiseParticipantListEvent(const std::vector<MeetingParticipant>& participants,
-                                               int total, bool needCleanUp, ConfSessionType session)
+                                               int total, int eventType, ConfSessionType session)
 {
     if (!participantListCallback) return;
     std::vector<ZrcParticipant> flat(participants.size());
     for (size_t i = 0; i < participants.size(); ++i)
         FlattenParticipant(participants[i], flat[i]);
     participantListCallback(flat.empty() ? nullptr : flat.data(),
-                            (int)flat.size(), needCleanUp ? 1 : 0,
+                            (int)flat.size(), eventType,
                             (int)session, participantListUserData);
 }
 
@@ -991,7 +992,7 @@ void ZrcParticipantHelperSink::OnInitMeetingParticipants(const std::vector<Meeti
         owner->participantCount = totalParticipantsCount;
         owner->RaiseParticipantCountEvent(totalParticipantsCount);
     }
-    owner->RaiseParticipantListEvent(participants, totalParticipantsCount, needCleanUpUserList, session);
+    owner->RaiseParticipantListEvent(participants, totalParticipantsCount, needCleanUpUserList ? 1 : 0, session);
 }
 
 void ZrcParticipantHelperSink::OnUserJoin(const std::vector<MeetingParticipant>& participants, ConfSessionType session)
@@ -1002,7 +1003,7 @@ void ZrcParticipantHelperSink::OnUserJoin(const std::vector<MeetingParticipant>&
         owner->participantCount += (int)participants.size();
         owner->RaiseParticipantCountEvent(owner->participantCount);
     }
-    owner->RaiseParticipantListEvent(participants, owner->participantCount, false, session);
+    owner->RaiseParticipantListEvent(participants, owner->participantCount, 0, session); // eventType 0 = join
 }
 
 void ZrcParticipantHelperSink::OnUserLeave(const std::vector<MeetingParticipant>& participants, ConfSessionType session)
@@ -1014,12 +1015,12 @@ void ZrcParticipantHelperSink::OnUserLeave(const std::vector<MeetingParticipant>
         if (owner->participantCount < 0) owner->participantCount = 0;
         owner->RaiseParticipantCountEvent(owner->participantCount);
     }
-    owner->RaiseParticipantListEvent(participants, owner->participantCount, false, session);
+    owner->RaiseParticipantListEvent(participants, owner->participantCount, 2, session); // eventType 2 = leave
 }
 
 void ZrcParticipantHelperSink::OnUserUpdate(const std::vector<MeetingParticipant>& participants, ConfSessionType session)
 {
-    if (owner) owner->RaiseParticipantListEvent(participants, owner->participantCount, false, session);
+    if (owner) owner->RaiseParticipantListEvent(participants, owner->participantCount, 3, session); // eventType 3 = update
 }
 
 void ZrcParticipantHelperSink::OnHostChangedNotification(int32_t /*hostUserID*/, bool amIHost, ConfSessionType session)

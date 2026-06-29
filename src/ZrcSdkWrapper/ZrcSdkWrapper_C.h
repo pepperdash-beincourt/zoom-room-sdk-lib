@@ -100,12 +100,12 @@ typedef struct ZrcParticipant {
 
 // Callback type for participant list updates.
 // participants: array of count ZrcParticipant values (caller-owned, valid only during callback)
-// needCleanUp:  1 = caller should clear its local list before applying updates
+// eventType:    0 = join, 1 = initialize (full replace), 2 = leave, 3 = update
 // sessionType:  ConfSessionType enum value
 typedef void (ZRCSDKWRAPPER_CALL *ZrcParticipantListCallback)(
     const ZrcParticipant* participants,
     int count,
-    int needCleanUp,
+    int eventType,
     int sessionType,
     void* userData);
 

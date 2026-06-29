@@ -133,12 +133,10 @@ public partial class ZrcSdk
     public event EventHandler<ParticipantListEventArgs>? UserJoined;
 
     /// <summary>Fired when one or more participants leave the meeting.</summary>
-#pragma warning disable CS0067 // raised by consumers; the SDK raises all three via the unified participant-list callback
     public event EventHandler<ParticipantListEventArgs>? UserLeft;
 
     /// <summary>Fired when participant properties (audio, video, hand, etc.) change.</summary>
     public event EventHandler<ParticipantListEventArgs>? UserUpdated;
-#pragma warning restore CS0067
 
     // ── Initializer ────────────────────────────────────────────────────────────
 
@@ -173,21 +171,33 @@ public partial class ZrcSdk
         HostChanged?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = amIHost });
 
     private void OnParticipantListCallback(IntPtr participantsPtr, int count,
-                                           int needCleanUp, int sessionType, IntPtr userData)
+                                           int eventType, int sessionType, IntPtr userData)
     {
+        // eventType: 0=join, 1=initialize (full replace), 2=leave, 3=update
         var participants = MarshalParticipants(participantsPtr, count);
         var args = new ParticipantListEventArgs
         {
             Participants = participants,
             TotalCount   = count,
-            NeedCleanUp  = needCleanUp != 0,
+            NeedCleanUp  = eventType == 1,
             Session      = (ConfSessionType)sessionType,
         };
 
-        if (needCleanUp != 0)
-            ParticipantsInitialized?.Invoke(this, args);
-        else if (count > 0 && participants.Length > 0)
-            UserJoined?.Invoke(this, args); // may also be leave/update — routed by needCleanUp pattern
+        switch (eventType)
+        {
+            case 1:
+                ParticipantsInitialized?.Invoke(this, args);
+                break;
+            case 2:
+                UserLeft?.Invoke(this, args);
+                break;
+            case 3:
+                UserUpdated?.Invoke(this, args);
+                break;
+            default: // 0 = join
+                UserJoined?.Invoke(this, args);
+                break;
+        }
     }
 
     private static ParticipantInfo[] MarshalParticipants(IntPtr ptr, int count)
