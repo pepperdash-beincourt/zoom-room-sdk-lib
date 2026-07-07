@@ -2702,6 +2702,22 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableMeetingQA(ZrcSdkHandle han
     return -2; // not exposed directly
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetMeetingStatus(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    MeetingStatus status;
+    ZRCSDKError err = pMS->GetMeetingStatus(status);
+    if (err != ZRCSDKERR_SUCCESS)
+    {
+        inst->RaiseErrorEvent("Failed to get meeting status", (int)err);
+        return -1;
+    }
+    return (int)status;
+}
+
 // ─── Phone / SIP ─────────────────────────────────────────────────────────────
 
 // Look up a cached SIPCallInfo by callID. If callID is null/empty and exactly one call is active,

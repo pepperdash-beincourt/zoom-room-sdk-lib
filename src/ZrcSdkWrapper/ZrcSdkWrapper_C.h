@@ -537,6 +537,13 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ListMeeting(ZrcSdkHandle handle)
 // ── Meeting Control extensions ────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LockMeeting(ZrcSdkHandle handle, int lock);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableMeetingQA(ZrcSdkHandle handle, int enable);
+// Synchronously queries the current meeting status (does not require a status change to have
+// occurred). Returns the MeetingStatus enum value (0=NotInMeeting,1=Connecting,2=InMeeting,
+// 3=LoggedOut) cast to int, or -1 on error (e.g. meeting service not available, or the query
+// itself failed). Use this once connected to pick up a meeting that was already in progress
+// before the SDK callbacks were registered, since ZrcSdk_SetMeetingStatusCallback only fires on
+// a subsequent *change*.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetMeetingStatus(ZrcSdkHandle handle);
 
 // ── Control System (ZRCS) ─────────────────────────────────────────────────────
 // Returns 1 if enabled, 0 if disabled, <0 on error

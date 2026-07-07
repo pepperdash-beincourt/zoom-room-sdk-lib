@@ -30,6 +30,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_EnableMeetingQA(IntPtr handle, int enable);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetMeetingStatus(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingLockStatusCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
 
     /// <summary>Meeting lock status changed. <see cref="SdkEventArgs.ErrorCode"/> is 1 if locked.</summary>
@@ -167,6 +169,20 @@ public partial class ZrcSdk
 
     /// <summary>Locks or unlocks the meeting. Host only.</summary>
     public bool LockMeeting(bool lockMeeting) { ThrowIfDisposed(); return ZrcSdk_LockMeeting(_handle, lockMeeting ? 1 : 0) == 0; }
+
+    /// <summary>
+    /// Synchronously queries the current meeting status. Unlike the <see cref="MeetingStatus"/> event,
+    /// this does not require a status change to have occurred - call it once connected to pick up a
+    /// meeting that was already in progress before the SDK callbacks were registered (the event only
+    /// fires on a subsequent change).
+    /// </summary>
+    /// <returns>The current meeting status, or null if the query failed (e.g. meeting service not available).</returns>
+    public MeetingStatus? GetMeetingStatus()
+    {
+        ThrowIfDisposed();
+        var result = ZrcSdk_GetMeetingStatus(_handle);
+        return result >= 0 ? (MeetingStatus)result : (MeetingStatus?)null;
+    }
 
     /// <summary>Cancels waiting for the host and aborts joining.</summary>
     public bool CancelWaitingForHost()
