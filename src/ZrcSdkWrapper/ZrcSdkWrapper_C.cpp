@@ -667,7 +667,7 @@ struct ZrcSdkInstance
     // eventType: 0=join, 1=initialize (full replace), 2=leave, 3=update
     void RaiseParticipantListEvent(const std::vector<MeetingParticipant>& participants,
                                    int total, int eventType, ConfSessionType session);
-    void RaiseContactListEvent(const std::vector<Contact>& contacts);
+    void RaiseContactListEvent(const std::vector<Contact>& contacts, int sourceType);
     void RaiseMeetingListEvent(int result, const std::vector<MeetingItem>& meetings);
 };
 
@@ -782,24 +782,26 @@ static void FlattenContact(const Contact& src, ZrcContact& dst)
     dst.buddyType      = (int32_t)src.buddyType;
 }
 
-void ZrcSdkInstance::RaiseContactListEvent(const std::vector<Contact>& contacts)
+void ZrcSdkInstance::RaiseContactListEvent(const std::vector<Contact>& contacts, int sourceType)
 {
     if (!contactListCallback) return;
     std::vector<ZrcContact> flat(contacts.size());
     for (size_t i = 0; i < contacts.size(); ++i)
         FlattenContact(contacts[i], flat[i]);
     contactListCallback(flat.empty() ? nullptr : flat.data(),
-                        (int)flat.size(), contactListUserData);
+                        (int)flat.size(), sourceType, contactListUserData);
 }
 
 void ZrcContactHelperSink::OnImUpdateContactNotification(const std::vector<Contact>& contacts)
 {
-    if (owner) owner->RaiseContactListEvent(contacts);
+    // Ambient IM/presence delta — NOT a page-fetch response. sourceType = 0.
+    if (owner) owner->RaiseContactListEvent(contacts, 0);
 }
 
 void ZrcContactHelperSink::OnDynamicContactListNotification(const DynamicContactListInfo& info)
 {
-    if (owner) owner->RaiseContactListEvent(info.contacts);
+    // Actual paged directory response to ZrcSdk_SubscribeContacts. sourceType = 1.
+    if (owner) owner->RaiseContactListEvent(info.contacts, 1);
 }
 
 // Helper: flatten a C++ MeetingItem to the C ZrcMeetingItem struct.

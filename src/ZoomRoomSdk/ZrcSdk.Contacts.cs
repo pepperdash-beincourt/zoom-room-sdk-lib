@@ -25,6 +25,7 @@ public partial class ZrcSdk
     private delegate void ZrcContactListCallbackDelegate(
         IntPtr contactsPtr,
         int count,
+        int sourceType,
         IntPtr userData);
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -115,11 +116,14 @@ public partial class ZrcSdk
 
     // ── Callback handlers ──────────────────────────────────────────────────────
 
-    private void OnContactListCallback(IntPtr contactsPtr, int count, IntPtr userData)
+    private void OnContactListCallback(IntPtr contactsPtr, int count, int sourceType, IntPtr userData)
     {
         ContactListChanged?.Invoke(this, new ContactListEventArgs
         {
             Contacts = MarshalContacts(contactsPtr, count),
+            Source = sourceType == (int)ContactListSource.DynamicListPage
+                ? ContactListSource.DynamicListPage
+                : ContactListSource.AmbientUpdate,
         });
     }
 

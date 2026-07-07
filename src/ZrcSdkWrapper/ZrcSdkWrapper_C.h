@@ -125,10 +125,16 @@ typedef struct ZrcContact {
 } ZrcContact;
 
 // Callback type for contact list updates.
-// contacts: array of count ZrcContact values (caller-owned, valid only during callback)
+// contacts:   array of count ZrcContact values (caller-owned, valid only during callback)
+// sourceType: 0 = ambient IM/presence update (native OnImUpdateContactNotification) — a contact's
+//                 status changed on its own, NOT a response to ZrcSdk_SubscribeContacts.
+//             1 = dynamic contact list notification (native OnDynamicContactListNotification) —
+//                 the actual paged response to ZrcSdk_SubscribeContacts. Only batches with this
+//                 sourceType should be used to drive phonebook paging/completion logic.
 typedef void (ZRCSDKWRAPPER_CALL *ZrcContactListCallback)(
     const ZrcContact* contacts,
     int count,
+    int sourceType,
     void* userData);
 
 // ── Incoming meeting-invite flat struct ────────────────────────────────────────
