@@ -210,6 +210,20 @@ typedef struct ZrcVideoPageStatus {
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcVideoPageStatusCallback)(const ZrcVideoPageStatus* status, void* userData);
 
+// ── Video thumb (self-view PiP) info flat struct ───────────────────────────────────────
+typedef struct ZrcVideoThumbInfo {
+    int32_t isSupported;               // 1 = self-view thumb is supported in the current context
+    int32_t position;                  // VideoThumbPosition enum
+    int32_t size;                      // VideoThumbSize enum
+    int32_t isInFirstPage;             // nested VideoPageStatus fields
+    int32_t isInLastPage;
+    int32_t pageVideoType;
+    int32_t videoCountInCurrentPage;
+    int32_t isThumbnailOnTop;
+} ZrcVideoThumbInfo;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcVideoThumbInfoCallback)(const ZrcVideoThumbInfo* info, void* userData);
+
 // ── Screen layout status flat structs ─────────────────────────────────────────
 #define ZRC_MAX_SCREEN_LAYOUT_SCREENS 4
 #define ZRC_MAX_SCREEN_LAYOUT_CTRLS   16
@@ -606,6 +620,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSharingStatusCallback(ZrcSdk
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAirPlayStatusCallback(ZrcSdkHandle handle, ZrcAirPlayStatusCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoPageStatusCallback(ZrcSdkHandle handle, ZrcVideoPageStatusCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayoutStatusCallback(ZrcSdkHandle handle, ZrcScreenLayoutStatusCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoThumbInfoCallback(ZrcSdkHandle handle, ZrcVideoThumbInfoCallback callback, void* userData);
 // Breakout Room
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=BO_STATUS
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBORoomListCallback(ZrcSdkHandle handle, ZrcBORoomListCallback callback, void* userData);

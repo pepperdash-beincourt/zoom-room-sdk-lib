@@ -275,7 +275,7 @@ public:
     ZrcSdkInstance* owner;
     explicit ZrcMeetingViewLayoutHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
     void OnUpdateWallviewStyleNotification(const WallViewStyleStatus& status) override {}
-    void OnUpdateVideoThumbInfo(const VideoThumbInfo& info) override {}
+    void OnUpdateVideoThumbInfo(const VideoThumbInfo& info) override;
     void OnUpdateVideoPageStatusNotification(const VideoPageStatus& status) override;
     void OnUpdateIsNonVideoParticipantsShowedNotification(bool show) override {}
     void OnUpdateShowUpTo49PerPageInGallery(bool show) override {}
@@ -524,6 +524,7 @@ struct ZrcSdkInstance
     // Layout
     ZrcVideoPageStatusCallback videoPageStatusCallback; void* videoPageStatusUserData;
     ZrcScreenLayoutStatusCallback screenLayoutStatusCallback; void* screenLayoutStatusUserData;
+    ZrcVideoThumbInfoCallback videoThumbInfoCallback; void* videoThumbInfoUserData;
     // Share
     ZrcSharingStatusCallback sharingStatusCallback; void* sharingStatusUserData;
     ZrcAirPlayStatusCallback airPlayStatusCallback; void* airPlayStatusUserData;
@@ -599,6 +600,7 @@ struct ZrcSdkInstance
         , feacDeclinedCallback(nullptr), feacDeclinedUserData(nullptr)
         , allowAttendeesVideoCallback(nullptr), allowAttendeesVideoUserData(nullptr)
         , videoPageStatusCallback(nullptr), videoPageStatusUserData(nullptr)
+        , videoThumbInfoCallback(nullptr), videoThumbInfoUserData(nullptr)
         , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
         , airPlayStatusCallback(nullptr), airPlayStatusUserData(nullptr)
         , boStatusChangedCallback(nullptr), boStatusChangedUserData(nullptr)
@@ -648,6 +650,7 @@ struct ZrcSdkInstance
     void RaiseAirPlayStatusEvent(const ZrcAirPlayStatus* s) { if (airPlayStatusCallback) airPlayStatusCallback(s, airPlayStatusUserData); }
     void RaiseVideoPageStatusEvent(const ZrcVideoPageStatus* s) { if (videoPageStatusCallback) videoPageStatusCallback(s, videoPageStatusUserData); }
     void RaiseScreenLayoutStatusEvent(const ZrcScreenLayoutStatus* s) { if (screenLayoutStatusCallback) screenLayoutStatusCallback(s, screenLayoutStatusUserData); }
+    void RaiseVideoThumbInfoEvent(const ZrcVideoThumbInfo* s) { if (videoThumbInfoCallback) videoThumbInfoCallback(s, videoThumbInfoUserData); }
     void RaiseBOStatusChangedEvent(int status)              { Raise(boStatusChangedCallback, boStatusChangedUserData, "", status); }
     void RaiseInSilentModeEvent(int inSilent)               { Raise(inSilentModeCallback, inSilentModeUserData, "", inSilent); }
     void RaiseReactionStatusEvent(int feedback)             { Raise(reactionStatusCallback, reactionStatusUserData, "", feedback); }
@@ -1159,6 +1162,21 @@ void ZrcMeetingViewLayoutHelperSink::OnUpdateVideoPageStatusNotification(const V
     s.pageVideoType           = (int32_t)status.pageVideoType;
     s.videoCountInCurrentPage = status.videoCountInCurrentPage;
     owner->RaiseVideoPageStatusEvent(&s);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnUpdateVideoThumbInfo(const VideoThumbInfo& info)
+{
+    if (!owner) return;
+    ZrcVideoThumbInfo s;
+    s.isSupported             = info.isSupported ? 1 : 0;
+    s.position                = (int32_t)info.position;
+    s.size                    = (int32_t)info.size;
+    s.isInFirstPage           = info.videoPageStatus.isInFirstPage ? 1 : 0;
+    s.isInLastPage            = info.videoPageStatus.isInLastPage ? 1 : 0;
+    s.pageVideoType           = (int32_t)info.videoPageStatus.pageVideoType;
+    s.videoCountInCurrentPage = info.videoPageStatus.videoCountInCurrentPage;
+    s.isThumbnailOnTop        = info.isThumbnailOnTop ? 1 : 0;
+    owner->RaiseVideoThumbInfoEvent(&s);
 }
 
 void ZrcMeetingViewLayoutHelperSink::OnUpdateScreenLayoutStatus(const ScreenLayoutStatus& status)
@@ -3089,6 +3107,13 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayoutStatusCallback(Z
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
     inst->screenLayoutStatusCallback = callback;
     inst->screenLayoutStatusUserData = userData;
+}
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoThumbInfoCallback(ZrcSdkHandle handle, ZrcVideoThumbInfoCallback callback, void* userData)
+{
+    if (!handle) return;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    inst->videoThumbInfoCallback = callback;
+    inst->videoThumbInfoUserData = userData;
 }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(boStatusChanged, callback, userData); }
