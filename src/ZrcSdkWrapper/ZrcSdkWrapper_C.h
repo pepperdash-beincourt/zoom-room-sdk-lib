@@ -148,6 +148,10 @@ typedef struct ZrcMeetingInvite {
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingInviteCallback)(const ZrcMeetingInvite* invite, void* userData);
 
+// Fired when a pending invite is resolved (answered here, answered/expired/cancelled elsewhere).
+// accepted: 1 = accepted, 0 = declined/expired/cancelled.
+typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingInviteTreatedCallback)(const ZrcMeetingInvite* invite, int32_t accepted, void* userData);
+
 // ── Meeting (booking/schedule) flat struct ─────────────────────────────────────
 // Flattened representation of the SDK MeetingItem struct (calendar/schedule entry).
 // All strings are null-terminated; startTime/endTime are ISO-8601 (e.g. "2017-03-15T11:30:00-07:00").
@@ -588,6 +592,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetExitMeetingCallback(ZrcSdkHa
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingNeedsPasswordCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // message=callerName, errorCode=0
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, ZrcMeetingInviteCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteTreatedCallback(ZrcSdkHandle handle, ZrcMeetingInviteTreatedCallback callback, void* userData);
 // errorCode=1 if muted
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAudioStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // errorCode=1 if mute on entry enabled

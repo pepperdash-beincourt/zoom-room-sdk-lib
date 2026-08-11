@@ -17,11 +17,14 @@ public partial class ZrcSdk
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate void ZrcMeetingInviteCallbackDelegate(IntPtr invitePtr, IntPtr userData);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcMeetingInviteTreatedCallbackDelegate(IntPtr invitePtr, int accepted, IntPtr userData);
     private SdkEventCallbackDelegate? _meetingStatusCallbackDelegate;
     private SdkEventCallbackDelegate? _startPmiResultCallbackDelegate;
     private SdkEventCallbackDelegate? _exitMeetingCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingNeedsPasswordCallbackDelegate;
     private ZrcMeetingInviteCallbackDelegate? _meetingInviteCallbackDelegate;
+    private ZrcMeetingInviteTreatedCallbackDelegate? _meetingInviteTreatedCallbackDelegate;
     private SdkEventCallbackDelegate? _instantMeetingStartedCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingLockStatusCallbackDelegate;
 
@@ -33,6 +36,8 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_GetMeetingStatus(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingLockStatusCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetMeetingInviteTreatedCallback(IntPtr handle, ZrcMeetingInviteTreatedCallbackDelegate? cb, IntPtr userData);
 
     /// <summary>Meeting lock status changed. <see cref="SdkEventArgs.ErrorCode"/> is 1 if locked.</summary>
     public event EventHandler<SdkEventArgs>? MeetingLockStatus;
@@ -69,6 +74,13 @@ public partial class ZrcSdk
     public event EventHandler<MeetingInviteEventArgs>? MeetingInvite;
 
     /// <summary>
+    /// Fired when a pending invite is resolved -- answered here, answered elsewhere, declined, or
+    /// expired/cancelled by the caller. Use this to clear a ringing call that was never explicitly
+    /// answered or declined locally (the SDK doesn't otherwise notify of a silently-ignored invite).
+    /// </summary>
+    public event EventHandler<MeetingInviteTreatedEventArgs>? MeetingInviteTreated;
+
+    /// <summary>
     /// Fired when an instant meeting starts.
     /// <see cref="SdkEventArgs.Message"/> is the meeting number.
     /// </summary>
@@ -83,6 +95,7 @@ public partial class ZrcSdk
         _exitMeetingCallbackDelegate          = OnExitMeetingCallback;
         _meetingNeedsPasswordCallbackDelegate = OnMeetingNeedsPasswordCallback;
         _meetingInviteCallbackDelegate        = OnMeetingInviteCallback;
+        _meetingInviteTreatedCallbackDelegate = OnMeetingInviteTreatedCallback;
         _instantMeetingStartedCallbackDelegate = OnInstantMeetingStartedCallback;
 
         ZrcSdk_SetMeetingStatusCallback(_handle,         _meetingStatusCallbackDelegate,        IntPtr.Zero);
@@ -90,6 +103,7 @@ public partial class ZrcSdk
         ZrcSdk_SetExitMeetingCallback(_handle,           _exitMeetingCallbackDelegate,          IntPtr.Zero);
         ZrcSdk_SetMeetingNeedsPasswordCallback(_handle,  _meetingNeedsPasswordCallbackDelegate, IntPtr.Zero);
         ZrcSdk_SetMeetingInviteCallback(_handle,         _meetingInviteCallbackDelegate,        IntPtr.Zero);
+        ZrcSdk_SetMeetingInviteTreatedCallback(_handle,  _meetingInviteTreatedCallbackDelegate, IntPtr.Zero);
         ZrcSdk_SetInstantMeetingStartedCallback(_handle, _instantMeetingStartedCallbackDelegate, IntPtr.Zero);
     }
 
@@ -220,6 +234,20 @@ public partial class ZrcSdk
             CallerContactId = n.callerContactID ?? string.Empty,
             MeetingId       = n.meetingID ?? string.Empty,
             MeetingNumber   = n.meetingNumber ?? string.Empty,
+        });
+    }
+
+    private void OnMeetingInviteTreatedCallback(IntPtr invitePtr, int accepted, IntPtr userData)
+    {
+        if (invitePtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcMeetingInviteNative>(invitePtr);
+        MeetingInviteTreated?.Invoke(this, new MeetingInviteTreatedEventArgs
+        {
+            CallerName      = n.callerName ?? string.Empty,
+            CallerContactId = n.callerContactID ?? string.Empty,
+            MeetingId       = n.meetingID ?? string.Empty,
+            MeetingNumber   = n.meetingNumber ?? string.Empty,
+            Accepted        = accepted != 0,
         });
     }
 

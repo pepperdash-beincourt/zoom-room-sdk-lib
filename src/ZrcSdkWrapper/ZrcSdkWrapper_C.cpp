@@ -500,6 +500,7 @@ struct ZrcSdkInstance
     SdkEventCallback exitMeetingCallback;           void* exitMeetingUserData;
     SdkEventCallback meetingNeedsPasswordCallback;  void* meetingNeedsPasswordUserData;
     ZrcMeetingInviteCallback meetingInviteCallback; void* meetingInviteUserData;
+    ZrcMeetingInviteTreatedCallback meetingInviteTreatedCallback; void* meetingInviteTreatedUserData;
     SdkEventCallback audioStatusCallback;           void* audioStatusUserData;
     SdkEventCallback muteOnEntryCallback;           void* muteOnEntryUserData;
     SdkEventCallback participantCountCallback;      void* participantCountUserData;
@@ -582,6 +583,7 @@ struct ZrcSdkInstance
         , exitMeetingCallback(nullptr), exitMeetingUserData(nullptr)
         , meetingNeedsPasswordCallback(nullptr), meetingNeedsPasswordUserData(nullptr)
         , meetingInviteCallback(nullptr), meetingInviteUserData(nullptr)
+        , meetingInviteTreatedCallback(nullptr), meetingInviteTreatedUserData(nullptr)
         , audioStatusCallback(nullptr), audioStatusUserData(nullptr)
         , muteOnEntryCallback(nullptr), muteOnEntryUserData(nullptr)
         , participantCountCallback(nullptr), participantCountUserData(nullptr)
@@ -631,6 +633,7 @@ struct ZrcSdkInstance
     void RaiseExitMeetingEvent(int result, int reason)            { Raise(exitMeetingCallback, exitMeetingUserData, "", result | (reason << 8)); }
     void RaiseMeetingNeedsPasswordEvent(int wrongAndRetry)        { Raise(meetingNeedsPasswordCallback, meetingNeedsPasswordUserData, "", wrongAndRetry); }
     void RaiseMeetingInviteEvent(const MeetingInvitationInfo& invite);  // defined out-of-line (needs strncpy_safe)
+    void RaiseMeetingInviteTreatedEvent(const MeetingInvitationInfo& invite, bool accepted);  // defined out-of-line (needs strncpy_safe)
     void RaiseAudioStatusEvent(int isMuted)                       { Raise(audioStatusCallback, audioStatusUserData, "", isMuted); }
     void RaiseMuteOnEntryEvent(int enabled)                       { Raise(muteOnEntryCallback, muteOnEntryUserData, "", enabled); }
     void RaiseParticipantCountEvent(int count)                    { Raise(participantCountCallback, participantCountUserData, "", count); }
@@ -912,6 +915,18 @@ void ZrcSdkInstance::RaiseMeetingInviteEvent(const MeetingInvitationInfo& invite
     meetingInviteCallback(&flat, meetingInviteUserData);
 }
 
+void ZrcSdkInstance::RaiseMeetingInviteTreatedEvent(const MeetingInvitationInfo& invite, bool accepted)
+{
+    if (!meetingInviteTreatedCallback) return;
+    ZrcMeetingInvite flat;
+    memset(&flat, 0, sizeof(flat));
+    strncpy_safe(flat.callerName,      invite.callerName,      sizeof(flat.callerName));
+    strncpy_safe(flat.callerContactID, invite.callerContactID, sizeof(flat.callerContactID));
+    strncpy_safe(flat.meetingID,       invite.meetingID,       sizeof(flat.meetingID));
+    strncpy_safe(flat.meetingNumber,   std::to_string(invite.meetingNumber), sizeof(flat.meetingNumber));
+    meetingInviteTreatedCallback(&flat, accepted ? 1 : 0, meetingInviteTreatedUserData);
+}
+
 void ZrcMeetingServiceSink::OnReceiveMeetingInviteNotification(const MeetingInvitationInfo& invitation)
 {
     if (!owner) return;
@@ -927,12 +942,16 @@ void ZrcMeetingServiceSink::OnReceiveMeetingInviteNotification(const MeetingInvi
 void ZrcMeetingServiceSink::OnTreatedMeetingInviteNotification(const MeetingInvitationInfo& invitation, bool accepted)
 {
     if (!owner) return;
-    // The invite was answered (here or elsewhere) — clear the cache to avoid acting on a stale invite.
-    // Match the meeting number before clearing so a newer invite that arrived between this callback
-    // and acquiring the mutex is not discarded (mirrors the guard in ZrcSdk_AnswerMeetingInvite).
-    std::lock_guard<std::mutex> lk(owner->meetingInviteMutex);
-    if (owner->hasMeetingInvite && owner->lastMeetingInvite.meetingNumber == invitation.meetingNumber)
-        owner->hasMeetingInvite = false;
+    // The invite was answered (here or elsewhere), declined, or expired/cancelled — clear the cache
+    // to avoid acting on a stale invite. Match the meeting number before clearing so a newer invite
+    // that arrived between this callback and acquiring the mutex is not discarded (mirrors the guard
+    // in ZrcSdk_AnswerMeetingInvite).
+    {
+        std::lock_guard<std::mutex> lk(owner->meetingInviteMutex);
+        if (owner->hasMeetingInvite && owner->lastMeetingInvite.meetingNumber == invitation.meetingNumber)
+            owner->hasMeetingInvite = false;
+    }
+    owner->RaiseMeetingInviteTreatedEvent(invitation, accepted);
 }
 
 void ZrcMeetingServiceSink::OnStartMeetingWithHostKeyResult(int32_t result)
@@ -3025,6 +3044,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingNeedsPasswordCallback
     { SET_CB(meetingNeedsPassword, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, ZrcMeetingInviteCallback callback, void* userData)
     { SET_CB(meetingInvite, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteTreatedCallback(ZrcSdkHandle handle, ZrcMeetingInviteTreatedCallback callback, void* userData)
+    { SET_CB(meetingInviteTreated, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAudioStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(audioStatus, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMuteOnEntryCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
