@@ -1924,6 +1924,19 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoState(ZrcSdkHandle handl
     return 0;
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMyVideoHidden(ZrcSdkHandle handle, int hidden)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingVideoHelper* pVideo = pMS->GetMeetingVideoHelper();
+    if (!pVideo) { inst->RaiseErrorEvent("Video Helper not available", -1); return -1; }
+    ZRCSDKError err = pVideo->SetMyVideoHidden(hidden != 0);
+    if (err != ZRCSDKERR_SUCCESS) { inst->RaiseErrorEvent("SetMyVideoHidden failed", (int)err); return (int)err; }
+    return 0;
+}
+
 // ─── Audio Extensions ─────────────────────────────────────────────────────────
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteUserAudio(ZrcSdkHandle handle, int32_t userID, int mute)
