@@ -274,20 +274,20 @@ class ZrcMeetingViewLayoutHelperSink : public IMeetingViewLayoutHelperSink
 public:
     ZrcSdkInstance* owner;
     explicit ZrcMeetingViewLayoutHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
-    void OnUpdateWallviewStyleNotification(const WallViewStyleStatus& status) override {}
+    void OnUpdateWallviewStyleNotification(const WallViewStyleStatus& status) override;
     void OnUpdateVideoThumbInfo(const VideoThumbInfo& info) override;
     void OnUpdateVideoPageStatusNotification(const VideoPageStatus& status) override;
-    void OnUpdateIsNonVideoParticipantsShowedNotification(bool show) override {}
-    void OnUpdateShowUpTo49PerPageInGallery(bool show) override {}
-    void OnAutoSwitchSpeakerNotification(bool a, bool b) override {}
-    void OnVideoOrderNotification(const VideoOrderInfo& info) override {}
+    void OnUpdateIsNonVideoParticipantsShowedNotification(bool show) override;
+    void OnUpdateShowUpTo49PerPageInGallery(bool show) override;
+    void OnAutoSwitchSpeakerNotification(bool a, bool b) override;
+    void OnVideoOrderNotification(const VideoOrderInfo& info) override;
     void OnDynamicLayoutOptionNotification(DynamicLayoutType type) override;
-    void OnConfidenceMonitorNotification(const ConfidenceMonitorInfo& info) override {}
-    void OnChangeAttendeeViewNotification(AttendeeViewLayoutType type) override {}
-    void OnAttendeeViewLayoutEnableShareContentOnlyNotification(bool a, bool b) override {}
-    void OnUpdateGalleryGridSelectionNotification(bool a, uint32_t b, uint32_t c) override {}
+    void OnConfidenceMonitorNotification(const ConfidenceMonitorInfo& info) override;
+    void OnChangeAttendeeViewNotification(AttendeeViewLayoutType type) override;
+    void OnAttendeeViewLayoutEnableShareContentOnlyNotification(bool a, bool b) override;
+    void OnUpdateGalleryGridSelectionNotification(bool a, uint32_t b, uint32_t c) override;
     void OnUpdateScreenLayoutStatus(const ScreenLayoutStatus& status) override;
-    void OnThumbnailsPositionNotification(ThumbnailsPositionType type) override {}
+    void OnThumbnailsPositionNotification(ThumbnailsPositionType type) override;
 };
 
 // ─── IMeetingControlHelperSink ────────────────────────────────────────────────
@@ -527,6 +527,7 @@ struct ZrcSdkInstance
     ZrcScreenLayoutStatusCallback screenLayoutStatusCallback; void* screenLayoutStatusUserData;
     ZrcVideoThumbInfoCallback videoThumbInfoCallback; void* videoThumbInfoUserData;
     SdkEventCallback dynamicLayoutOptionCallback; void* dynamicLayoutOptionUserData;
+    SdkEventCallback layoutDiagnosticCallback; void* layoutDiagnosticUserData;
     // Share
     ZrcSharingStatusCallback sharingStatusCallback; void* sharingStatusUserData;
     ZrcAirPlayStatusCallback airPlayStatusCallback; void* airPlayStatusUserData;
@@ -605,6 +606,7 @@ struct ZrcSdkInstance
         , videoPageStatusCallback(nullptr), videoPageStatusUserData(nullptr)
         , videoThumbInfoCallback(nullptr), videoThumbInfoUserData(nullptr)
         , dynamicLayoutOptionCallback(nullptr), dynamicLayoutOptionUserData(nullptr)
+        , layoutDiagnosticCallback(nullptr), layoutDiagnosticUserData(nullptr)
         , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
         , airPlayStatusCallback(nullptr), airPlayStatusUserData(nullptr)
         , boStatusChangedCallback(nullptr), boStatusChangedUserData(nullptr)
@@ -657,6 +659,8 @@ struct ZrcSdkInstance
     void RaiseScreenLayoutStatusEvent(const ZrcScreenLayoutStatus* s) { if (screenLayoutStatusCallback) screenLayoutStatusCallback(s, screenLayoutStatusUserData); }
     void RaiseVideoThumbInfoEvent(const ZrcVideoThumbInfo* s) { if (videoThumbInfoCallback) videoThumbInfoCallback(s, videoThumbInfoUserData); }
     void RaiseDynamicLayoutOptionEvent(int layout) { Raise(dynamicLayoutOptionCallback, dynamicLayoutOptionUserData, "", layout); }
+    // Layout tracer: forwards a human-readable message from any layout-helper sink callback (errorCode is an optional numeric hint).
+    void RaiseLayoutDiagnosticEvent(const std::string& msg, int val) { Raise(layoutDiagnosticCallback, layoutDiagnosticUserData, msg.c_str(), val); }
     void RaiseBOStatusChangedEvent(int status)              { Raise(boStatusChangedCallback, boStatusChangedUserData, "", status); }
     void RaiseInSilentModeEvent(int inSilent)               { Raise(inSilentModeCallback, inSilentModeUserData, "", inSilent); }
     void RaiseReactionStatusEvent(int feedback)             { Raise(reactionStatusCallback, reactionStatusUserData, "", feedback); }
@@ -1243,6 +1247,68 @@ void ZrcMeetingViewLayoutHelperSink::OnUpdateScreenLayoutStatus(const ScreenLayo
 void ZrcMeetingViewLayoutHelperSink::OnDynamicLayoutOptionNotification(DynamicLayoutType type)
 {
     if (owner) owner->RaiseDynamicLayoutOptionEvent((int)type);
+}
+
+// ── Layout tracer: surface every layout-helper notification (find what distinguishes Multi-Speaker) ──
+void ZrcMeetingViewLayoutHelperSink::OnUpdateWallviewStyleNotification(const WallViewStyleStatus& s)
+{
+    if (!owner) return;
+    const auto& v = s.videoLayoutStatus;
+    std::string m = "Wallview: isInDynamic=" + std::to_string(v.isInDynamicLayout)
+        + " isInGallery=" + std::to_string(v.isInGalleryView)
+        + " isInThumbnail=" + std::to_string(v.isInThumbnail)
+        + " isInImmersive=" + std::to_string(v.isInImmersive)
+        + " isInContentOnly=" + std::to_string(v.isInContentOnly)
+        + " canSwitchSpeaker=" + std::to_string(v.canSwitchSpeakerView)
+        + " canSwitchDynamic=" + std::to_string(v.canSwitchDynamicLayout)
+        + " canSwitchGallery=" + std::to_string(v.canSwitchGalleryView)
+        + " thumbOnTop=" + std::to_string(s.videoThumbInfo.isThumbnailOnTop);
+    owner->RaiseLayoutDiagnosticEvent(m, 0);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnUpdateIsNonVideoParticipantsShowedNotification(bool show)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("IsNonVideoParticipantsShowed=" + std::to_string(show ? 1 : 0), show ? 1 : 0);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnUpdateShowUpTo49PerPageInGallery(bool show)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("ShowUpTo49PerPageInGallery=" + std::to_string(show ? 1 : 0), show ? 1 : 0);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnAutoSwitchSpeakerNotification(bool support, bool enable)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("AutoSwitchSpeaker: support=" + std::to_string(support ? 1 : 0) + " enable=" + std::to_string(enable ? 1 : 0), enable ? 1 : 0);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnVideoOrderNotification(const VideoOrderInfo& info)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("VideoOrder: type=" + std::to_string((int)info.type) + " hasSaved=" + std::to_string(info.hasSavedOrder) + " followHost=" + std::to_string(info.isFollowHostOrder), (int)info.type);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnConfidenceMonitorNotification(const ConfidenceMonitorInfo& info)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("ConfidenceMonitor: layout=" + std::to_string((int)info.layout) + " shareAvail=" + std::to_string(info.isSharedContentAvailable), (int)info.layout);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnChangeAttendeeViewNotification(AttendeeViewLayoutType type)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("ChangeAttendeeView: type=" + std::to_string((int)type), (int)type);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnAttendeeViewLayoutEnableShareContentOnlyNotification(bool a, bool b)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("AttendeeViewEnableShareContentOnly: a=" + std::to_string(a ? 1 : 0) + " b=" + std::to_string(b ? 1 : 0), b ? 1 : 0);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnUpdateGalleryGridSelectionNotification(bool a, uint32_t row, uint32_t col)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("GalleryGridSelection: enabled=" + std::to_string(a ? 1 : 0) + " row=" + std::to_string(row) + " col=" + std::to_string(col), 0);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnThumbnailsPositionNotification(ThumbnailsPositionType type)
+{
+    if (owner) owner->RaiseLayoutDiagnosticEvent("ThumbnailsPosition: type=" + std::to_string((int)type), (int)type);
 }
 
 void ZrcMeetingControlHelperSink::OnUpdateMeetingLockStatus(bool locked)
@@ -3171,6 +3237,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoThumbInfoCallback(ZrcSd
 }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetDynamicLayoutOptionCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(dynamicLayoutOption, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetLayoutDiagnosticCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
+    { SET_CB(layoutDiagnostic, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(boStatusChanged, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBORoomListCallback(ZrcSdkHandle handle, ZrcBORoomListCallback callback, void* userData)

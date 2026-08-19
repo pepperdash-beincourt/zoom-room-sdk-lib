@@ -30,6 +30,8 @@ public partial class ZrcSdk
     private static extern void ZrcSdk_SetVideoThumbInfoCallback(IntPtr handle, ZrcVideoThumbInfoCallbackDelegate? cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetDynamicLayoutOptionCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetLayoutDiagnosticCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
 
     // ── Video Page Status ─────────────────────────────────────────────────────
 
@@ -63,6 +65,9 @@ public partial class ZrcSdk
 
         _dynamicLayoutOptionCallbackDelegate = OnDynamicLayoutOptionCallback;
         ZrcSdk_SetDynamicLayoutOptionCallback(_handle, _dynamicLayoutOptionCallbackDelegate, IntPtr.Zero);
+
+        _layoutDiagnosticCallbackDelegate = OnLayoutDiagnosticCallback;
+        ZrcSdk_SetLayoutDiagnosticCallback(_handle, _layoutDiagnosticCallbackDelegate, IntPtr.Zero);
     }
 
     private void OnVideoPageStatusCallback(IntPtr statusPtr, IntPtr userData)
@@ -130,6 +135,14 @@ public partial class ZrcSdk
 
     private void OnDynamicLayoutOptionCallback(string message, int layout, IntPtr userData) =>
         DynamicLayoutOptionChanged?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = layout });
+
+    private SdkEventCallbackDelegate? _layoutDiagnosticCallbackDelegate;
+
+    /// <summary>Diagnostic trace of any layout-helper notification the SDK delivers (Message = description, ErrorCode = numeric hint). For investigating layout behavior.</summary>
+    public event EventHandler<SdkEventArgs>? LayoutDiagnostic;
+
+    private void OnLayoutDiagnosticCallback(string message, int val, IntPtr userData) =>
+        LayoutDiagnostic?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = val });
 
     private void OnScreenLayoutStatusCallback(IntPtr statusPtr, IntPtr userData)
     {
