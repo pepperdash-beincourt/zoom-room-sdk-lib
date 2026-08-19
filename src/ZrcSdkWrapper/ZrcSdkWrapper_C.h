@@ -446,6 +446,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetSpeakerVolume(ZrcSdkHandle ha
 // ── Layout extensions ─────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayout(ZrcSdkHandle handle, int32_t screen, int32_t layoutSourceType);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handle, int32_t videoOrderType);
+// layout: DynamicLayoutType (SpeakersOnBottom=0/Middle=1/Top=2). Distinguishes Dynamic Gallery vs Multi-Speaker within Dynamic View.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetDynamicLayoutOption(ZrcSdkHandle handle, int32_t layout);
 // style: VideoLayoutStyle enum (Gallery=1, Speaker=2, Thumbnail=3, ContentOnly=4, DynamicLayout=6)
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UpdateVideoLayoutStyle(ZrcSdkHandle handle, int32_t style);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetFollowingHostOrder(ZrcSdkHandle handle, int follow);
@@ -626,6 +628,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetAirPlayStatusCallback(ZrcSdk
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoPageStatusCallback(ZrcSdkHandle handle, ZrcVideoPageStatusCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetScreenLayoutStatusCallback(ZrcSdkHandle handle, ZrcScreenLayoutStatusCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoThumbInfoCallback(ZrcSdkHandle handle, ZrcVideoThumbInfoCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetDynamicLayoutOptionCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData); // errorCode=DynamicLayoutType
 // Breakout Room
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);  // errorCode=BO_STATUS
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBORoomListCallback(ZrcSdkHandle handle, ZrcBORoomListCallback callback, void* userData);

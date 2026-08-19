@@ -9,6 +9,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetVideoOrder(IntPtr handle, int videoOrderType);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SetDynamicLayoutOption(IntPtr handle, int layout);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_UpdateVideoLayoutStyle(IntPtr handle, int style);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetFollowingHostOrder(IntPtr handle, int follow);
@@ -26,6 +28,8 @@ public partial class ZrcSdk
     private static extern void ZrcSdk_SetScreenLayoutStatusCallback(IntPtr handle, ZrcScreenLayoutStatusCallbackDelegate? cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetVideoThumbInfoCallback(IntPtr handle, ZrcVideoThumbInfoCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetDynamicLayoutOptionCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
 
     // ── Video Page Status ─────────────────────────────────────────────────────
 
@@ -56,6 +60,9 @@ public partial class ZrcSdk
 
         _videoThumbInfoCallbackDelegate = OnVideoThumbInfoCallback;
         ZrcSdk_SetVideoThumbInfoCallback(_handle, _videoThumbInfoCallbackDelegate, IntPtr.Zero);
+
+        _dynamicLayoutOptionCallbackDelegate = OnDynamicLayoutOptionCallback;
+        ZrcSdk_SetDynamicLayoutOptionCallback(_handle, _dynamicLayoutOptionCallbackDelegate, IntPtr.Zero);
     }
 
     private void OnVideoPageStatusCallback(IntPtr statusPtr, IntPtr userData)
@@ -114,6 +121,15 @@ public partial class ZrcSdk
 
     /// <summary>Screen layout status changed. See <see cref="ScreenLayoutStatusEventArgs"/>.</summary>
     public event EventHandler<ScreenLayoutStatusEventArgs>? ScreenLayoutStatusChanged;
+
+    private SdkEventCallbackDelegate? _dynamicLayoutOptionCallbackDelegate;
+
+    /// <summary>Dynamic-layout sub-option changed (ErrorCode = DynamicLayoutType: SpeakersOnBottom=0/Middle=1/Top=2).
+    /// On single-screen rooms this distinguishes Dynamic Gallery from Multi-Speaker.</summary>
+    public event EventHandler<SdkEventArgs>? DynamicLayoutOptionChanged;
+
+    private void OnDynamicLayoutOptionCallback(string message, int layout, IntPtr userData) =>
+        DynamicLayoutOptionChanged?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = layout });
 
     private void OnScreenLayoutStatusCallback(IntPtr statusPtr, IntPtr userData)
     {
@@ -234,6 +250,18 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_SetVideoOrder(_handle, videoOrderType);
+    }
+
+    /// <summary>
+    /// Sets the dynamic-layout sub-option within Dynamic View. On single-screen Zoom Rooms this is what
+    /// distinguishes "Dynamic Gallery" from "Multi-Speaker" (the controller has no separate
+    /// ScreenLayoutSourceType for Multi-Speaker).
+    /// </summary>
+    /// <param name="layout">DynamicLayoutType enum value (SpeakersOnBottom=0, SpeakersOnMiddle=1, SpeakersOnTop=2).</param>
+    public int SetDynamicLayoutOption(int layout)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_SetDynamicLayoutOption(_handle, layout);
     }
 
     /// <summary>

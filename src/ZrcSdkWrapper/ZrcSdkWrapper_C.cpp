@@ -281,7 +281,7 @@ public:
     void OnUpdateShowUpTo49PerPageInGallery(bool show) override {}
     void OnAutoSwitchSpeakerNotification(bool a, bool b) override {}
     void OnVideoOrderNotification(const VideoOrderInfo& info) override {}
-    void OnDynamicLayoutOptionNotification(DynamicLayoutType type) override {}
+    void OnDynamicLayoutOptionNotification(DynamicLayoutType type) override;
     void OnConfidenceMonitorNotification(const ConfidenceMonitorInfo& info) override {}
     void OnChangeAttendeeViewNotification(AttendeeViewLayoutType type) override {}
     void OnAttendeeViewLayoutEnableShareContentOnlyNotification(bool a, bool b) override {}
@@ -526,6 +526,7 @@ struct ZrcSdkInstance
     ZrcVideoPageStatusCallback videoPageStatusCallback; void* videoPageStatusUserData;
     ZrcScreenLayoutStatusCallback screenLayoutStatusCallback; void* screenLayoutStatusUserData;
     ZrcVideoThumbInfoCallback videoThumbInfoCallback; void* videoThumbInfoUserData;
+    SdkEventCallback dynamicLayoutOptionCallback; void* dynamicLayoutOptionUserData;
     // Share
     ZrcSharingStatusCallback sharingStatusCallback; void* sharingStatusUserData;
     ZrcAirPlayStatusCallback airPlayStatusCallback; void* airPlayStatusUserData;
@@ -603,6 +604,7 @@ struct ZrcSdkInstance
         , allowAttendeesVideoCallback(nullptr), allowAttendeesVideoUserData(nullptr)
         , videoPageStatusCallback(nullptr), videoPageStatusUserData(nullptr)
         , videoThumbInfoCallback(nullptr), videoThumbInfoUserData(nullptr)
+        , dynamicLayoutOptionCallback(nullptr), dynamicLayoutOptionUserData(nullptr)
         , sharingStatusCallback(nullptr), sharingStatusUserData(nullptr)
         , airPlayStatusCallback(nullptr), airPlayStatusUserData(nullptr)
         , boStatusChangedCallback(nullptr), boStatusChangedUserData(nullptr)
@@ -654,6 +656,7 @@ struct ZrcSdkInstance
     void RaiseVideoPageStatusEvent(const ZrcVideoPageStatus* s) { if (videoPageStatusCallback) videoPageStatusCallback(s, videoPageStatusUserData); }
     void RaiseScreenLayoutStatusEvent(const ZrcScreenLayoutStatus* s) { if (screenLayoutStatusCallback) screenLayoutStatusCallback(s, screenLayoutStatusUserData); }
     void RaiseVideoThumbInfoEvent(const ZrcVideoThumbInfo* s) { if (videoThumbInfoCallback) videoThumbInfoCallback(s, videoThumbInfoUserData); }
+    void RaiseDynamicLayoutOptionEvent(int layout) { Raise(dynamicLayoutOptionCallback, dynamicLayoutOptionUserData, "", layout); }
     void RaiseBOStatusChangedEvent(int status)              { Raise(boStatusChangedCallback, boStatusChangedUserData, "", status); }
     void RaiseInSilentModeEvent(int inSilent)               { Raise(inSilentModeCallback, inSilentModeUserData, "", inSilent); }
     void RaiseReactionStatusEvent(int feedback)             { Raise(reactionStatusCallback, reactionStatusUserData, "", feedback); }
@@ -1235,6 +1238,11 @@ void ZrcMeetingViewLayoutHelperSink::OnUpdateScreenLayoutStatus(const ScreenLayo
     }
 
     owner->RaiseScreenLayoutStatusEvent(&s);
+}
+
+void ZrcMeetingViewLayoutHelperSink::OnDynamicLayoutOptionNotification(DynamicLayoutType type)
+{
+    if (owner) owner->RaiseDynamicLayoutOptionEvent((int)type);
 }
 
 void ZrcMeetingControlHelperSink::OnUpdateMeetingLockStatus(bool locked)
@@ -2225,6 +2233,18 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoOrder(ZrcSdkHandle handl
     return (int)pL->SelectVideoOrder((VideoOrderType)videoOrderType);
 }
 
+// layout: DynamicLayoutType (SpeakersOnBottom=0/Middle=1/Top=2). Distinguishes Dynamic Gallery vs Multi-Speaker within Dynamic View.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetDynamicLayoutOption(ZrcSdkHandle handle, int32_t layout)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingViewLayoutHelper* pL = pMS->GetMeetingViewLayoutHelper();
+    if (!pL) { inst->RaiseErrorEvent("ViewLayout Helper not available", -1); return -1; }
+    return (int)pL->SetDynamicLayoutOption((DynamicLayoutType)layout);
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_UpdateVideoLayoutStyle(ZrcSdkHandle handle, int32_t style)
 {
     if (!handle) return -1;
@@ -3149,6 +3169,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetVideoThumbInfoCallback(ZrcSd
     inst->videoThumbInfoCallback = callback;
     inst->videoThumbInfoUserData = userData;
 }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetDynamicLayoutOptionCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
+    { SET_CB(dynamicLayoutOption, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOStatusChangedCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(boStatusChanged, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBORoomListCallback(ZrcSdkHandle handle, ZrcBORoomListCallback callback, void* userData)
