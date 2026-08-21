@@ -19,6 +19,10 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_RequestFarEndAudioControl(IntPtr handle, int farEndUserID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_GiveUpFarEndAudioControl(IntPtr handle, int farEndUserID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetSpeakerVolume(IntPtr handle, out float volume);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SetSpeakerVolume(IntPtr handle, float volume);
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetAllowAttendeesUnmuteCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
@@ -130,6 +134,24 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_GiveUpFarEndAudioControl(_handle, farEndUserID) == 0;
+    }
+
+    /// <summary>
+    /// Gets the room's speaker (audio output) volume. The value is the SDK's native float scale.
+    /// </summary>
+    /// <param name="volume">Receives the current speaker volume.</param>
+    /// <returns><see langword="true"/> on success.</returns>
+    public bool GetSpeakerVolume(out float volume)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_GetSpeakerVolume(_handle, out volume) == 0;
+    }
+
+    /// <summary>Sets the room's speaker (audio output) volume. The value is the SDK's native float scale.</summary>
+    public bool SetSpeakerVolume(float volume)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_SetSpeakerVolume(_handle, volume) == 0;
     }
 
     // ── Callbacks ─────────────────────────────────────────────────────────────

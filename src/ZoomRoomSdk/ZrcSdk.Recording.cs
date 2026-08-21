@@ -10,21 +10,39 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_ResponseToRecordingRequest(IntPtr handle, int accept, int acceptAlways);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetRecordingRequestCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetMeetingRecordingInfoCallback(IntPtr handle, ZrcMeetingRecordingInfoCallbackDelegate? cb, IntPtr userData);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ZrcMeetingRecordingInfoNative
+    {
+        public int isMeetingBeingRecorded;
+        public int canIRecord;
+        public int amIRecording;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcMeetingRecordingInfoCallbackDelegate(IntPtr infoPtr, IntPtr userData);
 
     private SdkEventCallbackDelegate? _recordingStatusCallbackDelegate;
     private SdkEventCallbackDelegate? _recordingRequestCallbackDelegate;
+    private ZrcMeetingRecordingInfoCallbackDelegate? _meetingRecordingInfoCallbackDelegate;
 
     /// <summary>Cloud recording status changed. <see cref="SdkEventArgs.ErrorCode"/> is 1 if recording is in progress.</summary>
     public event EventHandler<SdkEventArgs>? RecordingStatus;
     /// <summary>A participant requested permission to record. <see cref="SdkEventArgs.ErrorCode"/> is the requesting userID; Message is the display name.</summary>
     public event EventHandler<SdkEventArgs>? RecordingRequest;
+    /// <summary>Meeting recording info changed — includes whether this room can record. See <see cref="MeetingRecordingInfoEventArgs"/>.</summary>
+    public event EventHandler<MeetingRecordingInfoEventArgs>? MeetingRecordingInfoChanged;
 
     partial void InitializeRecordingCallbacks()
     {
-        _recordingStatusCallbackDelegate  = OnRecordingStatusCallback;
-        _recordingRequestCallbackDelegate = OnRecordingRequestCallback;
-        ZrcSdk_SetRecordingStatusCallback(_handle,  _recordingStatusCallbackDelegate,  IntPtr.Zero);
-        ZrcSdk_SetRecordingRequestCallback(_handle, _recordingRequestCallbackDelegate, IntPtr.Zero);
+        _recordingStatusCallbackDelegate       = OnRecordingStatusCallback;
+        _recordingRequestCallbackDelegate      = OnRecordingRequestCallback;
+        _meetingRecordingInfoCallbackDelegate  = OnMeetingRecordingInfoCallback;
+        ZrcSdk_SetRecordingStatusCallback(_handle,       _recordingStatusCallbackDelegate,      IntPtr.Zero);
+        ZrcSdk_SetRecordingRequestCallback(_handle,      _recordingRequestCallbackDelegate,     IntPtr.Zero);
+        ZrcSdk_SetMeetingRecordingInfoCallback(_handle,  _meetingRecordingInfoCallbackDelegate, IntPtr.Zero);
     }
 
     /// <summary>Starts cloud recording. Must be host or have recording permission.</summary>
@@ -60,4 +78,27 @@ public partial class ZrcSdk
 
     private void OnRecordingRequestCallback(string message, int userID, IntPtr userData) =>
         RecordingRequest?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = userID });
+
+    private void OnMeetingRecordingInfoCallback(IntPtr infoPtr, IntPtr userData)
+    {
+        if (infoPtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcMeetingRecordingInfoNative>(infoPtr);
+        MeetingRecordingInfoChanged?.Invoke(this, new MeetingRecordingInfoEventArgs
+        {
+            IsMeetingBeingRecorded = n.isMeetingBeingRecorded != 0,
+            CanIRecord             = n.canIRecord != 0,
+            AmIRecording           = n.amIRecording != 0,
+        });
+    }
+}
+
+/// <summary>Event args for <see cref="ZrcSdk.MeetingRecordingInfoChanged"/>.</summary>
+public sealed class MeetingRecordingInfoEventArgs : System.EventArgs
+{
+    /// <summary><see langword="true"/> if the meeting is being recorded.</summary>
+    public bool IsMeetingBeingRecorded { get; init; }
+    /// <summary><see langword="true"/> if this room is allowed to start recording.</summary>
+    public bool CanIRecord             { get; init; }
+    /// <summary><see langword="true"/> if this room is currently recording.</summary>
+    public bool AmIRecording           { get; init; }
 }

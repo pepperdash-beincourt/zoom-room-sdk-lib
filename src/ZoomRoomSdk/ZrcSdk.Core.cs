@@ -47,6 +47,8 @@ public partial class ZrcSdk : IDisposable
     partial void InitializeVideoCallbacks();
     partial void InitializeRecordingCallbacks();
     partial void InitializeParticipantCallbacks();
+    partial void InitializeContactsCallbacks();
+    partial void InitializeMeetingListCallbacks();
     partial void InitializeLayoutCallbacks();
     partial void InitializeShareCallbacks();
     partial void InitializeZrcsCallbacks();
@@ -66,6 +68,7 @@ public partial class ZrcSdk : IDisposable
     private const string DllName = "zrcsdkwrapperpdt";
 
     private static IntPtr _cachedWrapperHandle = IntPtr.Zero;
+    private static readonly object _wrapperHandleLock = new();
 
     private const int    RTLD_NOW    = 2;
     private const int    RTLD_LAZY   = 1;
@@ -117,44 +120,80 @@ public partial class ZrcSdk : IDisposable
         if (_cachedWrapperHandle != IntPtr.Zero)
             return _cachedWrapperHandle;
 
-        var libPath = "/usr/lib/libzrcsdkwrapperpdt.so";
-        if (!File.Exists(libPath))
-            throw new DllNotFoundException($"libzrcsdkwrapperpdt.so not found at {libPath}");
-
-        var libBytes = File.ReadAllBytes(libPath);
-        int memfd = syscall(SYS_memfd_create, "zrcsdkwrapperpdt", MFD_CLOEXEC);
-        if (memfd < 0)
-            throw new DllNotFoundException($"memfd_create failed (errno={Marshal.GetLastWin32Error()})");
-
-        try
+        lock (_wrapperHandleLock)
         {
-            var written = write(memfd, libBytes, (IntPtr)libBytes.Length);
-            if (written.ToInt64() != libBytes.Length)
-                throw new DllNotFoundException($"memfd write incomplete: {written}/{libBytes.Length}");
+            if (_cachedWrapperHandle != IntPtr.Zero)
+                return _cachedWrapperHandle;
 
-            var procPath = $"/proc/self/fd/{memfd}";
-            dlerror();
-            var handle = dlopen(procPath, RTLD_LAZY | RTLD_GLOBAL);
-            if (handle == IntPtr.Zero)
+            var libPath = ResolveWrapperPath();
+            if (!File.Exists(libPath))
             {
-                var errPtr = dlerror();
-                var errMsg = errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "unknown";
-                throw new DllNotFoundException($"Failed to dlopen via memfd ({procPath}): {errMsg}");
+                // Report every location that was searched so a misconfigured SetLibraryPath is obvious.
+                var searched = string.IsNullOrEmpty(_overrideLibraryPath)
+                    ? Path.Combine(DefaultWrapperDirectory, WrapperFileName)
+                    : $"{Path.Combine(_overrideLibraryPath, WrapperFileName)} and {Path.Combine(DefaultWrapperDirectory, WrapperFileName)}";
+                throw new DllNotFoundException(
+                    $"{WrapperFileName} not found. Searched: {searched}. " +
+                    "Set the wrapper directory with ZrcSdk.SetLibraryPath(dir) (the directory must contain the file).");
             }
 
-            _cachedWrapperHandle = handle;
-            return handle;
-        }
-        finally
-        {
-            close(memfd);
+            var libBytes = File.ReadAllBytes(libPath);
+            int memfd = syscall(SYS_memfd_create, "zrcsdkwrapperpdt", MFD_CLOEXEC);
+            if (memfd < 0)
+                throw new DllNotFoundException($"memfd_create failed (errno={Marshal.GetLastWin32Error()})");
+
+            try
+            {
+                var written = write(memfd, libBytes, (IntPtr)libBytes.Length);
+                if (written.ToInt64() != libBytes.Length)
+                    throw new DllNotFoundException($"memfd write incomplete: {written}/{libBytes.Length}");
+
+                var procPath = $"/proc/self/fd/{memfd}";
+                dlerror();
+                var handle = dlopen(procPath, RTLD_LAZY | RTLD_GLOBAL);
+                if (handle == IntPtr.Zero)
+                {
+                    var errPtr = dlerror();
+                    var errMsg = errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "unknown";
+                    throw new DllNotFoundException($"Failed to dlopen via memfd ({procPath}): {errMsg}");
+                }
+
+                _cachedWrapperHandle = handle;
+                return handle;
+            }
+            finally
+            {
+                close(memfd);
+            }
         }
     }
 
     private static string? _overrideLibraryPath;
 
+    private const string WrapperFileName = "libzrcsdkwrapperpdt.so";
+    private const string DefaultWrapperDirectory = "/usr/lib";
+
     /// <summary>
-    /// Overrides the directory searched for <c>libzrcsdkwrapperpdt.so</c>.
+    /// Resolves the full path to <c>libzrcsdkwrapperpdt.so</c>. Honors the directory set via
+    /// <see cref="SetLibraryPath"/> (if it contains the wrapper); otherwise falls back to
+    /// <c>/usr/lib</c>. The host can stage the wrapper in a writable location and point the
+    /// SDK at it, which is required on firmware where <c>/usr/lib</c> is read-only.
+    /// </summary>
+    private static string ResolveWrapperPath()
+    {
+        if (!string.IsNullOrEmpty(_overrideLibraryPath))
+        {
+            var overridePath = Path.Combine(_overrideLibraryPath, WrapperFileName);
+            if (File.Exists(overridePath))
+                return overridePath;
+        }
+
+        return Path.Combine(DefaultWrapperDirectory, WrapperFileName);
+    }
+
+    /// <summary>
+    /// Overrides the directory searched for <c>libzrcsdkwrapperpdt.so</c>. When set, the
+    /// resolver looks here first and falls back to <c>/usr/lib</c> if the wrapper is not present.
     /// Call before constructing any <see cref="ZrcSdk"/> instance.
     /// </summary>
     public static void SetLibraryPath(string directoryPath) =>
@@ -210,6 +249,8 @@ public partial class ZrcSdk : IDisposable
     private static extern int ZrcSdk_LeaveMeeting(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_EndMeeting(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_AnswerMeetingInvite(IntPtr handle, int accept);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_SendMeetingPassword(IntPtr handle, string password);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -265,7 +306,7 @@ public partial class ZrcSdk : IDisposable
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingNeedsPasswordCallback(IntPtr handle, SdkEventCallbackDelegate cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-    private static extern void ZrcSdk_SetMeetingInviteCallback(IntPtr handle, SdkEventCallbackDelegate cb, IntPtr userData);
+    private static extern void ZrcSdk_SetMeetingInviteCallback(IntPtr handle, ZrcMeetingInviteCallbackDelegate cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetAudioStatusCallback(IntPtr handle, SdkEventCallbackDelegate cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -309,6 +350,8 @@ public partial class ZrcSdk : IDisposable
         InitializeVideoCallbacks();
         InitializeRecordingCallbacks();
         InitializeParticipantCallbacks();
+        InitializeContactsCallbacks();
+        InitializeMeetingListCallbacks();
         InitializeLayoutCallbacks();
         InitializeShareCallbacks();
         InitializeZrcsCallbacks();
@@ -431,5 +474,24 @@ public partial class ZrcSdk : IDisposable
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Marshals a native contiguous array of <typeparamref name="TNative"/> structs (as delivered by an
+    /// SDK callback) into a managed <typeparamref name="TManaged"/> array via <paramref name="project"/>.
+    /// Single source of the null/zero-count guard and stride/PtrToStructure loop shared by the
+    /// contact-list and meeting-list marshalers.
+    /// </summary>
+    private static TManaged[] MarshalNativeArray<TNative, TManaged>(
+        IntPtr ptr, int count, Func<TNative, TManaged> project) where TNative : struct
+    {
+        if (ptr == IntPtr.Zero || count <= 0)
+            return Array.Empty<TManaged>();
+
+        var result = new TManaged[count];
+        int stride = Marshal.SizeOf<TNative>();
+        for (int i = 0; i < count; i++)
+            result[i] = project(Marshal.PtrToStructure<TNative>(ptr + i * stride));
+        return result;
     }
 }

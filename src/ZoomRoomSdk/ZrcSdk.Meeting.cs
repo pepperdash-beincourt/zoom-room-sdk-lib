@@ -1,14 +1,30 @@
 namespace PepperDash.ZoomRoom.Sdk;
 
 using System.Runtime.InteropServices;
+using PepperDash.ZoomRoom.Sdk.EventArgs;
 
 public partial class ZrcSdk
 {
+    // Flat incoming-invite struct (must mirror ZrcMeetingInvite in ZrcSdkWrapper_C.h exactly).
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    private struct ZrcMeetingInviteNative
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string callerName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string callerContactID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)] public string meetingID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]  public string meetingNumber;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcMeetingInviteCallbackDelegate(IntPtr invitePtr, IntPtr userData);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcMeetingInviteTreatedCallbackDelegate(IntPtr invitePtr, int accepted, IntPtr userData);
     private SdkEventCallbackDelegate? _meetingStatusCallbackDelegate;
     private SdkEventCallbackDelegate? _startPmiResultCallbackDelegate;
     private SdkEventCallbackDelegate? _exitMeetingCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingNeedsPasswordCallbackDelegate;
-    private SdkEventCallbackDelegate? _meetingInviteCallbackDelegate;
+    private ZrcMeetingInviteCallbackDelegate? _meetingInviteCallbackDelegate;
+    private ZrcMeetingInviteTreatedCallbackDelegate? _meetingInviteTreatedCallbackDelegate;
     private SdkEventCallbackDelegate? _instantMeetingStartedCallbackDelegate;
     private SdkEventCallbackDelegate? _meetingLockStatusCallbackDelegate;
 
@@ -17,7 +33,11 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_EnableMeetingQA(IntPtr handle, int enable);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetMeetingStatus(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingLockStatusCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetMeetingInviteTreatedCallback(IntPtr handle, ZrcMeetingInviteTreatedCallbackDelegate? cb, IntPtr userData);
 
     /// <summary>Meeting lock status changed. <see cref="SdkEventArgs.ErrorCode"/> is 1 if locked.</summary>
     public event EventHandler<SdkEventArgs>? MeetingLockStatus;
@@ -49,10 +69,16 @@ public partial class ZrcSdk
     public event EventHandler<SdkEventArgs>? MeetingNeedsPassword;
 
     /// <summary>
-    /// Fired when an incoming meeting invitation arrives.
-    /// <see cref="SdkEventArgs.Message"/> contains the caller's name.
+    /// Fired when an incoming meeting invitation arrives, with caller and meeting details.
     /// </summary>
-    public event EventHandler<SdkEventArgs>? MeetingInvite;
+    public event EventHandler<MeetingInviteEventArgs>? MeetingInvite;
+
+    /// <summary>
+    /// Fired when a pending invite is resolved -- answered here, answered elsewhere, declined, or
+    /// expired/cancelled by the caller. Use this to clear a ringing call that was never explicitly
+    /// answered or declined locally (the SDK doesn't otherwise notify of a silently-ignored invite).
+    /// </summary>
+    public event EventHandler<MeetingInviteTreatedEventArgs>? MeetingInviteTreated;
 
     /// <summary>
     /// Fired when an instant meeting starts.
@@ -69,6 +95,7 @@ public partial class ZrcSdk
         _exitMeetingCallbackDelegate          = OnExitMeetingCallback;
         _meetingNeedsPasswordCallbackDelegate = OnMeetingNeedsPasswordCallback;
         _meetingInviteCallbackDelegate        = OnMeetingInviteCallback;
+        _meetingInviteTreatedCallbackDelegate = OnMeetingInviteTreatedCallback;
         _instantMeetingStartedCallbackDelegate = OnInstantMeetingStartedCallback;
 
         ZrcSdk_SetMeetingStatusCallback(_handle,         _meetingStatusCallbackDelegate,        IntPtr.Zero);
@@ -76,6 +103,7 @@ public partial class ZrcSdk
         ZrcSdk_SetExitMeetingCallback(_handle,           _exitMeetingCallbackDelegate,          IntPtr.Zero);
         ZrcSdk_SetMeetingNeedsPasswordCallback(_handle,  _meetingNeedsPasswordCallbackDelegate, IntPtr.Zero);
         ZrcSdk_SetMeetingInviteCallback(_handle,         _meetingInviteCallbackDelegate,        IntPtr.Zero);
+        ZrcSdk_SetMeetingInviteTreatedCallback(_handle,  _meetingInviteTreatedCallbackDelegate, IntPtr.Zero);
         ZrcSdk_SetInstantMeetingStartedCallback(_handle, _instantMeetingStartedCallbackDelegate, IntPtr.Zero);
     }
 
@@ -128,6 +156,17 @@ public partial class ZrcSdk
         return ZrcSdk_LeaveMeeting(_handle) == 0;
     }
 
+    /// <summary>
+    /// Accepts (<paramref name="accept"/> = true) or declines an incoming meeting invite, using the
+    /// invite delivered by the last <see cref="MeetingInvite"/> event. Returns <see langword="false"/>
+    /// if there is no pending invite or the SDK rejects the answer.
+    /// </summary>
+    public bool AnswerMeetingInvite(bool accept)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_AnswerMeetingInvite(_handle, accept ? 1 : 0) == 0;
+    }
+
     /// <summary>Sends the meeting password when prompted by <see cref="MeetingNeedsPassword"/>.</summary>
     public bool SendMeetingPassword(string password)
     {
@@ -144,6 +183,20 @@ public partial class ZrcSdk
 
     /// <summary>Locks or unlocks the meeting. Host only.</summary>
     public bool LockMeeting(bool lockMeeting) { ThrowIfDisposed(); return ZrcSdk_LockMeeting(_handle, lockMeeting ? 1 : 0) == 0; }
+
+    /// <summary>
+    /// Synchronously queries the current meeting status. Unlike the <see cref="MeetingStatus"/> event,
+    /// this does not require a status change to have occurred - call it once connected to pick up a
+    /// meeting that was already in progress before the SDK callbacks were registered (the event only
+    /// fires on a subsequent change).
+    /// </summary>
+    /// <returns>The current meeting status, or null if the query failed (e.g. meeting service not available).</returns>
+    public MeetingStatus? GetMeetingStatus()
+    {
+        ThrowIfDisposed();
+        var result = ZrcSdk_GetMeetingStatus(_handle);
+        return result >= 0 ? (MeetingStatus)result : (MeetingStatus?)null;
+    }
 
     /// <summary>Cancels waiting for the host and aborts joining.</summary>
     public bool CancelWaitingForHost()
@@ -171,8 +224,32 @@ public partial class ZrcSdk
     private void OnMeetingNeedsPasswordCallback(string message, int wrongAndRetry, IntPtr userData) =>
         MeetingNeedsPassword?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = wrongAndRetry });
 
-    private void OnMeetingInviteCallback(string message, int errorCode, IntPtr userData) =>
-        MeetingInvite?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = errorCode });
+    private void OnMeetingInviteCallback(IntPtr invitePtr, IntPtr userData)
+    {
+        if (invitePtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcMeetingInviteNative>(invitePtr);
+        MeetingInvite?.Invoke(this, new MeetingInviteEventArgs
+        {
+            CallerName      = n.callerName ?? string.Empty,
+            CallerContactId = n.callerContactID ?? string.Empty,
+            MeetingId       = n.meetingID ?? string.Empty,
+            MeetingNumber   = n.meetingNumber ?? string.Empty,
+        });
+    }
+
+    private void OnMeetingInviteTreatedCallback(IntPtr invitePtr, int accepted, IntPtr userData)
+    {
+        if (invitePtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcMeetingInviteNative>(invitePtr);
+        MeetingInviteTreated?.Invoke(this, new MeetingInviteTreatedEventArgs
+        {
+            CallerName      = n.callerName ?? string.Empty,
+            CallerContactId = n.callerContactID ?? string.Empty,
+            MeetingId       = n.meetingID ?? string.Empty,
+            MeetingNumber   = n.meetingNumber ?? string.Empty,
+            Accepted        = accepted != 0,
+        });
+    }
 
     private void OnInstantMeetingStartedCallback(string meetingNumber, int result, IntPtr userData) =>
         InstantMeetingStarted?.Invoke(this, new SdkEventArgs { Message = meetingNumber, ErrorCode = result });

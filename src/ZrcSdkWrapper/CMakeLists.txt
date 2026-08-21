@@ -45,6 +45,11 @@ if(UNIX AND NOT APPLE)
         pthread
         dl
     )
+    # NOTE: do NOT statically link libstdc++/libgcc here. Crestron 4-series firmware provides
+    # libstdc++ up to GLIBCXX_3.4.28 and glibc up to GLIBC_2.30; static-linking pulls the build
+    # toolchain's newer libstdc++ (and its modern glibc calls, GLIBC_2.38) directly into the .so,
+    # which the device can't satisfy. Compatibility is instead controlled by the build TOOLCHAIN
+    # (GCC 9 via the pinned ubuntu:20.04 container in CI → GLIBCXX_3.4.27). See PR #4.
 elseif(APPLE)
     # macOS-specific settings for development/testing
     target_compile_options(ZrcSdkWrapper PRIVATE
