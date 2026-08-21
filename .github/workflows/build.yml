@@ -225,4 +225,23 @@ jobs:
               exit 1
             fi
           done
+
+      # ---------------------------
+      # Publish to the public NuGet.org registry
+      - name: Publish to NuGet.org
+        if: success() && inputs.newVersion == 'true'
+        continue-on-error: true
+        run: |
+          echo '## Publish to NuGet.org' >> "$GITHUB_STEP_SUMMARY"
+
+          find src -name '*.nupkg' | while read -r pkg; do
+            echo "Pushing $(basename "$pkg") to NuGet.org..."
+            if ! dotnet nuget push "$pkg" \
+              --source "https://api.nuget.org/v3/index.json" \
+              --api-key '${{ secrets.NUGET_API_KEY }}' \
+              --skip-duplicate; then
+              echo "***ERROR*** Failed to push $(basename "$pkg") to NuGet.org" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+          done
       
