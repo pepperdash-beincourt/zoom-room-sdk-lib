@@ -571,6 +571,27 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_EnableMeetingQA(ZrcSdkHandle han
 // a subsequent *change*.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetMeetingStatus(ZrcSdkHandle handle);
 
+// Flattened representation of the SDK MeetingInfo struct (info about the meeting currently in
+// progress, if any). Only a useful subset of the full native struct is surfaced; extend as needed.
+typedef struct ZrcMeetingInfo {
+    char    meetingID[128];
+    char    meetingNumber[32];
+    char    meetingName[256];
+    char    meetingPassword[64];
+    char    numericPassword[32];
+    char    joinMeetingUrl[512];
+    int32_t meetingType;        // MeetingType enum
+    int32_t isWebinar;
+    int32_t isWaitingRoom;
+    int32_t myUserId;
+    int32_t amIOriginalHost;
+} ZrcMeetingInfo;
+
+// Synchronously queries info about the meeting currently in progress (meeting ID, meeting
+// number, name, etc.). Returns 0 on success (outInfo populated), or -1 on error (e.g. not in a
+// meeting, meeting service not available, or the query itself failed).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetMeetingInfo(ZrcSdkHandle handle, ZrcMeetingInfo* outInfo);
+
 // ── Control System (ZRCS) ─────────────────────────────────────────────────────
 // Returns 1 if enabled, 0 if disabled, <0 on error
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_IsZRCSEnabled(ZrcSdkHandle handle);

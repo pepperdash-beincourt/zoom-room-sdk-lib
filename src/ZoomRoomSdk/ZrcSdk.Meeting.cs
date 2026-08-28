@@ -35,6 +35,25 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_GetMeetingStatus(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetMeetingInfo(IntPtr handle, out ZrcMeetingInfoNative outInfo);
+
+    // Flat current-meeting-info struct (must mirror ZrcMeetingInfo in ZrcSdkWrapper_C.h exactly).
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    private struct ZrcMeetingInfoNative
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)] public string meetingID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]  public string meetingNumber;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string meetingName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]  public string meetingPassword;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]  public string numericPassword;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)] public string joinMeetingUrl;
+        public int meetingType;
+        public int isWebinar;
+        public int isWaitingRoom;
+        public int myUserId;
+        public int amIOriginalHost;
+    }
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingLockStatusCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetMeetingInviteTreatedCallback(IntPtr handle, ZrcMeetingInviteTreatedCallbackDelegate? cb, IntPtr userData);
@@ -196,6 +215,37 @@ public partial class ZrcSdk
         ThrowIfDisposed();
         var result = ZrcSdk_GetMeetingStatus(_handle);
         return result >= 0 ? (MeetingStatus)result : (MeetingStatus?)null;
+    }
+
+    /// <summary>
+    /// Synchronously queries info about the meeting currently in progress (meeting ID, meeting
+    /// number, name, join URL, etc.) - e.g. to display the "Room Meeting ID" once a meeting has
+    /// started. Returns <see langword="false"/> if not in a meeting or the query failed.
+    /// </summary>
+    /// <param name="info">The current meeting info when this returns <see langword="true"/>.</param>
+    public bool TryGetMeetingInfo(out CurrentMeetingInfo? info)
+    {
+        ThrowIfDisposed();
+        if (ZrcSdk_GetMeetingInfo(_handle, out var native) == 0)
+        {
+            info = new CurrentMeetingInfo
+            {
+                MeetingID = native.meetingID ?? string.Empty,
+                MeetingNumber = native.meetingNumber ?? string.Empty,
+                MeetingName = native.meetingName ?? string.Empty,
+                MeetingPassword = native.meetingPassword ?? string.Empty,
+                NumericPassword = native.numericPassword ?? string.Empty,
+                JoinMeetingUrl = native.joinMeetingUrl ?? string.Empty,
+                MeetingType = (MeetingType)native.meetingType,
+                IsWebinar = native.isWebinar != 0,
+                IsWaitingRoom = native.isWaitingRoom != 0,
+                MyUserId = native.myUserId,
+                AmIOriginalHost = native.amIOriginalHost != 0,
+            };
+            return true;
+        }
+        info = null;
+        return false;
     }
 
     /// <summary>Cancels waiting for the host and aborts joining.</summary>

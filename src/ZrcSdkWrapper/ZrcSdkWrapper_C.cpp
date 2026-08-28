@@ -2856,6 +2856,40 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetMeetingStatus(ZrcSdkHandle ha
     return (int)status;
 }
 
+// Helper: flatten a C++ MeetingInfo to the C ZrcMeetingInfo struct.
+static void FlattenMeetingInfo(const MeetingInfo& src, ZrcMeetingInfo& dst)
+{
+    memset(&dst, 0, sizeof(ZrcMeetingInfo));
+    strncpy_safe(dst.meetingID,       src.meetingID,       sizeof(dst.meetingID));
+    strncpy_safe(dst.meetingNumber,   src.meetingNumber,   sizeof(dst.meetingNumber));
+    strncpy_safe(dst.meetingName,     src.meetingName,     sizeof(dst.meetingName));
+    strncpy_safe(dst.meetingPassword, src.meetingPassword, sizeof(dst.meetingPassword));
+    strncpy_safe(dst.numericPassword, src.numericPassword, sizeof(dst.numericPassword));
+    strncpy_safe(dst.joinMeetingUrl,  src.joinMeetingUrl,  sizeof(dst.joinMeetingUrl));
+    dst.meetingType    = (int32_t)src.meetingType;
+    dst.isWebinar       = src.isWebinar ? 1 : 0;
+    dst.isWaitingRoom   = src.isWaitingRoom ? 1 : 0;
+    dst.myUserId        = (int32_t)src.myUserId;
+    dst.amIOriginalHost = src.amIOriginalHost ? 1 : 0;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetMeetingInfo(ZrcSdkHandle handle, ZrcMeetingInfo* outInfo)
+{
+    if (!handle || !outInfo) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    MeetingInfo info;
+    ZRCSDKError err = pMS->GetMeetingInfo(info);
+    if (err != ZRCSDKERR_SUCCESS)
+    {
+        inst->RaiseErrorEvent("Failed to get meeting info", (int)err);
+        return -1;
+    }
+    FlattenMeetingInfo(info, *outInfo);
+    return 0;
+}
+
 // ─── Phone / SIP ─────────────────────────────────────────────────────────────
 
 // Look up a cached SIPCallInfo by callID. If callID is null/empty and exactly one call is active,
