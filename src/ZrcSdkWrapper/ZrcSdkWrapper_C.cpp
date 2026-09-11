@@ -2247,9 +2247,6 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AnswerUnmuteRequest(ZrcSdkHandle
     IMeetingReminderHelper* var = pMS_##var->GetMeetingReminderHelper();                 \
     if (!(var)) { (inst)->RaiseErrorEvent("Reminder Helper not available", -1); return -1; }
 
-ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetPromptCallback(ZrcSdkHandle handle, ZrcPromptCallback callback, void* userData)
-    { SET_CB(prompt, callback, userData); }
-
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmMeetingReminder(ZrcSdkHandle handle, int agree, int reminderType)
 {
     if (!handle) return -1;
@@ -3581,6 +3578,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetRecordingRequestCallback(Zrc
     { SET_CB(recordingRequest, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetFarEndCameraControlRequestCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData)
     { SET_CB(farEndCameraControl, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetPromptCallback(ZrcSdkHandle handle, ZrcPromptCallback callback, void* userData)
+    { SET_CB(prompt, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSIPCallStatusCallback(ZrcSdkHandle handle, ZrcSIPCallCallback callback, void* userData)
 {
     if (!handle) return;
