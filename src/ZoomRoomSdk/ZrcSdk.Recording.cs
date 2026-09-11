@@ -30,7 +30,11 @@ public partial class ZrcSdk
 
     /// <summary>Cloud recording status changed. <see cref="SdkEventArgs.ErrorCode"/> is 1 if recording is in progress.</summary>
     public event EventHandler<SdkEventArgs>? RecordingStatus;
-    /// <summary>A participant requested permission to record. <see cref="SdkEventArgs.ErrorCode"/> is the requesting userID; Message is the display name.</summary>
+    /// <summary>
+    /// A participant requested permission to record. <see cref="SdkEventArgs.Message"/> is the requester's display
+    /// name (empty for a cloud recording request); <see cref="SdkEventArgs.ErrorCode"/> is the <see cref="RecordingType"/>
+    /// value. Answer with <see cref="ResponseToRecordingRequest"/>.
+    /// </summary>
     public event EventHandler<SdkEventArgs>? RecordingRequest;
     /// <summary>Meeting recording info changed — includes whether this room can record. See <see cref="MeetingRecordingInfoEventArgs"/>.</summary>
     public event EventHandler<MeetingRecordingInfoEventArgs>? MeetingRecordingInfoChanged;
@@ -76,8 +80,8 @@ public partial class ZrcSdk
     private void OnRecordingStatusCallback(string message, int isRecording, IntPtr userData) =>
         RecordingStatus?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = isRecording });
 
-    private void OnRecordingRequestCallback(string message, int userID, IntPtr userData) =>
-        RecordingRequest?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = userID });
+    private void OnRecordingRequestCallback(string senderName, int recordingType, IntPtr userData) =>
+        RecordingRequest?.Invoke(this, new SdkEventArgs { Message = senderName, ErrorCode = recordingType });
 
     private void OnMeetingRecordingInfoCallback(IntPtr infoPtr, IntPtr userData)
     {

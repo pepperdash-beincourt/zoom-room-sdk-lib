@@ -183,7 +183,7 @@ public:
     void OnSetRecordingNotificationEmailNotification(int32_t result) override {}
     void OnSetMeetingRecordingResult(int32_t result, const std::string& recordingNotificationEmail, RecordingRequestType type) override;
     void OnUpdateRecordingPermission(const std::vector<RecordPermissionInfo>& info) override {}
-    void OnReceiveRecordingRequest(const RecordingRequestInfo& info) override {}
+    void OnReceiveRecordingRequest(const RecordingRequestInfo& info) override;
 };
 
 // ─── IControlSystemHelperSink — ZRCS events ──────────────────────────────────
@@ -669,7 +669,7 @@ struct ZrcSdkInstance
     void RaiseCaptionEvent(const ZrcCaption* cap)           { if (captionCallback) captionCallback(cap, captionUserData); }
     void RaiseMeetingLockStatusEvent(int locked)            { Raise(meetingLockStatusCallback, meetingLockStatusUserData, "", locked); }
     void RaiseQAEnabledEvent(int enabled)                   { Raise(qaEnabledCallback, qaEnabledUserData, "", enabled); }
-    void RaiseRecordingRequestEvent(int userID)             { Raise(recordingRequestCallback, recordingRequestUserData, "", userID); }
+    void RaiseRecordingRequestEvent(const char* senderName, int recordingType) { Raise(recordingRequestCallback, recordingRequestUserData, senderName, recordingType); }
     void RaiseFarEndCameraControlEvent(int userID)          { Raise(farEndCameraControlCallback, farEndCameraControlUserData, "", userID); }
     void RaiseSIPCallEvent(const ZrcSIPCall* call)          { if (sipCallStatusCallback) sipCallStatusCallback(call, sipCallStatusUserData); }
     void RaiseSIPServiceStatusEvent(const char* name, int status) { Raise(sipServiceStatusCallback, sipServiceStatusUserData, name, status); }
@@ -1074,6 +1074,14 @@ void ZrcRecordingHelperSink::OnSetMeetingRecordingResult(int32_t result, const s
                                                           RecordingRequestType /*type*/)
 {
     if (owner) owner->RaiseRecordingStatusEvent(result == 0 ? 1 : 0);
+}
+
+// A participant asked the room (host) for permission to record. senderName is empty for a cloud
+// recording request; recordingType is the RecordingType enum value (0 local, 1 cloud, -1 unknown).
+// Answer with ZrcSdk_ResponseToRecordingRequest.
+void ZrcRecordingHelperSink::OnReceiveRecordingRequest(const RecordingRequestInfo& info)
+{
+    if (owner) owner->RaiseRecordingRequestEvent(info.senderName.c_str(), (int)info.recordingType);
 }
 
 void ZrcControlSystemHelperSink::OnEnableZRCSNotification(bool enable)
