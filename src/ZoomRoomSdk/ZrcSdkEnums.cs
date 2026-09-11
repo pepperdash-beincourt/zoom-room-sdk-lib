@@ -144,6 +144,14 @@ public enum ConfInstType
     NewBO = 3,
 }
 
+/// <summary>Recording type carried by <see cref="ZrcSdk.RecordingRequest"/> (native RecordingType).</summary>
+public enum RecordingType
+{
+    Unknown = -1,
+    Local = 0,
+    Cloud = 1,
+}
+
 /// <summary>Claim host result.</summary>
 public enum ClaimHostResult
 {
