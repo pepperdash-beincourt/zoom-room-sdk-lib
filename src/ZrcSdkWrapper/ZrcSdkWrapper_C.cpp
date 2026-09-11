@@ -29,6 +29,8 @@
 #include "ServiceComponents/IThirdPartyMeetingHelper.h"
 #include "ServiceComponents/IContactHelper.h"
 #include "ServiceComponents/IMeetingListHelper.h"
+#include "ServiceComponents/IMeetingReminderHelper.h"
+#include "ServiceComponents/IMeetingWebinarHelper.h"
 
 using namespace ZRCSDK;
 
@@ -234,7 +236,7 @@ public:
     explicit ZrcMeetingVideoHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
     void OnUpdateMyVideoNotification(const VideoStatus& videoStatus) override {}
     void OnMuteUserVideoNotification(int32_t userID, const VideoStatus& videoStatus) override {}
-    void OnAskStartVideoByHostNotification(int32_t userID) override {}
+    void OnAskStartVideoByHostNotification(int32_t userID) override;
     void OnUpdateScreenStatusForPinNotification(const std::vector<ScreenStatusForPin>& screens, PinShareWarningType warning) override {}
     void OnSpotlightStatusNotification(const SpotlightStatus& status) override {}
     void OnUpdateAllowAttendeesStartVideo(bool allow) override;
@@ -345,10 +347,47 @@ public:
     ZrcSdkInstance* owner;
     explicit ZrcBreakoutRoomHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
     void OnBOStatusChanged(BO_STATUS boStatus) override;
-    void OnBOSwitchRequestReceived(const std::string& fromUserName, const BreakoutRoomInfo& newBORoomInfo) override {}
-    void OnHostInviteReturnToMainSession(const std::string& fromUserName) override {}
+    void OnBOSwitchRequestReceived(const std::string& fromUserName, const BreakoutRoomInfo& newBORoomInfo) override;
+    void OnHostInviteReturnToMainSession(const std::string& fromUserName) override;
     void OnBOStopCountDown(uint64_t remainingSeconds) override {}
     void OnStartJoinBONotification() override {}
+};
+
+// ─── IMeetingReminderHelperSink — reminder / consent dialogs ─────────────────
+class ZrcMeetingReminderHelperSink : public IMeetingReminderHelperSink
+{
+public:
+    ZrcSdkInstance* owner;
+    explicit ZrcMeetingReminderHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
+    void OnMeetingReminderNotification(const MeetingReminderContent& reminderContent) override;
+    void OnCustomizedReminderNotification(const CustomizedMeetingReminderContent& customizedContent) override;
+    void OnCombinedConsentNotification(const CombinedConsent& combinedConsent) override;
+    void OnConsentNotification(const ConsentInfo& info) override;
+    void OnPrivacyAlertNotification(PrivacyAlertAction action, PrivacyAlertType type, const DisclaimerPrivacy& message) override;
+    void OnMessageEventNotification(MessageEvent messageEvent) override;
+    void OnInactiveDetectionNotification(bool isShowPrompt, time_t autoEndTime) override;
+};
+
+// ─── IMeetingWebinarHelperSink — only the role change is surfaced ─────────────
+class ZrcMeetingWebinarHelperSink : public IMeetingWebinarHelperSink
+{
+public:
+    ZrcSdkInstance* owner;
+    explicit ZrcMeetingWebinarHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
+    void OnWebinarPracticeSessionNotification(bool inWebinarPracticeSession) override {}
+    void OnUpdateWebinarInfo(const WebinarInfo& info) override {}
+    void OnWebinarRoleChangedNotification(WebinarRoleChangedState roleChangedState) override;
+    void OnPanelistReachMaximumCapacityNotification(int32_t maximumCapacity) override {}
+    void OnWebinarAttendeeBaseInfoNotification(const WebinarAttendeeBaseInfo& baseInfo) override {}
+    void OnDynamicWebinarAttendeeListResponse(const DynamicWebinarAttendeeListRes& response) override {}
+    void OnNeedPromoteAttendeeToAllowTalkingNotification(int32_t userID, const std::string& userName) override {}
+    void OnAllowAttendeeViewParticipantCountNotification(bool allow) override {}
+    void OnWebinarParticipantCountNotification(const WebinarParticipantCountInfo& countInfo) override {}
+    void OnWebinarUnencryptedInfoNotification(const WebinarUnencryptedInfo& unencryptedInfo) override {}
+    void OnBackstageNotification(const BackstageNotification& noti) override {}
+    void OnBackstageInfoNotification(const BackstageInfo& info) override {}
+    void OnProductionStudioNotification(bool isProducerPublishing) override {}
+    void OnSimuliveWebinarInfoNotification(const SimuliveWebinarInfo& info) override {}
 };
 
 // ─── IMeetingChatHelperSink ───────────────────────────────────────────────────
@@ -471,6 +510,8 @@ struct ZrcSdkInstance
     ZrcCameraControlHelperSink*     pCameraControlHelperSink;
     ZrcParticipantHelperSink*   pParticipantHelperSink;
     ZrcRecordingHelperSink*     pRecordingHelperSink;
+    ZrcMeetingReminderHelperSink* pMeetingReminderHelperSink;
+    ZrcMeetingWebinarHelperSink*  pMeetingWebinarHelperSink;
     ZrcControlSystemHelperSink* pControlSystemHelperSink;
     IPhoneCallService*          pPhoneCallService;
     ZrcPhoneCallServiceSink*    pPhoneCallServiceSink;
@@ -550,6 +591,7 @@ struct ZrcSdkInstance
     SdkEventCallback recordingRequestCallback;      void* recordingRequestUserData;
     // Camera control
     SdkEventCallback farEndCameraControlCallback;   void* farEndCameraControlUserData;
+    ZrcPromptCallback promptCallback;               void* promptUserData;
     // Phone / SIP
     ZrcSIPCallCallback sipCallStatusCallback;       void* sipCallStatusUserData;
     SdkEventCallback sipServiceStatusCallback;      void* sipServiceStatusUserData;
@@ -569,7 +611,7 @@ struct ZrcSdkInstance
         , pBreakoutRoomHelperSink(nullptr), pChatHelperSink(nullptr)
         , pClosedCaptionHelperSink(nullptr), pCameraControlHelperSink(nullptr)
         , pParticipantHelperSink(nullptr)
-        , pRecordingHelperSink(nullptr), pControlSystemHelperSink(nullptr)
+        , pRecordingHelperSink(nullptr), pMeetingReminderHelperSink(nullptr), pMeetingWebinarHelperSink(nullptr), pControlSystemHelperSink(nullptr)
         , pPhoneCallService(nullptr), pPhoneCallServiceSink(nullptr)
         , pContactHelper(nullptr), pContactHelperSink(nullptr)
         , pMeetingListHelper(nullptr), pMeetingListHelperSink(nullptr)
@@ -620,6 +662,7 @@ struct ZrcSdkInstance
         , qaEnabledCallback(nullptr), qaEnabledUserData(nullptr)
         , recordingRequestCallback(nullptr), recordingRequestUserData(nullptr)
         , farEndCameraControlCallback(nullptr), farEndCameraControlUserData(nullptr)
+        , promptCallback(nullptr), promptUserData(nullptr)
         , sipCallStatusCallback(nullptr), sipCallStatusUserData(nullptr)
         , sipServiceStatusCallback(nullptr), sipServiceStatusUserData(nullptr)
         , zrcsDeviceListCallback(nullptr), zrcsDeviceListUserData(nullptr)
@@ -672,6 +715,7 @@ struct ZrcSdkInstance
     void RaiseRecordingRequestEvent(const char* senderName, int recordingType) { Raise(recordingRequestCallback, recordingRequestUserData, senderName, recordingType); }
     void RaiseFarEndCameraControlEvent(int userID)          { Raise(farEndCameraControlCallback, farEndCameraControlUserData, "", userID); }
     void RaiseSIPCallEvent(const ZrcSIPCall* call)          { if (sipCallStatusCallback) sipCallStatusCallback(call, sipCallStatusUserData); }
+    void RaisePromptEvent(const ZrcPrompt* prompt)          { if (promptCallback) promptCallback(prompt, promptUserData); }
     void RaiseSIPServiceStatusEvent(const char* name, int status) { Raise(sipServiceStatusCallback, sipServiceStatusUserData, name, status); }
     void RaiseBORoomListEvent(const std::vector<BreakoutRoomInfo>& rooms);
     void RaiseZRCSDeviceListEvent(ControlSystemUpdateDeviceType type, const ControlSystemDeviceList& list);
@@ -1082,6 +1126,121 @@ void ZrcRecordingHelperSink::OnSetMeetingRecordingResult(int32_t result, const s
 void ZrcRecordingHelperSink::OnReceiveRecordingRequest(const RecordingRequestInfo& info)
 {
     if (owner) owner->RaiseRecordingRequestEvent(info.senderName.c_str(), (int)info.recordingType);
+}
+
+// ─── In-call prompt sinks ────────────────────────────────────────────────────
+
+static void FillPromptDisclaimer(ZrcPrompt& p, const DisclaimerPrivacy& d)
+{
+    strncpy_safe(p.title, d.title, sizeof(p.title));
+    // The body may arrive as message, as a privacy section (customized disclaimers) or as the
+    // privacy message; take the first non-empty one.
+    const std::string& body = !d.message.empty() ? d.message
+                            : (!d.privacySection.empty() ? d.privacySection : d.privacyMessage.privacyMessage);
+    strncpy_safe(p.message, body, sizeof(p.message));
+    strncpy_safe(p.positiveText, d.positiveActionText, sizeof(p.positiveText));
+    strncpy_safe(p.negativeText, d.negativeActionText, sizeof(p.negativeText));
+    strncpy_safe(p.linkUrl, d.linkUrl, sizeof(p.linkUrl));
+    strncpy_safe(p.linkText, d.linkText, sizeof(p.linkText));
+}
+
+void ZrcMeetingVideoHelperSink::OnAskStartVideoByHostNotification(int32_t userID)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_AskStartVideo; p.userId = userID; p.isShowing = 1;
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcBreakoutRoomHelperSink::OnBOSwitchRequestReceived(const std::string& fromUserName, const BreakoutRoomInfo& newBORoomInfo)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_BOSwitchRequest; p.isShowing = 1;
+    strncpy_safe(p.fromUser, fromUserName, sizeof(p.fromUser));
+    strncpy_safe(p.sessionBID, newBORoomInfo.sessionBID, sizeof(p.sessionBID));
+    strncpy_safe(p.sessionName, newBORoomInfo.sessionName, sizeof(p.sessionName));
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcBreakoutRoomHelperSink::OnHostInviteReturnToMainSession(const std::string& fromUserName)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_BOReturnToMainInvite; p.isShowing = 1;
+    strncpy_safe(p.fromUser, fromUserName, sizeof(p.fromUser));
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnMeetingReminderNotification(const MeetingReminderContent& c)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_MeetingReminder; p.type = (int32_t)c.reminderType; p.isShowing = c.isShowing ? 1 : 0;
+    FillPromptDisclaimer(p, c.disclaimerPrivacy);
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnCustomizedReminderNotification(const CustomizedMeetingReminderContent& c)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_CustomizedReminder; p.type = c.customizedDisclaimerType; p.isShowing = c.isShowing ? 1 : 0;
+    FillPromptDisclaimer(p, c.disclaimerPrivacy);
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnCombinedConsentNotification(const CombinedConsent& c)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_CombinedConsent; p.type64 = c.type; p.isShowing = c.isShowing ? 1 : 0;
+    FillPromptDisclaimer(p, c.disclaimerPrivacy);
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnConsentNotification(const ConsentInfo& info)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_Consent; p.type = (int32_t)info.type; p.isShowing = info.isShowing ? 1 : 0;
+    strncpy_safe(p.consentId, info.consentID, sizeof(p.consentId));
+    FillPromptDisclaimer(p, info.disclaimer);
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnPrivacyAlertNotification(PrivacyAlertAction action, PrivacyAlertType type, const DisclaimerPrivacy& message)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_PrivacyAlert; p.type = (int32_t)type; p.userId = (int32_t)action;
+    p.isShowing = (action == PRIVACY_ALERT_ACTION_SHOW || action == PRIVACY_ALERT_ACTION_SHOW_DISCLAIMER) ? 1 : 0;
+    FillPromptDisclaimer(p, message);
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnMessageEventNotification(MessageEvent messageEvent)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_MessageEvent; p.type = (int32_t)messageEvent; p.isShowing = 1;
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingReminderHelperSink::OnInactiveDetectionNotification(bool isShowPrompt, time_t autoEndTime)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_InactiveDetection; p.isShowing = isShowPrompt ? 1 : 0; p.autoEndTime = (int64_t)autoEndTime;
+    owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingWebinarHelperSink::OnWebinarRoleChangedNotification(WebinarRoleChangedState roleChangedState)
+{
+    if (!owner) return;
+    ZrcPrompt p{};
+    p.kind = ZrcPromptKind_WebinarRoleChanged; p.type = (int32_t)roleChangedState; p.isShowing = 1;
+    owner->RaisePromptEvent(&p);
 }
 
 void ZrcControlSystemHelperSink::OnEnableZRCSNotification(bool enable)
@@ -1510,6 +1669,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle)
     delete inst->pVideoHelperSink;
     delete inst->pControlSystemHelperSink;
     delete inst->pRecordingHelperSink;
+    delete inst->pMeetingReminderHelperSink;
+    delete inst->pMeetingWebinarHelperSink;
     delete inst->pParticipantHelperSink;
     delete inst->pAudioHelperSink;
     delete inst->pMeetingServiceSink;
@@ -1670,6 +1831,20 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, 
             {
                 inst->pRecordingHelperSink = new ZrcRecordingHelperSink(inst);
                 pRec->RegisterSink(inst->pRecordingHelperSink);
+            }
+
+            IMeetingReminderHelper* pReminder = inst->pMeetingService->GetMeetingReminderHelper();
+            if (pReminder)
+            {
+                inst->pMeetingReminderHelperSink = new ZrcMeetingReminderHelperSink(inst);
+                pReminder->RegisterSink(inst->pMeetingReminderHelperSink);
+            }
+
+            IMeetingWebinarHelper* pWebinar = inst->pMeetingService->GetMeetingWebinarHelper();
+            if (pWebinar)
+            {
+                inst->pMeetingWebinarHelperSink = new ZrcMeetingWebinarHelperSink(inst);
+                pWebinar->RegisterSink(inst->pMeetingWebinarHelperSink);
             }
 
             IMeetingListHelper* pMeetingList = inst->pMeetingService->GetMeetingListHelper();
@@ -2063,6 +2238,94 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AnswerUnmuteRequest(ZrcSdkHandle
     IMeetingAudioHelper* pA = pMS->GetMeetingAudioHelper();
     if (!pA) { inst->RaiseErrorEvent("Audio Helper not available", -1); return -1; }
     return (int)pA->AnswerUnmuteAudioByHostRequest(accepted != 0);
+}
+
+// ─── In-call prompts ─────────────────────────────────────────────────────────
+
+#define GET_REMINDER_HELPER(inst, var)                                                   \
+    GET_MEETING_SERVICE(inst, pMS_##var);                                                \
+    IMeetingReminderHelper* var = pMS_##var->GetMeetingReminderHelper();                 \
+    if (!(var)) { (inst)->RaiseErrorEvent("Reminder Helper not available", -1); return -1; }
+
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetPromptCallback(ZrcSdkHandle handle, ZrcPromptCallback callback, void* userData)
+    { SET_CB(prompt, callback, userData); }
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmMeetingReminder(ZrcSdkHandle handle, int agree, int reminderType)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_REMINDER_HELPER(inst, pR);
+    return (int)pR->ConfirmMeetingReminder(agree != 0, (MeetingReminderType)reminderType);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmCustomizedMeetingReminder(ZrcSdkHandle handle, int agree, int customizedType)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_REMINDER_HELPER(inst, pR);
+    return (int)pR->ConfirmCustomizedMeetingReminder(agree != 0, (int32_t)customizedType);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmConsent(ZrcSdkHandle handle, int agree, int consentType, const char* consentId)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_REMINDER_HELPER(inst, pR);
+    return (int)pR->ConfirmConsent(agree != 0, (ConsentType)consentType, consentId ? std::string(consentId) : std::string());
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmCombinedConsent(ZrcSdkHandle handle, int agree, int64_t consentType)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_REMINDER_HELPER(inst, pR);
+    return (int)pR->ConfirmCombinedConsent(agree != 0, consentType);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_HandlePrivacyAlert(ZrcSdkHandle handle, int action, int type)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_REMINDER_HELPER(inst, pR);
+    return (int)pR->HandlePrivacyAlert((PrivacyAlertAction)action, (PrivacyAlertType)type);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ContinueMeetingOnInactivity(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_REMINDER_HELPER(inst, pR);
+    return (int)pR->ContinueMeetingOnInactivity();
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AnswerHostRequestUnmuteVideo(ZrcSdkHandle handle, int accepted)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingVideoHelper* pV = pMS->GetMeetingVideoHelper();
+    if (!pV) { inst->RaiseErrorEvent("Video Helper not available", -1); return -1; }
+    return (int)pV->AnswerHostRequestUnmuteVideo(accepted != 0);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ResponseHostInviteToMainSession(ZrcSdkHandle handle, int accept)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IBreakoutRoomHelper* pBO = pMS->GetBreakoutRoomHelper();
+    if (!pBO) { inst->RaiseErrorEvent("BreakoutRoom Helper not available", -1); return -1; }
+    IBOAssistantHelper* pAs = pBO->GetBOAssistantHelper();
+    if (!pAs) return -1;
+    return (int)pAs->ResponseHostInviteToMainSession(accept != 0);
 }
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowAttendeesUnmute(ZrcSdkHandle handle, int allow)

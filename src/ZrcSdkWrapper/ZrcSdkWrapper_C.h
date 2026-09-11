@@ -322,6 +322,45 @@ typedef struct ZrcSIPCall {
 typedef void (ZRCSDKWRAPPER_CALL *ZrcSIPCallCallback)(const ZrcSIPCall* call, void* userData);
 
 // ── BreakoutRoom flat struct ──────────────────────────────────────────────────
+// ── In-call prompt (reminder / consent / request) flat struct ─────────────────
+// One callback carries every dialog-style notification the Zoom Room raises during a call.
+// `kind` says which native notification it came from and which ZrcSdk_* call answers it.
+typedef enum ZrcPromptKind {
+    ZrcPromptKind_None               = 0,
+    ZrcPromptKind_MeetingReminder    = 1,   // type = MeetingReminderType         -> ZrcSdk_ConfirmMeetingReminder
+    ZrcPromptKind_CustomizedReminder = 2,   // type = customized disclaimer type  -> ZrcSdk_ConfirmCustomizedMeetingReminder
+    ZrcPromptKind_CombinedConsent    = 3,   // type64 = combined consent type     -> ZrcSdk_ConfirmCombinedConsent
+    ZrcPromptKind_Consent            = 4,   // type = ConsentType, consentId      -> ZrcSdk_ConfirmConsent
+    ZrcPromptKind_PrivacyAlert       = 5,   // type = PrivacyAlertType, userId = PrivacyAlertAction -> ZrcSdk_HandlePrivacyAlert
+    ZrcPromptKind_InactiveDetection  = 6,   // isShowing, autoEndTime (UTC s)     -> ZrcSdk_ContinueMeetingOnInactivity
+    ZrcPromptKind_MessageEvent       = 7,   // type = MessageEvent (informational, no answer)
+    ZrcPromptKind_AskStartVideo      = 8,   // host asked this room to start video -> ZrcSdk_AnswerHostRequestUnmuteVideo
+    ZrcPromptKind_BOSwitchRequest    = 9,   // fromUser, sessionBID/sessionName   -> accept with ZrcSdk_JoinBreakoutRoom
+    ZrcPromptKind_BOReturnToMainInvite = 10,// fromUser                           -> ZrcSdk_ResponseHostInviteToMainSession
+    ZrcPromptKind_WebinarRoleChanged = 11   // type = WebinarRoleChangedState (informational, no answer)
+} ZrcPromptKind;
+
+typedef struct ZrcPrompt {
+    int64_t type64;            // 64-bit sub-type (combined consent)
+    int64_t autoEndTime;       // inactive detection: UTC seconds when the meeting auto-ends
+    int32_t kind;              // ZrcPromptKind
+    int32_t type;              // native sub-type enum value for the kind
+    int32_t isShowing;         // 1 = the Zoom Room is showing this dialog; 0 = it closed / was resolved elsewhere
+    int32_t userId;            // requesting user (AskStartVideo) or PrivacyAlertAction (PrivacyAlert)
+    char    consentId[128];
+    char    title[512];
+    char    message[2048];
+    char    positiveText[128];
+    char    negativeText[128];
+    char    linkUrl[512];
+    char    linkText[128];
+    char    fromUser[256];     // BO switch / return-to-main: who sent it
+    char    sessionBID[128];   // BO switch: target room
+    char    sessionName[256];
+} ZrcPrompt;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcPromptCallback)(const ZrcPrompt* prompt, void* userData);
+
 typedef struct ZrcBORoom {
     char sessionBID[128];
     char sessionName[256];
@@ -676,6 +715,17 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSIPServiceStatusCallback(Zrc
 // ZRCS extended
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetZRCSDeviceListCallback(ZrcSdkHandle handle, ZrcZRCSDeviceListCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetZRCSSceneListCallback(ZrcSdkHandle handle, ZrcZRCSSceneListCallback callback, void* userData);
+
+// ── In-call prompts ──────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetPromptCallback(ZrcSdkHandle handle, ZrcPromptCallback callback, void* userData);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmMeetingReminder(ZrcSdkHandle handle, int agree, int reminderType);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmCustomizedMeetingReminder(ZrcSdkHandle handle, int agree, int customizedType);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmConsent(ZrcSdkHandle handle, int agree, int consentType, const char* consentId);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ConfirmCombinedConsent(ZrcSdkHandle handle, int agree, int64_t consentType);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_HandlePrivacyAlert(ZrcSdkHandle handle, int action, int type);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ContinueMeetingOnInactivity(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AnswerHostRequestUnmuteVideo(ZrcSdkHandle handle, int accepted);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ResponseHostInviteToMainSession(ZrcSdkHandle handle, int accept);
 
 #ifdef __cplusplus
 }
