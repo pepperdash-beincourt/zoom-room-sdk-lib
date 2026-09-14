@@ -1201,10 +1201,14 @@ void ZrcRecordingHelperSink::OnUpdateMeetingRecordingInfo(const MeetingRecording
     owner->RaiseMeetingRecordingInfoEvent(&info);
 }
 
+// Result of a start/stop/pause/resume command, NOT a status: it fires after every recording
+// command, so reporting result==0 as "recording on" made a SUCCESSFUL STOP look like a start and
+// left the UI stuck on "recording". The authoritative state comes from OnUpdateMeetingRecordingInfo;
+// here we only surface a failure.
 void ZrcRecordingHelperSink::OnSetMeetingRecordingResult(int32_t result, const std::string& /*recordingNotificationEmail*/,
                                                           RecordingRequestType /*type*/)
 {
-    if (owner) owner->RaiseRecordingStatusEvent(result == 0 ? 1 : 0);
+    if (owner && result != 0) owner->RaiseErrorEvent("Recording command failed", (int)result);
 }
 
 // A participant asked the room (host) for permission to record. senderName is empty for a cloud
