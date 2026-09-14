@@ -756,6 +756,40 @@ public enum ZrcPromptKind
     BOReturnToMainInvite = 10,
     /// <summary>Type is <see cref="WebinarRoleChangedState"/>. Informational.</summary>
     WebinarRoleChanged = 11,
+    /// <summary>A participant in a breakout room asked for help: ConsentId = userGUID, SessionBID / SessionName = their room. Answer with JoinBreakoutRoomForHelp or IgnoreBOHelpRequest.</summary>
+    BOHelpRequest = 12,
+    /// <summary>The breakout timer expired (host). Informational.</summary>
+    BOTimeUp = 13,
+    /// <summary>Result of this room's own help request; Type is the native BO_HELP_ATTENDEE_RESULT. Informational.</summary>
+    BOHelpResult = 14,
+}
+
+/// <summary>Native BO_ASSIGN_PARTICIPANTS_TYPE.</summary>
+public enum BOAssignType
+{
+    Automatically = 0,
+    Manually = 1,
+    LetParticipantsChoose = 2,
+}
+
+/// <summary>Native BO_USER_STATUS.</summary>
+public enum BOUserStatus
+{
+    Invalid = -1,
+    InMainSession = 1,
+    InBreakoutRoom = 2,
+    Left = 3,
+}
+
+/// <summary>Native BO_STOP_COUNTDOWN.</summary>
+public enum BOStopCountdown
+{
+    None = 0,
+    Seconds10 = 1,
+    Seconds15 = 2,
+    Seconds30 = 3,
+    Seconds60 = 4,
+    Seconds120 = 5,
 }
 
 /// <summary>Native MeetingReminderType.</summary>

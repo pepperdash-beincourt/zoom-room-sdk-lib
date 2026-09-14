@@ -19,6 +19,8 @@ public partial class ZrcSdk
         public int isMeetingBeingRecorded;
         public int canIRecord;
         public int amIRecording;
+        public int isConnectingToCMR;
+        public int isCMRPaused;
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -92,6 +94,8 @@ public partial class ZrcSdk
             IsMeetingBeingRecorded = n.isMeetingBeingRecorded != 0,
             CanIRecord             = n.canIRecord != 0,
             AmIRecording           = n.amIRecording != 0,
+            IsConnectingToCloud    = n.isConnectingToCMR != 0,
+            IsCloudRecordingPaused = n.isCMRPaused != 0,
         });
     }
 }
@@ -105,4 +109,8 @@ public sealed class MeetingRecordingInfoEventArgs : System.EventArgs
     public bool CanIRecord             { get; init; }
     /// <summary><see langword="true"/> if this room is currently recording.</summary>
     public bool AmIRecording           { get; init; }
+    /// <summary>Cloud recording is connecting.</summary>
+    public bool IsConnectingToCloud    { get; init; }
+    /// <summary>Cloud recording is paused.</summary>
+    public bool IsCloudRecordingPaused { get; init; }
 }

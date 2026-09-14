@@ -96,6 +96,11 @@ typedef struct ZrcParticipant {
     int32_t timeZoneOffsetMinutes;
     int32_t isSupportDisplayLocalTime;
     char    attendeeJid[256];
+
+    // Webinar breakout rooms (MeetingParticipant.webinarBOStatus); meeting breakout fields are above
+    char    webinarBoAssignedBID[128];   // assigned webinar breakout room, empty if none
+    char    webinarBoJoinedBID[128];     // webinar breakout room currently joined
+    int32_t webinarBoUserStatus;         // BO_USER_STATUS: -1 invalid, 1 in main, 2 in BO, 3 left
 } ZrcParticipant;
 
 // Callback type for participant list updates.
@@ -264,6 +269,8 @@ typedef struct ZrcMeetingRecordingInfo {
     int32_t isMeetingBeingRecorded;   // 1 = meeting is being recorded
     int32_t canIRecord;               // 1 = this room can start recording
     int32_t amIRecording;             // 1 = this room is recording
+    int32_t isConnectingToCMR;        // 1 = cloud recording is connecting
+    int32_t isCMRPaused;              // 1 = cloud recording is paused
 } ZrcMeetingRecordingInfo;
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcMeetingRecordingInfoCallback)(const ZrcMeetingRecordingInfo* info, void* userData);
@@ -337,7 +344,10 @@ typedef enum ZrcPromptKind {
     ZrcPromptKind_AskStartVideo      = 8,   // host asked this room to start video -> ZrcSdk_AnswerHostRequestUnmuteVideo
     ZrcPromptKind_BOSwitchRequest    = 9,   // fromUser, sessionBID/sessionName   -> accept with ZrcSdk_JoinBreakoutRoom
     ZrcPromptKind_BOReturnToMainInvite = 10,// fromUser                           -> ZrcSdk_ResponseHostInviteToMainSession
-    ZrcPromptKind_WebinarRoleChanged = 11   // type = WebinarRoleChangedState (informational, no answer)
+    ZrcPromptKind_WebinarRoleChanged = 11,  // type = WebinarRoleChangedState (informational, no answer)
+    ZrcPromptKind_BOHelpRequest      = 12,  // a participant in a breakout room asked for help: consentId = userGUID, sessionBID/sessionName -> ZrcSdk_JoinBreakoutRoomForHelp / ZrcSdk_IgnoreBOHelpRequest
+    ZrcPromptKind_BOTimeUp           = 13,  // breakout timer expired (host; informational)
+    ZrcPromptKind_BOHelpResult       = 14   // result of this room's own help request: type = BO_HELP_ATTENDEE_RESULT (informational)
 } ZrcPromptKind;
 
 typedef struct ZrcPrompt {
@@ -360,6 +370,23 @@ typedef struct ZrcPrompt {
 } ZrcPrompt;
 
 typedef void (ZRCSDKWRAPPER_CALL *ZrcPromptCallback)(const ZrcPrompt* prompt, void* userData);
+
+// ── Breakout room options (IBOCreatorHelper BOOptions) ────────────────────────
+typedef struct ZrcBOOptions {
+    int64_t boTimerDuration;                              // seconds, when isBOTimerEnabled
+    int64_t defaultBOTimerDuration;                       // read-only
+    int32_t isParticipantCanChooseRoom;
+    int32_t isParticipantCanReturnToMainSessionAtAnyTime;
+    int32_t isAutoMoveAllAssignedParticipantsEnabled;
+    int32_t isBOTimerEnabled;
+    int32_t isNotifyMeWhenTimeIsUp;
+    int32_t countdownSeconds;                             // BO_STOP_COUNTDOWN enum
+    int32_t defaultCountDown;                             // read-only
+    int32_t isPreAssignEnabled;                           // read-only
+    int32_t maxRoomCount;                                 // read-only
+} ZrcBOOptions;
+
+typedef void (ZRCSDKWRAPPER_CALL *ZrcBOOptionsCallback)(const ZrcBOOptions* options, void* userData);
 
 typedef struct ZrcBORoom {
     char sessionBID[128];
@@ -726,6 +753,34 @@ ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_HandlePrivacyAlert(ZrcSdkHandle
 ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ContinueMeetingOnInactivity(ZrcSdkHandle handle);
 ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AnswerHostRequestUnmuteVideo(ZrcSdkHandle handle, int accepted);
 ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ResponseHostInviteToMainSession(ZrcSdkHandle handle, int accept);
+
+// ── Breakout rooms: creator / admin / data helpers ───────────────────────────
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOOptionsCallback(ZrcSdkHandle handle, ZrcBOOptionsCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOUserStatusCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);       // message = joined room BID, errorCode = BO_USER_STATUS
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOTimerCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);            // errorCode = remaining seconds
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_CreateBreakoutRooms(ZrcSdkHandle handle, int count, int assignType);   // BO_ASSIGN_PARTICIPANTS_TYPE
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AddBreakoutRoom(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_DeleteBreakoutRoom(ZrcSdkHandle handle, const char* sessionBID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_RenameBreakoutRoom(ZrcSdkHandle handle, const char* sessionBID, const char* newName);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AssignUsersToBreakoutRoom(ZrcSdkHandle handle, const char* userGUIDsCsv, const char* sessionBID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_SetBOOptions(ZrcSdkHandle handle, const ZrcBOOptions* options);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_GetBOOptions(ZrcSdkHandle handle, ZrcBOOptions* options);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_MoveUserToBreakoutRoom(ZrcSdkHandle handle, const char* userGUID, const char* sessionBID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_InviteBOUserReturnToMainSession(ZrcSdkHandle handle, const char* userGUID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_IgnoreBOHelpRequest(ZrcSdkHandle handle, const char* userGUID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_JoinBreakoutRoomForHelp(ZrcSdkHandle handle, const char* userGUID, const char* sessionBID, const char* sessionName);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_JoinBreakoutRoomByBID(ZrcSdkHandle handle, const char* sessionBID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_RequestBreakoutRoomList(ZrcSdkHandle handle);       // answers on the BO room list callback
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_RequestBreakoutRoomUserList(ZrcSdkHandle handle);   // answers on the BO participant list callback (eventType 1)
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_RequestBOOptions(ZrcSdkHandle handle);              // answers on the BO options callback
+
+// ── Roles ────────────────────────────────────────────────────────────────────
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ClaimHost(ZrcSdkHandle handle, const char* hostKey);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AssignCohost(ZrcSdkHandle handle, int userID, int assign);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_PromoteAttendeeToPanelist(ZrcSdkHandle handle, int userID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_DemotePanelistToAttendee(ZrcSdkHandle handle, int userID);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AllowWebinarAttendeeTalk(ZrcSdkHandle handle, int userID, int allow);
 
 #ifdef __cplusplus
 }

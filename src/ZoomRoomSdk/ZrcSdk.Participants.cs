@@ -78,6 +78,9 @@ public partial class ZrcSdk
         public int timeZoneOffsetMinutes;
         public int isSupportDisplayLocalTime;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string attendeeJid;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)] public string webinarBoAssignedBID;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)] public string webinarBoJoinedBID;
+        public int webinarBoUserStatus;
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -270,6 +273,9 @@ public partial class ZrcSdk
                 TimeZoneOffsetMinutes      = native.timeZoneOffsetMinutes,
                 IsSupportDisplayLocalTime  = native.isSupportDisplayLocalTime != 0,
                 AttendeeJid                = native.attendeeJid ?? string.Empty,
+                WebinarBoAssignedRoomId    = native.webinarBoAssignedBID ?? string.Empty,
+                WebinarBoJoinedRoomId      = native.webinarBoJoinedBID ?? string.Empty,
+                WebinarBoUserStatus        = (BO_USER_STATUS)native.webinarBoUserStatus,
             };
         }
 
