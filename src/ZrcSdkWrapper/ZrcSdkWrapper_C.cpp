@@ -368,7 +368,7 @@ public:
     void OnInactiveDetectionNotification(bool isShowPrompt, time_t autoEndTime) override;
 };
 
-// ─── IMeetingWebinarHelperSink — only the role change is surfaced ─────────────
+// ─── IMeetingWebinarHelperSink — role change, attendee list and head counts ───
 class ZrcMeetingWebinarHelperSink : public IMeetingWebinarHelperSink
 {
 public:
@@ -378,11 +378,11 @@ public:
     void OnUpdateWebinarInfo(const WebinarInfo& info) override {}
     void OnWebinarRoleChangedNotification(WebinarRoleChangedState roleChangedState) override;
     void OnPanelistReachMaximumCapacityNotification(int32_t maximumCapacity) override {}
-    void OnWebinarAttendeeBaseInfoNotification(const WebinarAttendeeBaseInfo& baseInfo) override {}
-    void OnDynamicWebinarAttendeeListResponse(const DynamicWebinarAttendeeListRes& response) override {}
+    void OnWebinarAttendeeBaseInfoNotification(const WebinarAttendeeBaseInfo& baseInfo) override;
+    void OnDynamicWebinarAttendeeListResponse(const DynamicWebinarAttendeeListRes& response) override;
     void OnNeedPromoteAttendeeToAllowTalkingNotification(int32_t userID, const std::string& userName) override {}
     void OnAllowAttendeeViewParticipantCountNotification(bool allow) override {}
-    void OnWebinarParticipantCountNotification(const WebinarParticipantCountInfo& countInfo) override {}
+    void OnWebinarParticipantCountNotification(const WebinarParticipantCountInfo& countInfo) override;
     void OnWebinarUnencryptedInfoNotification(const WebinarUnencryptedInfo& unencryptedInfo) override {}
     void OnBackstageNotification(const BackstageNotification& noti) override {}
     void OnBackstageInfoNotification(const BackstageInfo& info) override {}
@@ -640,6 +640,8 @@ struct ZrcSdkInstance
     SdkEventCallback boUserStatusCallback;          void* boUserStatusUserData;
     SdkEventCallback boTimerCallback;               void* boTimerUserData;
     ZrcParticipantListCallback boParticipantListCallback; void* boParticipantListUserData;
+    ZrcWebinarAttendeeListCallback webinarAttendeeListCallback; void* webinarAttendeeListUserData;
+    ZrcWebinarCountsCallback webinarCountsCallback; void* webinarCountsUserData;
     // Phone / SIP
     ZrcSIPCallCallback sipCallStatusCallback;       void* sipCallStatusUserData;
     SdkEventCallback sipServiceStatusCallback;      void* sipServiceStatusUserData;
@@ -715,6 +717,8 @@ struct ZrcSdkInstance
         , boUserStatusCallback(nullptr), boUserStatusUserData(nullptr)
         , boTimerCallback(nullptr), boTimerUserData(nullptr)
         , boParticipantListCallback(nullptr), boParticipantListUserData(nullptr)
+        , webinarAttendeeListCallback(nullptr), webinarAttendeeListUserData(nullptr)
+        , webinarCountsCallback(nullptr), webinarCountsUserData(nullptr)
         , sipCallStatusCallback(nullptr), sipCallStatusUserData(nullptr)
         , sipServiceStatusCallback(nullptr), sipServiceStatusUserData(nullptr)
         , zrcsDeviceListCallback(nullptr), zrcsDeviceListUserData(nullptr)
@@ -772,6 +776,8 @@ struct ZrcSdkInstance
     void RaiseBOUserStatusEvent(const char* bid, int st)    { Raise(boUserStatusCallback, boUserStatusUserData, bid, st); }
     void RaiseBOTimerEvent(int remaining)                   { Raise(boTimerCallback, boTimerUserData, "", remaining); }
     void RaiseBOParticipantListEvent(const std::vector<MeetingParticipant>& participants, int total, int eventType);
+    void RaiseWebinarAttendeeListEvent(const DynamicWebinarAttendeeListRes& response);
+    void RaiseWebinarCountsEvent(int attendees, int raisedHands, int panelists) { if (webinarCountsCallback) webinarCountsCallback(attendees, raisedHands, panelists, webinarCountsUserData); }
     void RaiseSIPServiceStatusEvent(const char* name, int status) { Raise(sipServiceStatusCallback, sipServiceStatusUserData, name, status); }
     void RaiseBORoomListEvent(const std::vector<BreakoutRoomInfo>& rooms);
     void RaiseZRCSDeviceListEvent(ControlSystemUpdateDeviceType type, const ControlSystemDeviceList& list);
@@ -891,6 +897,17 @@ void ZrcSdkInstance::RaiseBOParticipantListEvent(const std::vector<MeetingPartic
     for (size_t i = 0; i < participants.size(); ++i)
         FlattenParticipant(participants[i], flat[i]);
     boParticipantListCallback(flat.empty() ? nullptr : flat.data(), (int)flat.size(), eventType, 0, boParticipantListUserData);
+}
+
+void ZrcSdkInstance::RaiseWebinarAttendeeListEvent(const DynamicWebinarAttendeeListRes& response)
+{
+    if (!webinarAttendeeListCallback) return;
+    std::vector<ZrcParticipant> flat(response.attendees.size());
+    for (size_t i = 0; i < response.attendees.size(); ++i)
+        FlattenParticipant(response.attendees[i], flat[i]);
+    webinarAttendeeListCallback(flat.empty() ? nullptr : flat.data(), (int)flat.size(),
+                                (int)response.totalOfAttendees, (int)response.index, (int)response.result,
+                                response.keywords.c_str(), webinarAttendeeListUserData);
 }
 
 static void FlattenBOOptions(const BOOptions& src, ZrcBOOptions& dst)
@@ -1332,6 +1349,23 @@ void ZrcMeetingWebinarHelperSink::OnWebinarRoleChangedNotification(WebinarRoleCh
     ZrcPrompt p{};
     p.kind = ZrcPromptKind_WebinarRoleChanged; p.type = (int32_t)roleChangedState; p.isShowing = 1;
     owner->RaisePromptEvent(&p);
+}
+
+void ZrcMeetingWebinarHelperSink::OnWebinarAttendeeBaseInfoNotification(const WebinarAttendeeBaseInfo& baseInfo)
+{
+    if (owner) owner->RaiseWebinarCountsEvent((int)baseInfo.attendeeCount, (int)baseInfo.raisedCount, -1);
+}
+
+void ZrcMeetingWebinarHelperSink::OnDynamicWebinarAttendeeListResponse(const DynamicWebinarAttendeeListRes& response)
+{
+    // The unencrypted-attendee list (end-to-end webinars) answers a different question; skip it.
+    if (!owner || response.attendeeListType == DynamicWebinarAttendeeListType_UNENCRYPTED_ATTENDEE_LIST) return;
+    owner->RaiseWebinarAttendeeListEvent(response);
+}
+
+void ZrcMeetingWebinarHelperSink::OnWebinarParticipantCountNotification(const WebinarParticipantCountInfo& countInfo)
+{
+    if (owner) owner->RaiseWebinarCountsEvent((int)countInfo.attendeeCount, -1, (int)countInfo.panelistCount);
 }
 
 // ─── Breakout sub-helper sink bodies ─────────────────────────────────────────
@@ -2754,6 +2788,15 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowWebinarAttendeeTalk(ZrcSdkH
     return allow ? (int)p->AllowWebinarAttendeeTalk((int32_t)userID) : (int)p->DisallowWebinarAttendeeTalk((int32_t)userID);
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ListWebinarAttendees(ZrcSdkHandle handle, const char* keywords)
+{
+    BO_PROLOGUE(handle, inst);
+    GET_MEETING_SERVICE(inst, pMS);
+    IMeetingWebinarHelper* p = pMS->GetMeetingWebinarHelper();
+    if (!p) { inst->RaiseErrorEvent("Webinar Helper not available", -1); return -1; }
+    return (int)p->ListWebinarAttendees(SafeStr(keywords));
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AllowAttendeesUnmute(ZrcSdkHandle handle, int allow)
 {
     if (!handle) return -1;
@@ -4017,6 +4060,10 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOTimerCallback(ZrcSdkHandle
     { SET_CB(boTimer, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetBOParticipantListCallback(ZrcSdkHandle handle, ZrcParticipantListCallback callback, void* userData)
     { SET_CB(boParticipantList, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetWebinarAttendeeListCallback(ZrcSdkHandle handle, ZrcWebinarAttendeeListCallback callback, void* userData)
+    { SET_CB(webinarAttendeeList, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetWebinarCountsCallback(ZrcSdkHandle handle, ZrcWebinarCountsCallback callback, void* userData)
+    { SET_CB(webinarCounts, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSIPCallStatusCallback(ZrcSdkHandle handle, ZrcSIPCallCallback callback, void* userData)
 {
     if (!handle) return;

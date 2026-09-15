@@ -64,6 +64,7 @@ public partial class ZrcSdk : IDisposable
     partial void InitializeProAVCallbacks();
     partial void InitializePromptCallbacks();
     partial void InitializeBreakoutAdminCallbacks();
+    partial void InitializeWebinarCallbacks();
 
     #region Native glue
 
@@ -369,6 +370,7 @@ public partial class ZrcSdk : IDisposable
         InitializeProAVCallbacks();
         InitializePromptCallbacks();
         InitializeBreakoutAdminCallbacks();
+        InitializeWebinarCallbacks();
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────

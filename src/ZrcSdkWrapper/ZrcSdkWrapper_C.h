@@ -782,6 +782,19 @@ ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_PromoteAttendeeToPanelist(ZrcSd
 ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_DemotePanelistToAttendee(ZrcSdkHandle handle, int userID);
 ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_AllowWebinarAttendeeTalk(ZrcSdkHandle handle, int userID, int allow);
 
+// ── Webinar attendees ────────────────────────────────────────────────────────
+// Attendees are not part of the meeting roster. ZrcSdk_ListWebinarAttendees asks for them ("" = the
+// first 100, otherwise a name search) and the answer arrives on the attendee list callback; the SDK
+// may push the same list again as it changes. startIndex 0 means replace the local list, otherwise
+// the entries continue a list already delivered. result is 0 on success.
+typedef void (ZRCSDKWRAPPER_CALL *ZrcWebinarAttendeeListCallback)(
+    const ZrcParticipant* attendees, int count, int total, int startIndex, int result, const char* keywords, void* userData);
+// Webinar head counts; a value of -1 was not part of this notification.
+typedef void (ZRCSDKWRAPPER_CALL *ZrcWebinarCountsCallback)(int attendeeCount, int raisedHandCount, int panelistCount, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetWebinarAttendeeListCallback(ZrcSdkHandle handle, ZrcWebinarAttendeeListCallback callback, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetWebinarCountsCallback(ZrcSdkHandle handle, ZrcWebinarCountsCallback callback, void* userData);
+ZRCSDKWRAPPER_API int  ZRCSDKWRAPPER_CALL ZrcSdk_ListWebinarAttendees(ZrcSdkHandle handle, const char* keywords);
+
 #ifdef __cplusplus
 }
 #endif
