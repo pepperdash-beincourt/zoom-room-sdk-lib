@@ -101,9 +101,12 @@ jobs:
       # runner's own toolchain drifted to GCC 11+ (GLIBCXX_3.4.29) after the org move, producing a
       # wrapper the device can't dlopen. Pinning the container makes this reproducible and immune to
       # runner drift. See PR #4.
+      # The image is pinned by digest (multi-arch index digest of the ubuntu:20.04 tag) so a
+      # re-pushed tag cannot silently change the base image. To update it, re-resolve the digest
+      # of ubuntu:20.04 and replace it here.
       - name: Build native ARM32 wrapper (pinned GCC 9 toolchain)
         run: |
-          docker run --rm -v "$PWD:/src" -w /src ubuntu:20.04 bash -c '
+          docker run --rm -v "$PWD:/src" -w /src ubuntu:20.04@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214 bash -c '
             set -e
             export DEBIAN_FRONTEND=noninteractive
             apt-get update
@@ -112,6 +115,41 @@ jobs:
             src/ZrcSdkWrapper/build.sh --arm --release --clean'
           cp src/ZrcSdkWrapper/build-arm/libzrcsdkwrapperpdt.so.1.0.0 \
              src/ZoomRoomSdk/native/linux-arm/libzrcsdkwrapperpdt.so
+
+      # ---------------------------
+      # Guard the libstdc++ ceiling: the target firmware ships libstdc++ up to GLIBCXX_3.4.28, so a
+      # wrapper that requires a newer GLIBCXX symbol version cannot be loaded on the device.
+      - name: Check native wrapper GLIBCXX ceiling
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq binutils-arm-linux-gnueabihf
+
+          lib=src/ZoomRoomSdk/native/linux-arm/libzrcsdkwrapperpdt.so
+          max_allowed=3.4.28
+
+          max_found=$(arm-linux-gnueabihf-objdump -T "$lib" \
+            | grep -o 'GLIBCXX_[0-9][0-9.]*' \
+            | sed 's/^GLIBCXX_//' \
+            | sort -u -V \
+            | tail -n 1)
+
+          if [ -z "$max_found" ]; then
+            echo "::error::No GLIBCXX_ symbol versions found in $lib; cannot verify the libstdc++ ceiling."
+            exit 1
+          fi
+
+          echo '## Native Wrapper GLIBCXX Check' >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Highest required**: GLIBCXX_$max_found" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Allowed ceiling**: GLIBCXX_$max_allowed" >> "$GITHUB_STEP_SUMMARY"
+
+          highest=$(printf '%s\n%s\n' "$max_found" "$max_allowed" | sort -V | tail -n 1)
+          if [ "$highest" != "$max_allowed" ]; then
+            echo "::error::$(basename "$lib") requires GLIBCXX_$max_found, above the GLIBCXX_$max_allowed ceiling of the target firmware's libstdc++. The device will not be able to load it; build the wrapper with the pinned GCC 9 toolchain."
+            echo '**GLIBCXX CHECK FAILED**' >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          echo "$(basename "$lib") requires at most GLIBCXX_$max_found (ceiling GLIBCXX_$max_allowed)."
 
       # ---------------------------
       - name: Build Solution

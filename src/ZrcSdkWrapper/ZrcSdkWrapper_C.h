@@ -679,7 +679,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetStartPmiResultCallback(ZrcSd
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetExitMeetingCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
 // errorCode=1 if wrong password and retry, 0 otherwise
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingNeedsPasswordCallback(ZrcSdkHandle handle, SdkEventCallback callback, void* userData);
-// message=callerName, errorCode=0
+// Invite callbacks receive a ZrcMeetingInvite* (caller name/contact ID, meeting ID/number);
+// the treated callback also receives accepted (1 = accepted, 0 = declined/expired/cancelled).
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteCallback(ZrcSdkHandle handle, ZrcMeetingInviteCallback callback, void* userData);
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetMeetingInviteTreatedCallback(ZrcSdkHandle handle, ZrcMeetingInviteTreatedCallback callback, void* userData);
 // errorCode=1 if muted
