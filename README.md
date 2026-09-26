@@ -41,6 +41,12 @@ The C wrapper is necessary because the ZRC SDK exposes a C++ ABI that cannot be 
 | CMake | 3.x+ | `brew install cmake` |
 | ARM32 cross-compiler | GCC 15.x | See below |
 
+## Updating ZoomRoom SDK
+
+https://developers.zoom.us/docs/rooms/controller/getting-started/
+
+Download the zrcsdk-linux-arm.zip and extract the lib/armhf *.so file
+
 ### ARM32 Cross-Compiler (macOS)
 
 ```bash

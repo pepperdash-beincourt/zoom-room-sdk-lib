@@ -9,9 +9,242 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetVideoOrder(IntPtr handle, int videoOrderType);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SetDynamicLayoutOption(IntPtr handle, int layout);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_UpdateVideoLayoutStyle(IntPtr handle, int style);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetFollowingHostOrder(IntPtr handle, int follow);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ControlVideoPosition(IntPtr handle, int position, int size);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_TurnVideoPage(IntPtr handle, int forward, int pageVideoType);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_ChangeThumbnailsPosition(IntPtr handle, int type);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SwitchToFloatingShareForSingleScreen(IntPtr handle, int floatingShare);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetVideoPageStatusCallback(IntPtr handle, ZrcVideoPageStatusCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetScreenLayoutStatusCallback(IntPtr handle, ZrcScreenLayoutStatusCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetVideoThumbInfoCallback(IntPtr handle, ZrcVideoThumbInfoCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetDynamicLayoutOptionCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern void ZrcSdk_SetLayoutDiagnosticCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
 
-    partial void InitializeLayoutCallbacks() { /* no native callbacks for layout */ }
+    // ── Video Page Status ─────────────────────────────────────────────────────
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ZrcVideoPageStatusNative
+    {
+        public int isInFirstPage;
+        public int isInLastPage;
+        public int pageVideoType;
+        public int videoCountInCurrentPage;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcVideoPageStatusCallbackDelegate(IntPtr statusPtr, IntPtr userData);
+
+    private ZrcVideoPageStatusCallbackDelegate? _videoPageStatusCallbackDelegate;
+
+    /// <summary>Video page status changed (first/last page, page video type, count). See <see cref="VideoPageStatusEventArgs"/>.</summary>
+    public event EventHandler<VideoPageStatusEventArgs>? VideoPageStatusChanged;
+
+    partial void InitializeLayoutCallbacks()
+    {
+        _videoPageStatusCallbackDelegate = OnVideoPageStatusCallback;
+        ZrcSdk_SetVideoPageStatusCallback(_handle, _videoPageStatusCallbackDelegate, IntPtr.Zero);
+
+        _screenLayoutStatusCallbackDelegate = OnScreenLayoutStatusCallback;
+        ZrcSdk_SetScreenLayoutStatusCallback(_handle, _screenLayoutStatusCallbackDelegate, IntPtr.Zero);
+
+        _videoThumbInfoCallbackDelegate = OnVideoThumbInfoCallback;
+        ZrcSdk_SetVideoThumbInfoCallback(_handle, _videoThumbInfoCallbackDelegate, IntPtr.Zero);
+
+        _dynamicLayoutOptionCallbackDelegate = OnDynamicLayoutOptionCallback;
+        ZrcSdk_SetDynamicLayoutOptionCallback(_handle, _dynamicLayoutOptionCallbackDelegate, IntPtr.Zero);
+
+        _layoutDiagnosticCallbackDelegate = OnLayoutDiagnosticCallback;
+        ZrcSdk_SetLayoutDiagnosticCallback(_handle, _layoutDiagnosticCallbackDelegate, IntPtr.Zero);
+    }
+
+    private void OnVideoPageStatusCallback(IntPtr statusPtr, IntPtr userData)
+    {
+        if (statusPtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcVideoPageStatusNative>(statusPtr);
+        VideoPageStatusChanged?.Invoke(this, new VideoPageStatusEventArgs
+        {
+            IsInFirstPage           = n.isInFirstPage != 0,
+            IsInLastPage            = n.isInLastPage != 0,
+            PageVideoType           = n.pageVideoType,
+            VideoCountInCurrentPage = n.videoCountInCurrentPage,
+        });
+    }
+
+    // ── Screen Layout Status ──────────────────────────────────────────────────
+
+    private const int MaxScreenLayoutScreens = 4;
+    private const int MaxScreenLayoutCtrls = 16;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ZrcScreenLayoutCtrlInfoNative
+    {
+        public int layout;
+        public int enable;
+        public int visible;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private unsafe struct ZrcScreenLayoutInfoNative
+    {
+        public int screen;
+        public int layout;
+        public int ctrlInfoCount;
+        public fixed byte ctrlInfosRaw[MaxScreenLayoutCtrls * 12]; // 3 ints * 4 bytes = 12 bytes per ctrl
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private unsafe struct ZrcScreenLayoutStatusNative
+    {
+        public int canShowContentOnly;
+        public int isInContentOnly;
+        public int canAdjustFloatingVideo;
+        public int canSwitchFloatingShareContent;
+        public int isInFloatingShareContent;
+        public int canAdjustMyAutoGeneratedVideoStreamsVisibility;
+        public int isShowMyAutoGeneratedVideoStreams;
+        public int screenCount;
+        public fixed byte screensRaw[MaxScreenLayoutScreens * (12 + MaxScreenLayoutCtrls * 12)]; // per screen: 3 ints header + ctrls
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcScreenLayoutStatusCallbackDelegate(IntPtr statusPtr, IntPtr userData);
+
+    private ZrcScreenLayoutStatusCallbackDelegate? _screenLayoutStatusCallbackDelegate;
+
+    /// <summary>Screen layout status changed. See <see cref="ScreenLayoutStatusEventArgs"/>.</summary>
+    public event EventHandler<ScreenLayoutStatusEventArgs>? ScreenLayoutStatusChanged;
+
+    private SdkEventCallbackDelegate? _dynamicLayoutOptionCallbackDelegate;
+
+    /// <summary>Dynamic-layout sub-option changed (ErrorCode = DynamicLayoutType: SpeakersOnBottom=0/Middle=1/Top=2).
+    /// On single-screen rooms this distinguishes Dynamic Gallery from Multi-Speaker.</summary>
+    public event EventHandler<SdkEventArgs>? DynamicLayoutOptionChanged;
+
+    private void OnDynamicLayoutOptionCallback(string message, int layout, IntPtr userData) =>
+        DynamicLayoutOptionChanged?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = layout });
+
+    private SdkEventCallbackDelegate? _layoutDiagnosticCallbackDelegate;
+
+    /// <summary>Diagnostic trace of any layout-helper notification the SDK delivers (Message = description, ErrorCode = numeric hint). For investigating layout behavior.</summary>
+    public event EventHandler<SdkEventArgs>? LayoutDiagnostic;
+
+    private void OnLayoutDiagnosticCallback(string message, int val, IntPtr userData) =>
+        LayoutDiagnostic?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = val });
+
+    private void OnScreenLayoutStatusCallback(IntPtr statusPtr, IntPtr userData)
+    {
+        if (statusPtr == IntPtr.Zero) return;
+
+        // Read the flat native struct using pointer arithmetic for the variable-length arrays
+        var reader = statusPtr;
+        var bools = new int[7];
+        for (int i = 0; i < 7; i++)
+        {
+            bools[i] = Marshal.ReadInt32(reader);
+            reader += 4;
+        }
+        int screenCount = Marshal.ReadInt32(reader);
+        reader += 4;
+
+        var screens = new ScreenLayoutInfoEventArgs[screenCount];
+        // Each ZrcScreenLayoutInfo in memory: int screen, int layout, int ctrlInfoCount, then MaxScreenLayoutCtrls * ZrcScreenLayoutCtrlInfo
+        int ctrlInfoSize = 12; // 3 * sizeof(int)
+        int screenInfoSize = 12 + MaxScreenLayoutCtrls * ctrlInfoSize; // header + fixed ctrl array
+
+        for (int i = 0; i < screenCount; i++)
+        {
+            int screen = Marshal.ReadInt32(reader);
+            int layout = Marshal.ReadInt32(reader + 4);
+            int ctrlCount = Marshal.ReadInt32(reader + 8);
+            var ctrls = new ScreenLayoutCtrlInfoEventArgs[ctrlCount];
+            IntPtr ctrlBase = reader + 12;
+            for (int j = 0; j < ctrlCount; j++)
+            {
+                ctrls[j] = new ScreenLayoutCtrlInfoEventArgs
+                {
+                    Layout = Marshal.ReadInt32(ctrlBase + j * ctrlInfoSize),
+                    Enable = Marshal.ReadInt32(ctrlBase + j * ctrlInfoSize + 4) != 0,
+                    Visible = Marshal.ReadInt32(ctrlBase + j * ctrlInfoSize + 8) != 0,
+                };
+            }
+            screens[i] = new ScreenLayoutInfoEventArgs
+            {
+                Screen = screen,
+                Layout = layout,
+                LayoutCtrlInfos = ctrls,
+            };
+            reader += screenInfoSize;
+        }
+
+        ScreenLayoutStatusChanged?.Invoke(this, new ScreenLayoutStatusEventArgs
+        {
+            CanShowContentOnly = bools[0] != 0,
+            IsInContentOnly = bools[1] != 0,
+            CanAdjustFloatingVideo = bools[2] != 0,
+            CanSwitchFloatingShareContent = bools[3] != 0,
+            IsInFloatingShareContent = bools[4] != 0,
+            CanAdjustMyAutoGeneratedVideoStreamsVisibility = bools[5] != 0,
+            IsShowMyAutoGeneratedVideoStreams = bools[6] != 0,
+            LayoutInfos = screens,
+        });
+    }
+
+    // ── Video Thumb Info ───────────────────────────────────────────────────────
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ZrcVideoThumbInfoNative
+    {
+        public int isSupported;
+        public int position;
+        public int size;
+        public int isInFirstPage;
+        public int isInLastPage;
+        public int pageVideoType;
+        public int videoCountInCurrentPage;
+        public int isThumbnailOnTop;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate void ZrcVideoThumbInfoCallbackDelegate(IntPtr infoPtr, IntPtr userData);
+
+    private ZrcVideoThumbInfoCallbackDelegate? _videoThumbInfoCallbackDelegate;
+
+    /// <summary>
+    /// Self-view video thumb (PiP) support/state changed. Fires whenever the SDK's notion of whether
+    /// the floating self-view thumb is supported, or its position/size, changes -- e.g. across layout
+    /// switches. See <see cref="VideoThumbInfoEventArgs"/>.
+    /// </summary>
+    public event EventHandler<VideoThumbInfoEventArgs>? VideoThumbInfoChanged;
+
+    private void OnVideoThumbInfoCallback(IntPtr infoPtr, IntPtr userData)
+    {
+        if (infoPtr == IntPtr.Zero) return;
+        var n = Marshal.PtrToStructure<ZrcVideoThumbInfoNative>(infoPtr);
+        VideoThumbInfoChanged?.Invoke(this, new VideoThumbInfoEventArgs
+        {
+            IsSupported             = n.isSupported != 0,
+            Position                = n.position,
+            Size                    = n.size,
+            IsInFirstPage           = n.isInFirstPage != 0,
+            IsInLastPage            = n.isInLastPage != 0,
+            PageVideoType           = n.pageVideoType,
+            VideoCountInCurrentPage = n.videoCountInCurrentPage,
+            IsThumbnailOnTop        = n.isThumbnailOnTop != 0,
+        });
+    }
 
     /// <summary>
     /// Sets the video layout for a screen.
@@ -32,10 +265,149 @@ public partial class ZrcSdk
         return ZrcSdk_SetVideoOrder(_handle, videoOrderType);
     }
 
+    /// <summary>
+    /// Sets the dynamic-layout sub-option within Dynamic View. On single-screen Zoom Rooms this is what
+    /// distinguishes "Dynamic Gallery" from "Multi-Speaker" (the controller has no separate
+    /// ScreenLayoutSourceType for Multi-Speaker).
+    /// </summary>
+    /// <param name="layout">DynamicLayoutType enum value (SpeakersOnBottom=0, SpeakersOnMiddle=1, SpeakersOnTop=2).</param>
+    public int SetDynamicLayoutOption(int layout)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_SetDynamicLayoutOption(_handle, layout);
+    }
+
+    /// <summary>
+    /// Sets the meeting video layout style (Gallery / Speaker / Thumbnail / Content-only / Dynamic).
+    /// This is distinct from <see cref="SetVideoOrder"/>, which only changes participant tile ordering.
+    /// </summary>
+    /// <param name="videoLayoutStyle">VideoLayoutStyle enum value (Gallery=1, Speaker=2, Thumbnail=3, ContentOnly=4, DynamicLayout=6).</param>
+    public int UpdateVideoLayoutStyle(int videoLayoutStyle)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_UpdateVideoLayoutStyle(_handle, videoLayoutStyle);
+    }
+
     /// <summary>Toggles following the host's video order. Returns -2 if not supported by this SDK version.</summary>
     public int SetFollowingHostOrder(bool follow)
     {
         ThrowIfDisposed();
         return ZrcSdk_SetFollowingHostOrder(_handle, follow ? 1 : 0);
     }
+
+    /// <summary>
+    /// Sets the self-view PiP position and size.
+    /// </summary>
+    /// <param name="position">VideoThumbPosition enum value (Center=0, Up, Right, UpRight, Down, DownRight, Left, UpLeft, DownLeft).</param>
+    /// <param name="size">VideoThumbSize enum value (Off=0 hides the PiP, 1x=1, 2x=2, 3x=3, Stripe=4).</param>
+    public int ControlVideoPosition(int position, int size)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ControlVideoPosition(_handle, position, size);
+    }
+
+    /// <summary>Pages the video gallery/thumbnail/dynamic view forward or backward.</summary>
+    /// <param name="forward"><see langword="true"/> to page to the next page; <see langword="false"/> for the previous page.</param>
+    /// <param name="pageVideoType">PageVideoType enum value (GalleryView=0, ThumbnailView=1, DynamicLayoutView=2).</param>
+    public int TurnVideoPage(bool forward, int pageVideoType)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_TurnVideoPage(_handle, forward ? 1 : 0, pageVideoType);
+    }
+
+    /// <summary>Changes the thumbnail strip position (top/bottom).</summary>
+    /// <param name="type">ThumbnailsPositionType enum value.</param>
+    public int ChangeThumbnailsPosition(int type)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_ChangeThumbnailsPosition(_handle, type);
+    }
+
+    /// <summary>
+    /// Swaps the shared content with the participant video on a single screen
+    /// ("swap content with thumbnail").
+    /// </summary>
+    /// <param name="floatingShare"><see langword="true"/> to float the share (video full-screen with share PiP); <see langword="false"/> for full-screen share.</param>
+    public int SwitchToFloatingShareForSingleScreen(bool floatingShare)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_SwitchToFloatingShareForSingleScreen(_handle, floatingShare ? 1 : 0);
+    }
+}
+
+/// <summary>Event args for <see cref="ZrcSdk.VideoPageStatusChanged"/>.</summary>
+public sealed class VideoPageStatusEventArgs : System.EventArgs
+{
+    /// <summary><see langword="true"/> if the video view is on the first page.</summary>
+    public bool IsInFirstPage           { get; init; }
+    /// <summary><see langword="true"/> if the video view is on the last page.</summary>
+    public bool IsInLastPage            { get; init; }
+    /// <summary>Current page video type (PageVideoType: GalleryView=0, ThumbnailView=1, DynamicLayoutView=2).</summary>
+    public int  PageVideoType           { get; init; }
+    /// <summary>Number of video tiles on the current page.</summary>
+    public int  VideoCountInCurrentPage { get; init; }
+}
+
+/// <summary>Event args for <see cref="ZrcSdk.ScreenLayoutStatusChanged"/>.</summary>
+public sealed class ScreenLayoutStatusEventArgs : System.EventArgs
+{
+    /// <summary>Whether content-only mode can be activated.</summary>
+    public bool CanShowContentOnly { get; init; }
+    /// <summary>Whether content-only mode is currently active.</summary>
+    public bool IsInContentOnly { get; init; }
+    /// <summary>Whether the floating video position/size can be adjusted.</summary>
+    public bool CanAdjustFloatingVideo { get; init; }
+    /// <summary>Whether floating share content can be toggled.</summary>
+    public bool CanSwitchFloatingShareContent { get; init; }
+    /// <summary>Whether floating share content mode is currently active.</summary>
+    public bool IsInFloatingShareContent { get; init; }
+    /// <summary>Whether auto-generated video streams visibility can be adjusted.</summary>
+    public bool CanAdjustMyAutoGeneratedVideoStreamsVisibility { get; init; }
+    /// <summary>Whether auto-generated video streams are currently shown.</summary>
+    public bool IsShowMyAutoGeneratedVideoStreams { get; init; }
+    /// <summary>Per-screen layout information.</summary>
+    public ScreenLayoutInfoEventArgs[] LayoutInfos { get; init; } = [];
+}
+
+/// <summary>Event args for <see cref="ZrcSdk.VideoThumbInfoChanged"/>.</summary>
+public sealed class VideoThumbInfoEventArgs : System.EventArgs
+{
+    /// <summary>Whether the floating self-view video thumb (PiP) is supported in the current context.</summary>
+    public bool IsSupported { get; init; }
+    /// <summary>Current thumb position (VideoThumbPosition: Center=0, Up, Right, UpRight, Down, DownRight, Left, UpLeft, DownLeft).</summary>
+    public int Position { get; init; }
+    /// <summary>Current thumb size (VideoThumbSize: Off=0, 1x=1, 2x=2, 3x=3, Stripe=4).</summary>
+    public int Size { get; init; }
+    /// <summary><see langword="true"/> if the thumb's video page is on the first page.</summary>
+    public bool IsInFirstPage { get; init; }
+    /// <summary><see langword="true"/> if the thumb's video page is on the last page.</summary>
+    public bool IsInLastPage { get; init; }
+    /// <summary>Current page video type (PageVideoType: GalleryView=0, ThumbnailView=1, DynamicLayoutView=2).</summary>
+    public int PageVideoType { get; init; }
+    /// <summary>Number of video tiles on the current page.</summary>
+    public int VideoCountInCurrentPage { get; init; }
+    /// <summary>Whether the thumbnail strip is positioned at the top of the screen.</summary>
+    public bool IsThumbnailOnTop { get; init; }
+}
+
+/// <summary>Per-screen layout info within <see cref="ScreenLayoutStatusEventArgs"/>.</summary>
+public sealed class ScreenLayoutInfoEventArgs
+{
+    /// <summary>MeetingScreen enum value (0=First, 1=Second, 2=Third, 100=Confidence).</summary>
+    public int Screen { get; init; }
+    /// <summary>Current ScreenLayoutSourceType for this screen.</summary>
+    public int Layout { get; init; }
+    /// <summary>Available layout controls for this screen.</summary>
+    public ScreenLayoutCtrlInfoEventArgs[] LayoutCtrlInfos { get; init; } = [];
+}
+
+/// <summary>Individual layout control availability within <see cref="ScreenLayoutInfoEventArgs"/>.</summary>
+public sealed class ScreenLayoutCtrlInfoEventArgs
+{
+    /// <summary>ScreenLayoutSourceType enum value for this control.</summary>
+    public int Layout { get; init; }
+    /// <summary>Whether this layout option is enabled.</summary>
+    public bool Enable { get; init; }
+    /// <summary>Whether this layout option is currently visible/selected.</summary>
+    public bool Visible { get; init; }
 }

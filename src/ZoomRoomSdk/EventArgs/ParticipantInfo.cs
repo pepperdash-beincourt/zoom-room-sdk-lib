@@ -142,4 +142,11 @@ public sealed class ParticipantInfo
     public bool   IsSupportDisplayLocalTime     { get; init; }
     /// <summary>Jabber ID (JID) of this attendee, used for messaging.</summary>
     public string AttendeeJid                   { get; init; } = string.Empty;
+
+    // ── Webinar breakout rooms (meeting breakout fields are BoSessionBID / BoUserStatus above) ──
+    /// <summary>Webinar breakout room this participant is assigned to (session BID); empty if none.</summary>
+    public string WebinarBoAssignedRoomId       { get; init; } = string.Empty;
+    /// <summary>Webinar breakout room this participant is currently in; empty while in the main session.</summary>
+    public string WebinarBoJoinedRoomId         { get; init; } = string.Empty;
+    public BO_USER_STATUS WebinarBoUserStatus   { get; init; }
 }

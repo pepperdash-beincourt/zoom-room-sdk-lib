@@ -144,6 +144,14 @@ public enum ConfInstType
     NewBO = 3,
 }
 
+/// <summary>Recording type carried by <see cref="ZrcSdk.RecordingRequest"/> (native RecordingType).</summary>
+public enum RecordingType
+{
+    Unknown = -1,
+    Local = 0,
+    Cloud = 1,
+}
+
 /// <summary>Claim host result.</summary>
 public enum ClaimHostResult
 {
@@ -719,4 +727,136 @@ public enum ThirdPartyMeetingServiceProvider
     MetaWorkrooms = 8,
     /// <summary>Tencent Meeting.</summary>
     Tencent = 9,
+}
+
+
+/// <summary>Which native notification a <see cref="EventArgs.PromptEventArgs"/> came from, and which answer applies.</summary>
+public enum ZrcPromptKind
+{
+    None = 0,
+    /// <summary>Type is <see cref="MeetingReminderType"/>; answer with ConfirmMeetingReminder.</summary>
+    MeetingReminder = 1,
+    /// <summary>Type is the customized disclaimer type; answer with ConfirmCustomizedMeetingReminder.</summary>
+    CustomizedReminder = 2,
+    /// <summary>Type64 is the combined consent type; answer with ConfirmCombinedConsent.</summary>
+    CombinedConsent = 3,
+    /// <summary>Type is <see cref="ConsentType"/> (ConsentId for Common); answer with ConfirmConsent.</summary>
+    Consent = 4,
+    /// <summary>Type is <see cref="PrivacyAlertType"/>, UserId is the <see cref="PrivacyAlertAction"/>; answer with HandlePrivacyAlert.</summary>
+    PrivacyAlert = 5,
+    /// <summary>Room empty for 30 minutes; AutoEndTime says when the meeting ends. Keep it with ContinueMeetingOnInactivity.</summary>
+    InactiveDetection = 6,
+    /// <summary>Type is <see cref="MeetingMessageEvent"/>. Informational.</summary>
+    MessageEvent = 7,
+    /// <summary>The host asked this room to start video; answer with AnswerHostRequestUnmuteVideo.</summary>
+    AskStartVideo = 8,
+    /// <summary>The host moved this room to breakout room SessionName; accept with JoinBreakoutRoom.</summary>
+    BOSwitchRequest = 9,
+    /// <summary>The host invited this room back to the main session; answer with ResponseHostInviteToMainSession.</summary>
+    BOReturnToMainInvite = 10,
+    /// <summary>Type is <see cref="WebinarRoleChangedState"/>. Informational.</summary>
+    WebinarRoleChanged = 11,
+    /// <summary>A participant in a breakout room asked for help: ConsentId = userGUID, SessionBID / SessionName = their room. Answer with JoinBreakoutRoomForHelp or IgnoreBOHelpRequest.</summary>
+    BOHelpRequest = 12,
+    /// <summary>The breakout timer expired (host). Informational.</summary>
+    BOTimeUp = 13,
+    /// <summary>Result of this room's own help request; Type is the native BO_HELP_ATTENDEE_RESULT. Informational.</summary>
+    BOHelpResult = 14,
+}
+
+/// <summary>Native BO_ASSIGN_PARTICIPANTS_TYPE.</summary>
+public enum BOAssignType
+{
+    Automatically = 0,
+    Manually = 1,
+    LetParticipantsChoose = 2,
+}
+
+/// <summary>Native BO_USER_STATUS.</summary>
+public enum BOUserStatus
+{
+    Invalid = -1,
+    InMainSession = 1,
+    InBreakoutRoom = 2,
+    Left = 3,
+}
+
+/// <summary>Native BO_STOP_COUNTDOWN.</summary>
+public enum BOStopCountdown
+{
+    None = 0,
+    Seconds10 = 1,
+    Seconds15 = 2,
+    Seconds30 = 3,
+    Seconds60 = 4,
+    Seconds120 = 5,
+}
+
+/// <summary>Native MeetingReminderType.</summary>
+public enum MeetingReminderType
+{
+    None = -1,
+    StartOrJoinMeeting = 0,
+    JoinExternalMeeting = 1,
+    RecordingReminder = 2,
+    RecordingDisclaimer = 3,
+    ArchivingFail = 4,
+    JoinWebinarAsPanelist = 5,
+}
+
+/// <summary>Native ConsentType.</summary>
+public enum ConsentType
+{
+    None = -1,
+    LiveStreaming = 0,
+    PromotedToPanelist = 1,
+    Archiving = 2,
+    Ndi = 3,
+    FocusModeStart = 4,
+    FocusModeEnding = 5,
+    AdminPayRemind = 6,
+    PersonalAudioConference = 7,
+    ZoomPhoneAcr = 8,
+    HdmiConnected = 9,
+    MeetingSummary = 10,
+    MeetingQuery = 11,
+    CustomAiCompanion = 12,
+    Common = 13,
+    SimuliveWebinar = 14,
+    CustomRecording = 15,
+}
+
+/// <summary>Native PrivacyAlertType.</summary>
+public enum PrivacyAlertType
+{
+    LiveTranscription = 0,
+    NewLttCaption = 1,
+}
+
+/// <summary>Native PrivacyAlertAction.</summary>
+public enum PrivacyAlertAction
+{
+    None = 0,
+    Show = 1,
+    Close = 2,
+    ShowDisclaimer = 3,
+    CloseDisclaimer = 4,
+}
+
+/// <summary>Native MessageEvent (video could not be started, and why).</summary>
+public enum MeetingMessageEvent
+{
+    Unknown = 0,
+    OpenVideoFailForHostStop = 1,
+    OpenVideoFailForForceVBEnabledButUserOptionDisabled = 2,
+    OpenVideoFailForForceVBEnabledButUserNoGreenScreen = 3,
+    OpenVideoFailForForceVBEnabledButDeviceNotSupport = 4,
+}
+
+/// <summary>Native WebinarRoleChangedState.</summary>
+public enum WebinarRoleChangedState
+{
+    None = 0,
+    Promote = 1,
+    Demote = 2,
 }

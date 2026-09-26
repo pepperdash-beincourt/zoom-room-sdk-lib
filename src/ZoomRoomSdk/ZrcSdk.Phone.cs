@@ -19,13 +19,19 @@ public partial class ZrcSdk
     private delegate void ZrcSIPCallCallbackDelegate(IntPtr callPtr, IntPtr userData);
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    private static extern int ZrcSdk_DeclineSIPCall(IntPtr handle, string callID);
+    private static extern int ZrcSdk_DeclineSIPCall(IntPtr handle, string? callID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    private static extern int ZrcSdk_TerminateSIPCall(IntPtr handle, string callID);
+    private static extern int ZrcSdk_CallSIP(IntPtr handle, string uri);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    private static extern int ZrcSdk_HoldSIPCall(IntPtr handle, string callID);
+    private static extern int ZrcSdk_SendDTMFToSIPCall(IntPtr handle, string dtmf, string? callID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    private static extern int ZrcSdk_UnholdSIPCall(IntPtr handle, string callID);
+    private static extern int ZrcSdk_TerminateSIPCall(IntPtr handle, string? callID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_HoldSIPCall(IntPtr handle, string? callID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_UnholdSIPCall(IntPtr handle, string? callID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_CallOutPSTNUser(IntPtr handle, string phoneNumber, int cancelCall, int hasVoicePrompt);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetSIPCallStatusCallback(IntPtr handle, ZrcSIPCallCallbackDelegate? cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -47,17 +53,37 @@ public partial class ZrcSdk
         ZrcSdk_SetSIPServiceStatusCallback(_handle, _sipServiceStatusCallbackDelegate, IntPtr.Zero);
     }
 
-    /// <summary>Declines an incoming SIP call. Returns false if not supported (requires stored call state).</summary>
-    public bool DeclineSIPCall(string callID) { ThrowIfDisposed(); return ZrcSdk_DeclineSIPCall(_handle, callID) == 0; }
+    /// <summary>Places an outbound SIP call to the given URI / number.</summary>
+    public bool CallSIP(string uri) { ThrowIfDisposed(); return ZrcSdk_CallSIP(_handle, uri) == 0; }
 
-    /// <summary>Terminates an active SIP call.</summary>
-    public bool TerminateSIPCall(string callID) { ThrowIfDisposed(); return ZrcSdk_TerminateSIPCall(_handle, callID) == 0; }
+    /// <summary>
+    /// Sends DTMF digits to an active SIP call. Pass the call's <c>callID</c>, or null/empty to
+    /// target the single active call.
+    /// </summary>
+    public bool SendDTMFToSIPCall(string dtmf, string? callID = null) { ThrowIfDisposed(); return ZrcSdk_SendDTMFToSIPCall(_handle, dtmf, callID) == 0; }
 
-    /// <summary>Holds an active SIP call.</summary>
-    public bool HoldSIPCall(string callID) { ThrowIfDisposed(); return ZrcSdk_HoldSIPCall(_handle, callID) == 0; }
+    /// <summary>Declines an incoming SIP call. Pass the call's <c>callID</c>, or null/empty for the single active call.</summary>
+    public bool DeclineSIPCall(string? callID = null) { ThrowIfDisposed(); return ZrcSdk_DeclineSIPCall(_handle, callID) == 0; }
 
-    /// <summary>Resumes a held SIP call.</summary>
-    public bool UnholdSIPCall(string callID) { ThrowIfDisposed(); return ZrcSdk_UnholdSIPCall(_handle, callID) == 0; }
+    /// <summary>Terminates an active SIP call. Pass the call's <c>callID</c>, or null/empty for the single active call.</summary>
+    public bool TerminateSIPCall(string? callID = null) { ThrowIfDisposed(); return ZrcSdk_TerminateSIPCall(_handle, callID) == 0; }
+
+    /// <summary>Holds an active SIP call. Pass the call's <c>callID</c>, or null/empty for the single active call.</summary>
+    public bool HoldSIPCall(string? callID = null) { ThrowIfDisposed(); return ZrcSdk_HoldSIPCall(_handle, callID) == 0; }
+
+    /// <summary>Resumes a held SIP call. Pass the call's <c>callID</c>, or null/empty for the single active call.</summary>
+    public bool UnholdSIPCall(string? callID = null) { ThrowIfDisposed(); return ZrcSdk_UnholdSIPCall(_handle, callID) == 0; }
+
+    /// <summary>
+    /// Dials out a PSTN phone number into the current meeting via the third-party meeting helper.
+    /// <paramref name="cancelCall"/> cancels an in-progress call-out; <paramref name="hasVoicePrompt"/>
+    /// rings the call on the Zoom Room.
+    /// </summary>
+    public bool CallOutPSTNUser(string phoneNumber, bool cancelCall = false, bool hasVoicePrompt = false)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_CallOutPSTNUser(_handle, phoneNumber, cancelCall ? 1 : 0, hasVoicePrompt ? 1 : 0) == 0;
+    }
 
     private void OnSIPCallStatusCallback(IntPtr callPtr, IntPtr userData)
     {

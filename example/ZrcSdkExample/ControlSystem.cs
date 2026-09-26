@@ -119,7 +119,7 @@ public class ControlSystem:CrestronControlSystem
       zrcSdk.MeetingNeedsPassword += (s, e) =>
           CrestronConsole.PrintLine($"Meeting needs password{(e.ErrorCode == 1 ? " (previous password was wrong)" : "")}");
       zrcSdk.MeetingInvite += (s, e) =>
-          CrestronConsole.PrintLine($"Incoming meeting invite from: {e.Message}");
+          CrestronConsole.PrintLine($"Incoming meeting invite from: {e.CallerName} (meeting {e.MeetingNumber})");
       zrcSdk.AudioStatus += (s, e) =>
           CrestronConsole.PrintLine($"Audio mute: {(e.ErrorCode == 1 ? "muted" : "unmuted")}");
       zrcSdk.MuteOnEntry += (s, e) =>

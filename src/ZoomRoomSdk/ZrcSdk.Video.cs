@@ -7,6 +7,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_MuteUserVideo(IntPtr handle, int userID, int mute);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SetMyVideoHidden(IntPtr handle, int hidden);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_AllowAttendeesStartVideo(IntPtr handle, int allow);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_PinUserOnScreen(IntPtr handle, int userID, int screenIndex);
@@ -35,6 +37,13 @@ public partial class ZrcSdk
     {
         ThrowIfDisposed();
         return ZrcSdk_SetVideoState(_handle, start ? 1 : 0) == 0;
+    }
+
+    /// <summary>Hides or shows the room's own self video locally (does not stop video to the far end).</summary>
+    public bool SetMyVideoHidden(bool hidden)
+    {
+        ThrowIfDisposed();
+        return ZrcSdk_SetMyVideoHidden(_handle, hidden ? 1 : 0) == 0;
     }
 
     /// <summary>Mutes or unmutes a participant's video. Host only.</summary>

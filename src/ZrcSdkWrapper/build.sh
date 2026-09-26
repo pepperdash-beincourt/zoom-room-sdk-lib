@@ -160,8 +160,8 @@ if [ $? -eq 0 ]; then
         echo "  $LIB_FILE"
         echo ""
         
-        # Show file info
-        file "$LIB_FILE"
+        # Show file info (cosmetic; don't abort the build if `file` isn't installed)
+        command -v file >/dev/null 2>&1 && file "$LIB_FILE" || true
         echo ""
         
         # Show size
