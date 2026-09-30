@@ -4,6 +4,8 @@
 #include <cstring>
 #include <map>
 #include <mutex>
+#include <set>
+#include <vector>
 #include <sys/stat.h>
 #include "IZRCSDK.h"
 #include "IZoomRoomsService.h"
@@ -529,7 +531,7 @@ struct ZrcSdkInstance
     IZRCSDK*             pNativeSDK;
     bool                 bInitialized;
 
-    ZrcSDKSink*                 pSdkSink;
+    std::string                 roomID;   // non-empty while this handle holds a claim on the shared SDK
     IZoomRoomsService*          pZoomRoomsService;
     ZrcZoomRoomsServiceSink*    pZoomRoomsServiceSink;
     IPreMeetingService*         pPreMeetingService;
@@ -651,7 +653,7 @@ struct ZrcSdkInstance
 
     ZrcSdkInstance()
         : pNativeSDK(nullptr), bInitialized(false)
-        , pSdkSink(nullptr), pZoomRoomsService(nullptr), pZoomRoomsServiceSink(nullptr)
+        , pZoomRoomsService(nullptr), pZoomRoomsServiceSink(nullptr)
         , pPreMeetingService(nullptr), pPreMeetingServiceSink(nullptr)
         , pSettingService(nullptr)
         , pMeetingService(nullptr), pMeetingServiceSink(nullptr)
@@ -1834,22 +1836,24 @@ void ZrcPhoneCallServiceSink::OnUpdateSIPServiceStatusNotification(const SIPServ
         return -1;                                                          \
     }
 
-// ─── SDK Lifecycle ────────────────────────────────────────────────────────────
+// ─── Shared SDK state ─────────────────────────────────────────────────────────
+// IZRCSDK is one singleton per process. Every handle shares it and owns one IZoomRoomsService,
+// selected by room ID (ZRC SDK 6.3.0+), so a single process can control several Zoom Rooms. The
+// singleton is created by the first handle to initialize and destroyed when the last one
+// uninitializes.
+static std::mutex                   g_sdkMutex;
+static IZRCSDK*                     g_pNativeSDK  = nullptr;
+static ZrcSDKSink*                  g_pSdkSink    = nullptr;
+static int                          g_sdkRefCount = 0;
+static std::set<std::string>        g_roomIDsInUse;
+// Handles destroyed while other handles kept the singleton alive. Their sinks are still registered
+// with a live room service, so they are kept until the singleton goes.
+static std::vector<ZrcSdkInstance*> g_parkedInstances;
 
-ZRCSDKWRAPPER_API ZrcSdkHandle ZRCSDKWRAPPER_CALL ZrcSdk_Create()
+// Only call once no live SDK object can still reach this handle's sinks: either the singleton is
+// gone, or the handle never created a room service.
+static void FreeInstance(ZrcSdkInstance* inst)
 {
-    try { return (ZrcSdkHandle)(new ZrcSdkInstance()); }
-    catch (...) { return nullptr; }
-}
-
-ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle)
-{
-    if (!handle) return;
-    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (inst->bInitialized) ZrcSdk_Uninitialize(handle);
-    // Sinks were deregistered from their helpers in ZrcSdk_Uninitialize (above) before the SDK
-    // singleton was destroyed, so these deletes cannot race a live SDK callback. Null after delete
-    // to stay safe against any re-entrant teardown.
     delete inst->pContactHelperSink;     inst->pContactHelperSink = nullptr;
     delete inst->pMeetingListHelperSink; inst->pMeetingListHelperSink = nullptr;
     delete inst->pPhoneCallServiceSink;
@@ -1876,34 +1880,147 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle)
     delete inst->pMeetingServiceSink;
     delete inst->pPreMeetingServiceSink;
     delete inst->pZoomRoomsServiceSink;
-    delete inst->pSdkSink;
     delete inst;
+}
+
+// Drops a handle's claim on the shared SDK. The last claim flushes and destroys the singleton and
+// frees any parked handles; an earlier one only flushes, leaving the singleton to the other rooms.
+static void ReleaseSharedSdk(ZrcSdkInstance* inst)
+{
+    std::vector<ZrcSdkInstance*> toFree;
+    {
+        std::lock_guard<std::mutex> lock(g_sdkMutex);
+        if (!inst->roomID.empty())
+        {
+            g_roomIDsInUse.erase(inst->roomID);
+            inst->roomID.clear();
+            if (g_sdkRefCount > 0) --g_sdkRefCount;
+        }
+        inst->pNativeSDK = nullptr;
+
+        if (!g_pNativeSDK) return;
+        g_pNativeSDK->ForceFlushLog();          // flush credential cache and logs to disk
+        if (g_sdkRefCount > 0) return;
+
+        IZRCSDK::DestroyInstance();             // cleanly shut down SDK singleton
+        g_pNativeSDK = nullptr;
+        delete g_pSdkSink;
+        g_pSdkSink = nullptr;
+        toFree.swap(g_parkedInstances);
+    }
+    for (ZrcSdkInstance* parked : toFree) FreeInstance(parked);
+}
+
+// ─── SDK Lifecycle ────────────────────────────────────────────────────────────
+
+ZRCSDKWRAPPER_API ZrcSdkHandle ZRCSDKWRAPPER_CALL ZrcSdk_Create()
+{
+    try { return (ZrcSdkHandle)(new ZrcSdkInstance()); }
+    catch (...) { return nullptr; }
+}
+
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle)
+{
+    if (!handle) return;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (inst->pNativeSDK) ZrcSdk_Uninitialize(handle);
+
+    // ZrcSdk_Uninitialize destroys the singleton only for the last handle. While another room keeps
+    // it alive this handle's sinks are still registered with its room service, so deleting them
+    // would leave the SDK calling freed memory: park the handle until the singleton goes.
+    {
+        std::lock_guard<std::mutex> lock(g_sdkMutex);
+        if (g_pNativeSDK && inst->pZoomRoomsService)
+        {
+            g_parkedInstances.push_back(inst);
+            return;
+        }
+    }
+    FreeInstance(inst);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetActiveRoomCount()
+{
+    std::lock_guard<std::mutex> lock(g_sdkMutex);
+    return g_sdkRefCount;
 }
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, const char* configPath)
 {
+    return ZrcSdk_InitializeRoom(handle, configPath, nullptr);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_InitializeRoom(ZrcSdkHandle handle, const char* configPath, const char* roomID)
+{
     if (!handle) return -1;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (inst->bInitialized) return 0;
 
     try
     {
-        std::string contentDir = (configPath && configPath[0] != '\0')
-            ? std::string(configPath) : std::string("/tmp/zrcsdk/");
-        mkdir(contentDir.c_str(), 0755);
+        const std::string id = (roomID && roomID[0] != '\0')
+            ? std::string(roomID) : std::string(ZRCSDK_DEFAULT_ROOM_ID);
 
-        inst->pSdkSink = new ZrcSDKSink(contentDir);
-        inst->pNativeSDK = IZRCSDK::CreateInstance(inst->pSdkSink);
-        if (!inst->pNativeSDK)
+        const char* failure = nullptr;
+        int failureCode = -1;
         {
-            inst->RaiseErrorEvent("IZRCSDK::CreateInstance returned null", -1);
-            return -1;
+            std::lock_guard<std::mutex> lock(g_sdkMutex);
+
+            if (g_roomIDsInUse.count(id))
+            {
+                // The SDK hands back the same room service for a repeated ID, which would leave two
+                // handles driving one Zoom Room.
+                failure = "Room ID is already in use by another handle";
+                failureCode = -2;
+            }
+            else
+            {
+                if (!g_pNativeSDK)
+                {
+                    // The content directory belongs to the singleton: the first handle sets it.
+                    std::string contentDir = (configPath && configPath[0] != '\0')
+                        ? std::string(configPath) : std::string("/tmp/zrcsdk/");
+                    mkdir(contentDir.c_str(), 0755);
+
+                    g_pSdkSink = new ZrcSDKSink(contentDir);
+                    g_pNativeSDK = IZRCSDK::CreateInstance(g_pSdkSink);
+                    if (!g_pNativeSDK)
+                    {
+                        delete g_pSdkSink;
+                        g_pSdkSink = nullptr;
+                        failure = "IZRCSDK::CreateInstance returned null";
+                    }
+                }
+
+                if (g_pNativeSDK)
+                {
+                    inst->pZoomRoomsService = g_pNativeSDK->CreateZoomRoomsService(id);
+                    if (inst->pZoomRoomsService)
+                    {
+                        inst->pNativeSDK = g_pNativeSDK;
+                        inst->roomID = id;
+                        g_roomIDsInUse.insert(id);
+                        ++g_sdkRefCount;
+                    }
+                    else
+                    {
+                        failure = "CreateZoomRoomsService returned null";
+                        if (g_sdkRefCount == 0)
+                        {
+                            IZRCSDK::DestroyInstance();
+                            g_pNativeSDK = nullptr;
+                            delete g_pSdkSink;
+                            g_pSdkSink = nullptr;
+                        }
+                    }
+                }
+            }
         }
 
-        inst->pZoomRoomsService = inst->pNativeSDK->CreateZoomRoomsService();
-        if (!inst->pZoomRoomsService)
+        if (failure)
         {
-            inst->RaiseErrorEvent("CreateZoomRoomsService returned null", -1);
-            return -1;
+            inst->RaiseErrorEvent(failure, failureCode);
+            return failureCode;
         }
 
         inst->pZoomRoomsServiceSink = new ZrcZoomRoomsServiceSink(inst);
@@ -2096,6 +2213,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, 
     }
     catch (...)
     {
+        // A failure after the room service was created leaves sinks registered with it, so the
+        // claim on the shared SDK is kept until ZrcSdk_Uninitialize / ZrcSdk_Destroy release it.
         inst->RaiseErrorEvent("Exception during initialization", -1);
         return -1;
     }
@@ -2105,7 +2224,7 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Uninitialize(ZrcSdkHandle handl
 {
     if (!handle) return;
     ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
-    if (inst->pNativeSDK && inst->bInitialized)
+    if (inst->pNativeSDK)
     {
         try
         {
@@ -2120,12 +2239,11 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_Uninitialize(ZrcSdkHandle handl
             if (inst->pMeetingListHelper && inst->pMeetingListHelperSink)
                 inst->pMeetingListHelper->DeregisterSink(inst->pMeetingListHelperSink);
 
-            inst->pNativeSDK->ForceFlushLog();  // flush credential cache and logs to disk
-            IZRCSDK::DestroyInstance();          // cleanly shut down SDK singleton
-            inst->pNativeSDK = nullptr;
+            // Flushes, and destroys the singleton when this was the last room using it.
+            ReleaseSharedSdk(inst);
 
-            // Helper/service pointers are owned by the now-destroyed SDK; clear them so nothing
-            // reuses dangling memory (entrypoints also gate on bInitialized, but don't rely on it).
+            // Helper/service pointers are owned by the SDK, which may now be destroyed; clear them so
+            // nothing reuses dangling memory (entrypoints also gate on bInitialized, but don't rely on it).
             inst->pContactHelper = nullptr;
             inst->pMeetingListHelper = nullptr;
             inst->pSettingService = nullptr;

@@ -15,6 +15,11 @@ namespace PepperDash.ZoomRoom.Sdk;
 /// matching the SDK's single-threaded libuv event loop requirement.
 /// </para>
 /// <para>
+/// The native SDK is one singleton per process. Each <see cref="ZrcSdk"/> instance controls one
+/// Zoom Room on it, selected by the room ID passed to <see cref="Initialize(string, string?)"/>,
+/// and every instance is initialized, pumped and uninitialized on the same shared SDK thread.
+/// </para>
+/// <para>
 /// On Crestron systems all writable application paths are mounted <c>noexec</c>. The
 /// native library is therefore loaded via <c>memfd_create</c> + <c>dlopen(/proc/self/fd/N)</c>
 /// to bypass the restriction. The proprietary <c>libZRCSdk.so</c> must already be installed
@@ -25,10 +30,22 @@ public partial class ZrcSdk : IDisposable
 {
     private IntPtr _handle;
     private bool _disposed;
-    private Thread? _sdkThread;
-    private volatile bool _sdkRunning;
-    private bool _initResult;
-    private ManualResetEventSlim? _initDone;
+
+    // Set when this instance was uninitialized while other rooms kept the native SDK alive. Its
+    // native handle (and the callback delegates it points at) must outlive the SDK, so it is freed
+    // by the last instance to uninitialize rather than by Dispose.
+    private volatile bool _retired;
+
+    // ── Shared SDK thread ─────────────────────────────────────────────────────
+    // The native SDK is one singleton, created, pumped and destroyed on a single thread. That
+    // thread is shared by every instance: it runs queued lifecycle work, then one HeartBeat per
+    // tick, and exits once no instance is initialized.
+    private static readonly object s_sdkThreadLock = new();
+    private static readonly Queue<Action> s_sdkWork = new();
+    private static Thread? s_sdkThread;
+    // Both lists are touched only on the SDK thread.
+    private static readonly List<ZrcSdk> s_initialized = new();
+    private static readonly List<ZrcSdk> s_retired = new();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void SdkEventCallbackDelegate(
@@ -209,11 +226,13 @@ public partial class ZrcSdk : IDisposable
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_Destroy(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    private static extern int ZrcSdk_Initialize(IntPtr handle, string configPath);
+    private static extern int ZrcSdk_InitializeRoom(IntPtr handle, string configPath, string? roomID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_Uninitialize(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_HeartBeat(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_GetActiveRoomCount();
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_GetSDKVersion(IntPtr handle, StringBuilder buffer, int bufferSize);
 
@@ -383,39 +402,136 @@ public partial class ZrcSdk : IDisposable
     /// Directory used by the SDK for persistent state. On Crestron use <c>/user/zrcsdk</c>.
     /// </param>
     /// <returns><see langword="true"/> on success.</returns>
-    public bool Initialize(string configPath)
+    public bool Initialize(string configPath) => Initialize(configPath, null);
+
+    /// <summary>
+    /// Initializes the SDK for one Zoom Room and starts the shared HeartBeat loop if it is not
+    /// already running. Blocks until the native initialization returns.
+    /// </summary>
+    /// <param name="configPath">
+    /// Directory used by the SDK for persistent state. On Crestron use <c>/user/zrcsdk</c>. The
+    /// directory belongs to the shared native SDK: the first instance to initialize sets it and
+    /// later instances use that same directory.
+    /// </param>
+    /// <param name="roomId">
+    /// Identifies this instance's Zoom Room to the SDK. Pairing is stored per ID, and the ID is
+    /// shown as the controller's serial number in the Zoom web portal. <see langword="null"/> or
+    /// empty uses the SDK's default ID, which is what a single-room program was paired under.
+    /// Each instance in a process needs its own ID; a repeated one fails.
+    /// </param>
+    /// <returns><see langword="true"/> on success.</returns>
+    public bool Initialize(string configPath, string? roomId)
     {
         ThrowIfDisposed();
-        _initDone = new ManualResetEventSlim(false);
-        _sdkRunning = true;
-        _sdkThread = new Thread(() => SdkThreadProc(configPath))
+        var ok = false;
+        RunOnSdkThread(() =>
         {
-            IsBackground = true,
-            Name = "ZrcSdkThread",
-        };
-        _sdkThread.Start();
-        _initDone.Wait();
-        _initDone.Dispose();
-        _initDone = null;
-        return _initResult;
+            ok = ZrcSdk_InitializeRoom(_handle, configPath, roomId) == 0;
+            if (ok && !s_initialized.Contains(this)) s_initialized.Add(this);
+        }, Timeout.InfiniteTimeSpan);
+        return ok;
     }
 
-    private void SdkThreadProc(string configPath)
+    /// <summary>
+    /// Runs <paramref name="work"/> on the shared SDK thread, starting that thread if needed, and
+    /// waits up to <paramref name="timeout"/> for it to finish. Work queued from the SDK thread
+    /// itself (an event handler calling back in) runs inline.
+    /// </summary>
+    private static bool RunOnSdkThread(Action work, TimeSpan timeout)
     {
-        int result = ZrcSdk_Initialize(_handle, configPath);
-        _initResult = result == 0;
-        _initDone!.Set();
-
-        if (_initResult)
+        if (Thread.CurrentThread == s_sdkThread)
         {
-            while (_sdkRunning)
-            {
-                Thread.Sleep(150);
-                if (_handle != IntPtr.Zero && _sdkRunning)
-                    ZrcSdk_HeartBeat(_handle);
-            }
-            ZrcSdk_Uninitialize(_handle);
+            work();
+            return true;
         }
+
+        var done = new ManualResetEventSlim(false);
+        lock (s_sdkThreadLock)
+        {
+            s_sdkWork.Enqueue(() =>
+            {
+                try { work(); }
+                finally { done.Set(); }
+            });
+
+            if (s_sdkThread == null)
+            {
+                s_sdkThread = new Thread(SdkThreadProc)
+                {
+                    IsBackground = true,
+                    Name = "ZrcSdkThread",
+                };
+                s_sdkThread.Start();
+            }
+        }
+
+        // Not disposed: on a timeout the SDK thread still sets it when the work eventually runs.
+        return done.Wait(timeout);
+    }
+
+    private static void SdkThreadProc()
+    {
+        while (true)
+        {
+            while (true)
+            {
+                Action? work;
+                lock (s_sdkThreadLock)
+                {
+                    if (s_sdkWork.Count == 0)
+                    {
+                        if (s_initialized.Count == 0)
+                        {
+                            s_sdkThread = null;
+                            return;
+                        }
+                        break;
+                    }
+                    work = s_sdkWork.Dequeue();
+                }
+
+                try { work(); }
+                catch { /* lifecycle work reports through its own result; keep the pump alive */ }
+            }
+
+            Thread.Sleep(150);
+
+            // One HeartBeat pumps the shared native SDK for every room.
+            var pumped = s_initialized.Find(sdk => sdk._handle != IntPtr.Zero);
+            if (pumped != null)
+                ZrcSdk_HeartBeat(pumped._handle);
+        }
+    }
+
+    // SDK thread only.
+    private void UninitializeOnSdkThread()
+    {
+        if (!s_initialized.Remove(this))
+            return;
+
+        // The handle is already gone if Dispose gave up waiting for this work and destroyed it.
+        if (_handle != IntPtr.Zero)
+            ZrcSdk_Uninitialize(_handle);
+
+        if (ZrcSdk_GetActiveRoomCount() > 0)
+        {
+            // Other rooms keep the native SDK alive, and this room's sinks are still registered with
+            // it: hold the handle and the delegates it calls until the SDK is destroyed.
+            if (_handle != IntPtr.Zero)
+            {
+                _retired = true;
+                s_retired.Add(this);
+            }
+            return;
+        }
+
+        // That was the last room, so the native SDK is gone and the retired handles can go too.
+        foreach (var retired in s_retired)
+        {
+            ZrcSdk_Destroy(retired._handle);
+            retired._handle = IntPtr.Zero;
+        }
+        s_retired.Clear();
     }
 
     /// <summary>Returns the ZRC SDK version string.</summary>
@@ -441,11 +557,7 @@ public partial class ZrcSdk : IDisposable
     public void Uninitialize()
     {
         if (!_disposed && _handle != IntPtr.Zero)
-        {
-            _sdkRunning = false;
-            _sdkThread?.Join(TimeSpan.FromSeconds(2));
-            _sdkThread = null;
-        }
+            RunOnSdkThread(UninitializeOnSdkThread, TimeSpan.FromSeconds(2));
     }
 
     /// <inheritdoc/>
@@ -453,14 +565,13 @@ public partial class ZrcSdk : IDisposable
     {
         if (!_disposed)
         {
-            _sdkRunning = false;
-            if (disposing)
-            {
-                _sdkThread?.Join(TimeSpan.FromSeconds(2));
-                _sdkThread = null;
-            }
+            // An initialized instance is rooted by the shared SDK thread's lists, so the finalizer
+            // only ever sees one that never initialized or has already been uninitialized.
+            if (disposing && _handle != IntPtr.Zero)
+                RunOnSdkThread(UninitializeOnSdkThread, TimeSpan.FromSeconds(2));
 
-            if (_handle != IntPtr.Zero)
+            // A retired handle is freed by the last room to uninitialize (see UninitializeOnSdkThread).
+            if (_handle != IntPtr.Zero && !_retired)
             {
                 ZrcSdk_Destroy(_handle);
                 _handle = IntPtr.Zero;

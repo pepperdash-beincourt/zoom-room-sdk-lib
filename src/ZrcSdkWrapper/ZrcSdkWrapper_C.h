@@ -413,11 +413,24 @@ typedef void (ZRCSDKWRAPPER_CALL *ZrcZRCSDeviceListCallback)(const ZrcZRCSDevice
 typedef void (ZRCSDKWRAPPER_CALL *ZrcZRCSSceneListCallback)(const ZrcZRCSScene* scenes, int count, void* userData);
 
 // ── SDK Lifecycle ─────────────────────────────────────────────────────────────
+// Every handle shares the one native SDK singleton and controls one Zoom Room, selected by room
+// ID. Initialize, HeartBeat and Uninitialize must all be called from the same thread for every
+// handle. HeartBeat pumps the shared singleton, so one call per tick serves every handle.
 ZRCSDKWRAPPER_API ZrcSdkHandle ZRCSDKWRAPPER_CALL ZrcSdk_Create();
+// A handle destroyed while other handles are still initialized is kept until the last one
+// uninitializes; its callbacks can fire until then, so keep them valid.
 ZRCSDKWRAPPER_API void         ZRCSDKWRAPPER_CALL ZrcSdk_Destroy(ZrcSdkHandle handle);
+// Same as ZrcSdk_InitializeRoom with the SDK's default room ID.
 ZRCSDKWRAPPER_API int          ZRCSDKWRAPPER_CALL ZrcSdk_Initialize(ZrcSdkHandle handle, const char* configPath);
+// roomID: identifies this handle's Zoom Room to the SDK (pairing is stored per ID, and it is shown
+// as the controller's serial number in the Zoom web portal); null or empty = the SDK default.
+// configPath is used by the first handle to initialize; later handles share that directory.
+// Returns 0 on success, -2 when another handle already uses roomID, -1 on any other failure.
+ZRCSDKWRAPPER_API int          ZRCSDKWRAPPER_CALL ZrcSdk_InitializeRoom(ZrcSdkHandle handle, const char* configPath, const char* roomID);
 ZRCSDKWRAPPER_API void         ZRCSDKWRAPPER_CALL ZrcSdk_Uninitialize(ZrcSdkHandle handle);
 ZRCSDKWRAPPER_API void         ZRCSDKWRAPPER_CALL ZrcSdk_HeartBeat(ZrcSdkHandle handle);
+// Number of handles currently initialized; 0 means the native SDK singleton is not running.
+ZRCSDKWRAPPER_API int          ZRCSDKWRAPPER_CALL ZrcSdk_GetActiveRoomCount();
 
 // ── SDK Information ───────────────────────────────────────────────────────────
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetSDKVersion(ZrcSdkHandle handle, char* buffer, int bufferSize);
