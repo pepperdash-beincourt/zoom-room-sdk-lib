@@ -550,6 +550,10 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LowerHandForUser(ZrcSdkHandle ha
 // Host actions on a participant (IParticipantHelper).
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ExpelUser(ZrcSdkHandle handle, int32_t userID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignHost(ZrcSdkHandle handle, int32_t userID);
+// Multi-camera: make the room itself, or one of its own camera tiles (a participant whose
+// parentUserID is the room's userID), the active speaker. ZR 6.6.0+.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMySelfAsActiveSpeaker(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMyChildAsActiveSpeaker(ZrcSdkHandle handle, int32_t userID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionFeedback(ZrcSdkHandle handle, int32_t feedbackType);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ClearAllFeedback(ZrcSdkHandle handle);

@@ -98,12 +98,29 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_ExpelUser(IntPtr handle, int userID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_AssignHost(IntPtr handle, int userID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SetMySelfAsActiveSpeaker(IntPtr handle);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_SetMyChildAsActiveSpeaker(IntPtr handle, int userID);
 
     /// <summary>Removes (expels) a participant from the meeting. Host only.</summary>
     public bool ExpelUser(int userID) { ThrowIfDisposed(); return ZrcSdk_ExpelUser(_handle, userID) == 0; }
 
     /// <summary>Assigns the host role to a participant. Host only.</summary>
     public bool AssignHost(int userID) { ThrowIfDisposed(); return ZrcSdk_AssignHost(_handle, userID) == 0; }
+
+    /// <summary>
+    /// Makes the room's own (main) video the active speaker. Multi-camera rooms only; Zoom Rooms 6.6.0+.
+    /// Returns the raw SDK result code (0 = success).
+    /// </summary>
+    public int SetMySelfAsActiveSpeaker() { ThrowIfDisposed(); return ZrcSdk_SetMySelfAsActiveSpeaker(_handle); }
+
+    /// <summary>
+    /// Makes one of the room's own extra camera tiles - a participant whose
+    /// <see cref="ParticipantInfo.ParentUserID"/> is the room's user ID - the active speaker.
+    /// Multi-camera rooms only; Zoom Rooms 6.6.0+. Returns the raw SDK result code (0 = success).
+    /// </summary>
+    public int SetMyChildAsActiveSpeaker(int userID) { ThrowIfDisposed(); return ZrcSdk_SetMyChildAsActiveSpeaker(_handle, userID); }
 
     // ── Delegates ──────────────────────────────────────────────────────────────
 

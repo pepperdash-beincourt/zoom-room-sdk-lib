@@ -3314,6 +3314,28 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignHost(ZrcSdkHandle handle, 
     return (int)pPart->AssignHost(userID);
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMySelfAsActiveSpeaker(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IParticipantHelper* pPart = pMS->GetParticipantHelper();
+    if (!pPart) { inst->RaiseErrorEvent("Participant Helper not available", -1); return -1; }
+    return (int)pPart->SetMySelfAsActiveSpeaker();
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMyChildAsActiveSpeaker(ZrcSdkHandle handle, int32_t userID)
+{
+    if (!handle) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IParticipantHelper* pPart = pMS->GetParticipantHelper();
+    if (!pPart) { inst->RaiseErrorEvent("Participant Helper not available", -1); return -1; }
+    return (int)pPart->SetMyChildAsActiveSpeaker(userID);
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji)
 {
     if (!handle || !emoji) return -1;
