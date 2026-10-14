@@ -9,7 +9,7 @@ C# P/Invoke wrapper for the **Zoom Rooms Controller SDK (ZRC SDK)**, targeting C
 | .NET | net8.0 |
 | Runtime | `linux-arm` (ARMv7-A hard-float) |
 | Device | Crestron CP4N or similar ARM32 Linux Crestron appliance |
-| ZRC SDK | `libZRCSdk.so` installed at `/usr/lib/` on the device (ZRC SDK 6.5.5+) |
+| ZRC SDK | `libZRCSdk.so` installed at `/usr/lib/` on the device (ZRC SDK 7.0.0+) |
 
 ## Installation
 

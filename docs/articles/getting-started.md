@@ -4,7 +4,7 @@
 
 - .NET 8.0
 - Crestron CP4N (or any Crestron ARMv7-A hard-float Linux appliance)
-- ZRC SDK 6.5.5+ — `libZRCSdk.so` installed at `/usr/lib/` on the device
+- ZRC SDK 7.0.0+ — `libZRCSdk.so` installed at `/usr/lib/` on the device
 - Zoom Rooms activation code (from the Zoom admin portal)
 
 ## Installation

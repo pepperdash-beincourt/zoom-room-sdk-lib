@@ -14,8 +14,10 @@ src/
 example/
   ZrcSdkExample/        # Standalone Crestron program using the library
   ZrcSdkExample.slnx    # Open this separately — not part of the main solution
-zrcsdkArm/              # ZRC SDK 6.5.5 headers and ARM32 .so (armhf)
-zrcsdkArm64/            # ZRC SDK 6.5.5 headers and ARM64 .so
+zrcsdk/                 # ZRC SDK 7.0.0 (250)
+  include/              # SDK headers
+  libs/armhf/           # ARM32 libZRCSdk.so
+  Demo/                 # Zoom's SDK demo
 PepperDash.ZoomRoom.Sdk.slnx  # Main solution (library + tests only)
 ```
 
