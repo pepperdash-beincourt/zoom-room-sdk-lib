@@ -631,6 +631,34 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendDTMFToSIPCall(ZrcSdkHandle h
 // cancelCall != 0 cancels an in-progress call-out; hasVoicePrompt != 0 rings on the Zoom Room.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CallOutPSTNUser(ZrcSdkHandle handle, const char* phoneNumber, int cancelCall, int hasVoicePrompt);
 
+// ── Third-party (integration) meetings: the Zoom Room joins a Teams / Webex / Google meeting ──
+// provider: ThirdPartyMeetingServiceProvider (Webex=1, Skype=2, GoToMeeting=3, Teams=4, Bluejeans=5,
+// GoogleHangouts=6, Fuze=7, MetaWorkrooms=8, Tencent=9). ZR 6.0+.
+typedef struct ZrcInterOperabilityInfo {
+    int32_t meetingType;            // ThirdPartyMeetingServiceProvider
+    int32_t supportJoinMeeting;     // 1 = the room may join this provider's meetings
+    int32_t supportJoinWebClient;   // 1 = by the provider's web client
+    int32_t supportSipJoin;         // 1 = by SIP
+    int32_t supportPhoneJoin;       // 1 = by phone
+    int32_t isPexipEnabled;
+} ZrcInterOperabilityInfo;
+// Integration meeting events. Text fields are joined with the unit separator (0x1F).
+//  kind 1 start result:      code = result (0 = success), value = provider
+//  kind 2 meeting info:      code = IntegrationMeetingState, value = provider, text = title, meetingID, audioMuted, videoMuted
+//  kind 3 error:             code = error code, text = message
+//  kind 4 supports Teams:    code = 1/0;  kind 5 supports Teams ad hoc;  kind 6 supports Google Meet
+//  kind 7 content share:     code = IntegrationContentShareState, value = HDMI share available
+//  kind 8 layout:            code = selected layout, value = available layouts (bit mask)
+//  kind 9 asked to join:     text = meeting name, meeting number
+typedef void (ZRCSDKWRAPPER_CALL *ZrcIntegrationEventCallback)(int32_t kind, int32_t code, int32_t value, const char* text, void* userData);
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetIntegrationEventCallback(ZrcSdkHandle handle, ZrcIntegrationEventCallback callback, void* userData);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_JoinIntegrationMeeting(ZrcSdkHandle handle, const char* meetingID, const char* password, int32_t provider);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LeaveIntegrationMeeting(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RejoinIntegrationMeeting(ZrcSdkHandle handle);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteIntegrationAudio(ZrcSdkHandle handle, int mute);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StopIntegrationVideo(ZrcSdkHandle handle, int stop);
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetInterOperabilityInfo(ZrcSdkHandle handle, int32_t provider, ZrcInterOperabilityInfo* outInfo);
+
 // ── Contacts / Directory ──────────────────────────────────────────────────────
 // Subscribe to a range of directory contacts; results arrive via the contact-list callback.
 // startIndex/count page the directory (count ~50 suggested); isSearchSip != 0 searches SIP contacts.

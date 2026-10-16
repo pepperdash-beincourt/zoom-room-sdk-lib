@@ -392,6 +392,27 @@ public:
     void OnSimuliveWebinarInfoNotification(const SimuliveWebinarInfo& info) override {}
 };
 
+// ─── Third-party (integration) meeting sink ──────────────────────────────────
+class ZrcThirdPartyMeetingHelperSink : public IThirdPartyMeetingHelperSink
+{
+public:
+    ZrcSdkInstance* owner;
+    explicit ZrcThirdPartyMeetingHelperSink(ZrcSdkInstance* inst) : owner(inst) {}
+    void OnAskToJoinThirdPartyMeeting(const MeetingItem& item) override;
+    void OnPSTNCallOutNotification(PSTNCallOutStatus callStatus) override {}
+    void OnPSTNCalloutResult(bool isCancel, bool isSwitchToNormalMeeting, const std::string& phoneNumber, const std::string& userName) override {}
+    void OnRoomSystemJoinedNotification(int32_t userID, const std::string& userName) override {}
+    void OnRoomSystemCallingStatusNotification(RoomSystemCallingStatus status) override {}
+    void OnStartIntegrationMeetingResult(int32_t result, int32_t serviceProvider) override;
+    void OnUpdateIntegrationMeetingInfo(const IntegrationMeetingInfo& info) override;
+    void OnUpdateIntegrationMeetingErrorInfo(const IntegrationMeetingErrorInfo& info) override;
+    void OnUpdateIntegrationMeetingContentShareInfo(const IntegrationMeetingContentShareInfo& info) override;
+    void OnUpdateIntegrationMeetingLayoutInfo(const IntegrationMeetingLayoutInfo& info) override;
+    void OnUpdateSupportIntegrationTeamsMeeting(bool isSupport) override;
+    void OnUpdateSupportIntegrationTeamsMeetingForAdhoc(bool isSupport) override;
+    void OnUpdateSupportIntegrationGoogleMeet(bool isSupport) override;
+};
+
 // ─── Breakout sub-helper sinks ───────────────────────────────────────────────
 class ZrcBOCreatorHelperSink : public IBOCreatorHelperSink
 {
@@ -554,6 +575,7 @@ struct ZrcSdkInstance
     ZrcRecordingHelperSink*     pRecordingHelperSink;
     ZrcMeetingReminderHelperSink* pMeetingReminderHelperSink;
     ZrcMeetingWebinarHelperSink*  pMeetingWebinarHelperSink;
+    ZrcThirdPartyMeetingHelperSink* pThirdPartyMeetingHelperSink;
     ZrcBOCreatorHelperSink*       pBOCreatorHelperSink;
     ZrcBOAdminHelperSink*         pBOAdminHelperSink;
     ZrcBOAttendeeHelperSink*      pBOAttendeeHelperSink;
@@ -644,6 +666,7 @@ struct ZrcSdkInstance
     ZrcParticipantListCallback boParticipantListCallback; void* boParticipantListUserData;
     ZrcWebinarAttendeeListCallback webinarAttendeeListCallback; void* webinarAttendeeListUserData;
     ZrcWebinarCountsCallback webinarCountsCallback; void* webinarCountsUserData;
+    ZrcIntegrationEventCallback integrationEventCallback; void* integrationEventUserData;
     // Phone / SIP
     ZrcSIPCallCallback sipCallStatusCallback;       void* sipCallStatusUserData;
     SdkEventCallback sipServiceStatusCallback;      void* sipServiceStatusUserData;
@@ -663,7 +686,7 @@ struct ZrcSdkInstance
         , pBreakoutRoomHelperSink(nullptr), pChatHelperSink(nullptr)
         , pClosedCaptionHelperSink(nullptr), pCameraControlHelperSink(nullptr)
         , pParticipantHelperSink(nullptr)
-        , pRecordingHelperSink(nullptr), pMeetingReminderHelperSink(nullptr), pMeetingWebinarHelperSink(nullptr), pBOCreatorHelperSink(nullptr), pBOAdminHelperSink(nullptr), pBOAttendeeHelperSink(nullptr), pBODataHelperSink(nullptr), pControlSystemHelperSink(nullptr)
+        , pRecordingHelperSink(nullptr), pMeetingReminderHelperSink(nullptr), pMeetingWebinarHelperSink(nullptr), pThirdPartyMeetingHelperSink(nullptr), pBOCreatorHelperSink(nullptr), pBOAdminHelperSink(nullptr), pBOAttendeeHelperSink(nullptr), pBODataHelperSink(nullptr), pControlSystemHelperSink(nullptr)
         , pPhoneCallService(nullptr), pPhoneCallServiceSink(nullptr)
         , pContactHelper(nullptr), pContactHelperSink(nullptr)
         , pMeetingListHelper(nullptr), pMeetingListHelperSink(nullptr)
@@ -721,6 +744,7 @@ struct ZrcSdkInstance
         , boParticipantListCallback(nullptr), boParticipantListUserData(nullptr)
         , webinarAttendeeListCallback(nullptr), webinarAttendeeListUserData(nullptr)
         , webinarCountsCallback(nullptr), webinarCountsUserData(nullptr)
+        , integrationEventCallback(nullptr), integrationEventUserData(nullptr)
         , sipCallStatusCallback(nullptr), sipCallStatusUserData(nullptr)
         , sipServiceStatusCallback(nullptr), sipServiceStatusUserData(nullptr)
         , zrcsDeviceListCallback(nullptr), zrcsDeviceListUserData(nullptr)
@@ -780,6 +804,7 @@ struct ZrcSdkInstance
     void RaiseBOParticipantListEvent(const std::vector<MeetingParticipant>& participants, int total, int eventType);
     void RaiseWebinarAttendeeListEvent(const DynamicWebinarAttendeeListRes& response);
     void RaiseWebinarCountsEvent(int attendees, int raisedHands, int panelists) { if (webinarCountsCallback) webinarCountsCallback(attendees, raisedHands, panelists, webinarCountsUserData); }
+    void RaiseIntegrationEvent(int kind, int code, int value, const std::string& text) { if (integrationEventCallback) integrationEventCallback(kind, code, value, text.c_str(), integrationEventUserData); }
     void RaiseSIPServiceStatusEvent(const char* name, int status) { Raise(sipServiceStatusCallback, sipServiceStatusUserData, name, status); }
     void RaiseBORoomListEvent(const std::vector<BreakoutRoomInfo>& rooms);
     void RaiseZRCSDeviceListEvent(ControlSystemUpdateDeviceType type, const ControlSystemDeviceList& list);
@@ -1353,6 +1378,37 @@ void ZrcMeetingWebinarHelperSink::OnWebinarRoleChangedNotification(WebinarRoleCh
     owner->RaisePromptEvent(&p);
 }
 
+// ─── Third-party meeting sink implementations ────────────────────────────────
+static std::string JoinFields(const std::vector<std::string>& fields)
+{
+    std::string out;
+    for (size_t i = 0; i < fields.size(); ++i) { if (i) out += '\x1f'; out += fields[i]; }
+    return out;
+}
+
+void ZrcThirdPartyMeetingHelperSink::OnAskToJoinThirdPartyMeeting(const MeetingItem& item)
+{ if (owner) owner->RaiseIntegrationEvent(9, 0, 0, JoinFields({ item.meetingName, item.meetingNumber })); }
+void ZrcThirdPartyMeetingHelperSink::OnStartIntegrationMeetingResult(int32_t result, int32_t serviceProvider)
+{ if (owner) owner->RaiseIntegrationEvent(1, result, serviceProvider, std::string()); }
+void ZrcThirdPartyMeetingHelperSink::OnUpdateIntegrationMeetingInfo(const IntegrationMeetingInfo& info)
+{
+    if (!owner) return;
+    owner->RaiseIntegrationEvent(2, (int)info.meetingState, (int)info.provider,
+        JoinFields({ info.meetingTitle, info.meetingID, info.isAudioMuted ? "1" : "0", info.isVideoMuted ? "1" : "0" }));
+}
+void ZrcThirdPartyMeetingHelperSink::OnUpdateIntegrationMeetingErrorInfo(const IntegrationMeetingErrorInfo& info)
+{ if (owner) owner->RaiseIntegrationEvent(3, info.errorCode, 0, info.errorMessage); }
+void ZrcThirdPartyMeetingHelperSink::OnUpdateIntegrationMeetingContentShareInfo(const IntegrationMeetingContentShareInfo& info)
+{ if (owner) owner->RaiseIntegrationEvent(7, (int)info.contentShareState, info.isHDMIContentShareAvailable ? 1 : 0, std::string()); }
+void ZrcThirdPartyMeetingHelperSink::OnUpdateIntegrationMeetingLayoutInfo(const IntegrationMeetingLayoutInfo& info)
+{ if (owner) owner->RaiseIntegrationEvent(8, (int)info.selectedLayoutType, (int)info.availableLayoutType, std::string()); }
+void ZrcThirdPartyMeetingHelperSink::OnUpdateSupportIntegrationTeamsMeeting(bool isSupport)
+{ if (owner) owner->RaiseIntegrationEvent(4, isSupport ? 1 : 0, 0, std::string()); }
+void ZrcThirdPartyMeetingHelperSink::OnUpdateSupportIntegrationTeamsMeetingForAdhoc(bool isSupport)
+{ if (owner) owner->RaiseIntegrationEvent(5, isSupport ? 1 : 0, 0, std::string()); }
+void ZrcThirdPartyMeetingHelperSink::OnUpdateSupportIntegrationGoogleMeet(bool isSupport)
+{ if (owner) owner->RaiseIntegrationEvent(6, isSupport ? 1 : 0, 0, std::string()); }
+
 void ZrcMeetingWebinarHelperSink::OnWebinarAttendeeBaseInfoNotification(const WebinarAttendeeBaseInfo& baseInfo)
 {
     if (owner) owner->RaiseWebinarCountsEvent((int)baseInfo.attendeeCount, (int)baseInfo.raisedCount, -1);
@@ -1871,6 +1927,7 @@ static void FreeInstance(ZrcSdkInstance* inst)
     delete inst->pRecordingHelperSink;
     delete inst->pMeetingReminderHelperSink;
     delete inst->pMeetingWebinarHelperSink;
+    delete inst->pThirdPartyMeetingHelperSink;
     delete inst->pBOCreatorHelperSink;
     delete inst->pBOAdminHelperSink;
     delete inst->pBOAttendeeHelperSink;
@@ -2187,6 +2244,13 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_InitializeRoom(ZrcSdkHandle hand
             {
                 inst->pMeetingWebinarHelperSink = new ZrcMeetingWebinarHelperSink(inst);
                 pWebinar->RegisterSink(inst->pMeetingWebinarHelperSink);
+            }
+
+            IThirdPartyMeetingHelper* pThirdParty = inst->pMeetingService->GetThirdPartyMeetingHelper();
+            if (pThirdParty)
+            {
+                inst->pThirdPartyMeetingHelperSink = new ZrcThirdPartyMeetingHelperSink(inst);
+                pThirdParty->RegisterSink(inst->pThirdPartyMeetingHelperSink);
             }
 
             IMeetingListHelper* pMeetingList = inst->pMeetingService->GetMeetingListHelper();
@@ -3876,6 +3940,73 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_CallOutPSTNUser(ZrcSdkHandle han
     return (int)pTPM->CallOutPSTNUser(std::string(phoneNumber), cancelCall != 0, hasVoicePrompt != 0);
 }
 
+// ─── Third-party (integration) meetings ──────────────────────────────────────
+
+static IThirdPartyMeetingHelper* GetThirdPartyHelper(ZrcSdkInstance* inst)
+{
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return nullptr; }
+    if (!inst->pMeetingService) { inst->RaiseErrorEvent("Meeting Service not available", -1); return nullptr; }
+    IThirdPartyMeetingHelper* p = inst->pMeetingService->GetThirdPartyMeetingHelper();
+    if (!p) inst->RaiseErrorEvent("Third Party Meeting Helper not available", -1);
+    return p;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_JoinIntegrationMeeting(ZrcSdkHandle handle, const char* meetingID, const char* password, int32_t provider)
+{
+    if (!handle || !meetingID) return -1;
+    IThirdPartyMeetingHelper* p = GetThirdPartyHelper((ZrcSdkInstance*)handle);
+    if (!p) return -1;
+    return (int)p->JoinIntegrationMeeting(std::string(meetingID), SafeStr(password), (ThirdPartyMeetingServiceProvider)provider);
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LeaveIntegrationMeeting(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    IThirdPartyMeetingHelper* p = GetThirdPartyHelper((ZrcSdkInstance*)handle);
+    return p ? (int)p->LeaveIntegrationMeeting() : -1;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RejoinIntegrationMeeting(ZrcSdkHandle handle)
+{
+    if (!handle) return -1;
+    IThirdPartyMeetingHelper* p = GetThirdPartyHelper((ZrcSdkInstance*)handle);
+    return p ? (int)p->RejoinIntegrationMeeting() : -1;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_MuteIntegrationAudio(ZrcSdkHandle handle, int mute)
+{
+    if (!handle) return -1;
+    IThirdPartyMeetingHelper* p = GetThirdPartyHelper((ZrcSdkInstance*)handle);
+    return p ? (int)p->MuteIntegrationAudio(mute != 0) : -1;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StopIntegrationVideo(ZrcSdkHandle handle, int stop)
+{
+    if (!handle) return -1;
+    IThirdPartyMeetingHelper* p = GetThirdPartyHelper((ZrcSdkInstance*)handle);
+    return p ? (int)p->StopIntegrationVideo(stop != 0) : -1;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetInterOperabilityInfo(ZrcSdkHandle handle, int32_t provider, ZrcInterOperabilityInfo* outInfo)
+{
+    if (!handle || !outInfo) return -1;
+    IThirdPartyMeetingHelper* p = GetThirdPartyHelper((ZrcSdkInstance*)handle);
+    if (!p) return -1;
+    InterOperabilityInfo info;
+    int rc = (int)p->GetInterOperabilityInfoByMeetingType((ThirdPartyMeetingServiceProvider)provider, info);
+    memset(outInfo, 0, sizeof(ZrcInterOperabilityInfo));
+    if (rc == 0)
+    {
+        outInfo->meetingType          = (int32_t)info.meetingType;
+        outInfo->supportJoinMeeting   = info.supportJoinMeeting ? 1 : 0;
+        outInfo->supportJoinWebClient = info.supportJoinWebClient ? 1 : 0;
+        outInfo->supportSipJoin       = info.supportSipJoin ? 1 : 0;
+        outInfo->supportPhoneJoin     = info.supportPhoneJoin ? 1 : 0;
+        outInfo->isPexipEnabled       = info.isPexipEnabled ? 1 : 0;
+    }
+    return rc;
+}
+
 // ─── Contacts / Directory ─────────────────────────────────────────────────────
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SubscribeContacts(ZrcSdkHandle handle, int startIndex, int count, int isSearchSip)
@@ -4215,6 +4346,8 @@ ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetWebinarAttendeeListCallback(
     { SET_CB(webinarAttendeeList, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetWebinarCountsCallback(ZrcSdkHandle handle, ZrcWebinarCountsCallback callback, void* userData)
     { SET_CB(webinarCounts, callback, userData); }
+ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetIntegrationEventCallback(ZrcSdkHandle handle, ZrcIntegrationEventCallback callback, void* userData)
+    { SET_CB(integrationEvent, callback, userData); }
 ZRCSDKWRAPPER_API void ZRCSDKWRAPPER_CALL ZrcSdk_SetSIPCallStatusCallback(ZrcSdkHandle handle, ZrcSIPCallCallback callback, void* userData)
 {
     if (!handle) return;
