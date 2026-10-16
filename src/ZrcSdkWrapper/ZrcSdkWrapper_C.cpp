@@ -3622,6 +3622,8 @@ static void FlattenDevice(const Device& src, ZrcDevice& dst)
     strncpy_safe(dst.name,        src.name,        sizeof(dst.name));
     strncpy_safe(dst.displayName, src.displayName, sizeof(dst.displayName));
     dst.isSelected = src.isSelected ? 1 : 0;
+    strncpy_safe(dst.alias,       src.alias,       sizeof(dst.alias));
+    dst.isSelectedAsMultiDevice = src.isSelectedAsMultiDevice ? 1 : 0;
 }
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCameraList(ZrcSdkHandle handle, ZrcDevice* outDevices, int maxCount)
@@ -3652,6 +3654,15 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCurrentCamera(ZrcSdkHandle ha
     int rc = (int)inst->pSettingService->GetCurrentCamera(cam);
     if (rc == 0) FlattenDevice(cam, *outDevice);
     return rc;
+}
+
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraDisplayName(ZrcSdkHandle handle, const char* deviceID, const char* displayName)
+{
+    if (!handle || !deviceID || !displayName) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    return (int)inst->pSettingService->SetCameraDisplayName(std::string(deviceID), std::string(displayName));
 }
 
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle handle, const char* deviceID)

@@ -22,6 +22,8 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_GetCurrentCamera(IntPtr handle, out ZrcDeviceNative outDevice);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_SetCurrentCamera(IntPtr handle, string deviceID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_SetCameraDisplayName(IntPtr handle, string deviceID, string displayName);
 
     // Camera presets (index range [0,1,2]; empty deviceID = main/near camera).
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -41,6 +43,8 @@ public partial class ZrcSdk
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string name;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string displayName;
         public int isSelected;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] public string alias;
+        public int isSelectedAsMultiDevice;
     }
 
     // Camera preset flat structs (must mirror ZrcCameraPreset / ZrcCameraPresetInfo in ZrcSdkWrapper_C.h).
@@ -189,7 +193,21 @@ public partial class ZrcSdk
         Name        = n.name ?? string.Empty,
         DisplayName = string.IsNullOrEmpty(n.displayName) ? (n.name ?? string.Empty) : n.displayName,
         IsSelected  = n.isSelected != 0,
+        Alias       = n.alias ?? string.Empty,
+        IsSelectedAsMultiDevice = n.isSelectedAsMultiDevice != 0,
     };
+
+    /// <summary>
+    /// Renames a camera in the Zoom Room's settings (persistent across meetings and restarts).
+    /// Zoom Rooms 6.0+. Returns the raw SDK result code (0 = success; 141 = this camera's display
+    /// name can't be set).
+    /// </summary>
+    public int SetCameraDisplayName(string deviceID, string displayName)
+    {
+        ThrowIfDisposed();
+        if (string.IsNullOrEmpty(deviceID) || displayName == null) return -1;
+        return ZrcSdk_SetCameraDisplayName(_handle, deviceID, displayName);
+    }
 
     /// <summary>
     /// Controls a far-end (participant) camera. The target participant must have granted

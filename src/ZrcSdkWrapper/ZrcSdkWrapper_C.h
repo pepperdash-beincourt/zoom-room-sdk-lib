@@ -588,6 +588,8 @@ typedef struct ZrcDevice {
     char    name[256];              // Device name
     char    displayName[256];       // Display name for UI
     int32_t isSelected;             // 1 = currently selected/active
+    char    alias[256];             // Device alias
+    int32_t isSelectedAsMultiDevice;// 1 = one of the cameras used in multi-camera mode
 } ZrcDevice;
 
 // ── Camera control ────────────────────────────────────────────────────────────
@@ -612,6 +614,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCameraList(ZrcSdkHandle handl
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCurrentCamera(ZrcSdkHandle handle, ZrcDevice* outDevice);
 // SetCurrentCamera selects the active camera by device ID; returns 0 on success.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle handle, const char* deviceID);
+// Renames a camera in the Zoom Room's settings (persistent). ZR 6.0+.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraDisplayName(ZrcSdkHandle handle, const char* deviceID, const char* displayName);
 
 // ── Phone Call ────────────────────────────────────────────────────────────────
 // SIP call wrapping. Command methods that take a callID look up the cached SIPCallInfo; pass an

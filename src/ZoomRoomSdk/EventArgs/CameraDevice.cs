@@ -15,4 +15,8 @@ public sealed class CameraDevice
     public string DisplayName { get; init; } = string.Empty;
     /// <summary>True when this is the currently selected/active camera.</summary>
     public bool   IsSelected  { get; init; }
+    /// <summary>Device alias reported by the SDK.</summary>
+    public string Alias       { get; init; } = string.Empty;
+    /// <summary>True when this camera is one of the cameras used in multi-camera mode.</summary>
+    public bool   IsSelectedAsMultiDevice { get; init; }
 }
