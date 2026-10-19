@@ -103,6 +103,9 @@ public partial class ZrcSdk : IDisposable
     [DllImport("libdl.so.2")]
     private static extern IntPtr dlerror();
 
+    [DllImport("libdl.so.2")]
+    private static extern IntPtr dlsym(IntPtr handle, string symbol);
+
     [DllImport("libc.so.6", SetLastError = true)]
     private static extern int syscall(int number, string name, uint flags);
 
@@ -112,25 +115,56 @@ public partial class ZrcSdk : IDisposable
     [DllImport("libc.so.6", SetLastError = true)]
     private static extern int close(int fd);
 
+    // IZRCSDK::CreateInstance(IZRCSDKSink*): the wrapper's first call into libZRCSdk.so.
+    private const string NativeSdkEntrySymbol = "_ZN6ZRCSDK7IZRCSDK14CreateInstanceEPNS_11IZRCSDKSinkE";
+
+    private static readonly string? s_nativeSdkLoadError;
+
+    /// <summary>
+    /// Why <c>libZRCSdk.so</c> could not be loaded, or <see langword="null"/> when it loaded.
+    /// While this is set, constructing a <see cref="ZrcSdk"/> throws.
+    /// </summary>
+    public static string? NativeSdkLoadError => s_nativeSdkLoadError;
+
     static ZrcSdk()
+    {
+        s_nativeSdkLoadError = PreloadNativeSdk();
+        if (s_nativeSdkLoadError != null)
+            Console.WriteLine($"Warning: Could not preload ZRC SDK: {s_nativeSdkLoadError}");
+
+        NativeLibrary.SetDllImportResolver(typeof(ZrcSdk).Assembly, DllImportResolver);
+    }
+
+    /// <summary>
+    /// Loads <c>libZRCSdk.so</c> process-wide. The wrapper does not link against it and binds to
+    /// its symbols lazily, on first call, so this load is what makes them resolvable.
+    /// </summary>
+    /// <returns><see langword="null"/> on success, otherwise why the library is unusable.</returns>
+    private static string? PreloadNativeSdk()
     {
         try
         {
             dlerror();
             var handle = dlopen("libZRCSdk.so", RTLD_NOW | RTLD_GLOBAL);
             if (handle == IntPtr.Zero)
-            {
-                var errPtr = dlerror();
-                var errMsg = errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "unknown";
-                throw new InvalidOperationException($"Failed to load libZRCSdk.so: {errMsg}");
-            }
+                return $"Failed to load libZRCSdk.so: {LastDlError()}";
+
+            dlerror();
+            if (dlsym(handle, NativeSdkEntrySymbol) == IntPtr.Zero)
+                return $"libZRCSdk.so has no IZRCSDK::CreateInstance(IZRCSDKSink*): {LastDlError()}";
+
+            return null;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Warning: Could not preload ZRC SDK: {ex.Message}");
+            return $"Failed to load libZRCSdk.so: {ex.Message}";
         }
+    }
 
-        NativeLibrary.SetDllImportResolver(typeof(ZrcSdk).Assembly, DllImportResolver);
+    private static string LastDlError()
+    {
+        var errPtr = dlerror();
+        return errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) ?? "unknown" : "unknown";
     }
 
     private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
@@ -357,8 +391,14 @@ public partial class ZrcSdk : IDisposable
     /// <summary>
     /// Creates the native SDK instance and registers all event callbacks.
     /// </summary>
+    /// <exception cref="DllNotFoundException"><c>libZRCSdk.so</c> did not load; see <see cref="NativeSdkLoadError"/>.</exception>
     public ZrcSdk()
     {
+        // Without libZRCSdk.so the wrapper's first call into it is an unresolved symbol, and the
+        // dynamic linker ends the whole process with no managed exception. Fail here instead.
+        if (s_nativeSdkLoadError != null)
+            throw new DllNotFoundException($"ZRC SDK native library unavailable: {s_nativeSdkLoadError}");
+
         _handle = ZrcSdk_Create();
         if (_handle == IntPtr.Zero)
             throw new InvalidOperationException("Failed to create ZRC SDK instance");
