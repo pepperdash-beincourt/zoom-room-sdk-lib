@@ -554,6 +554,9 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AssignHost(ZrcSdkHandle handle, 
 // parentUserID is the room's userID), the active speaker. ZR 6.6.0+.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMySelfAsActiveSpeaker(ZrcSdkHandle handle);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMyChildAsActiveSpeaker(ZrcSdkHandle handle, int32_t userID);
+// Renames a participant for the current meeting (IParticipantHelper::RenameUser), e.g. one of the
+// room's own camera tiles. Renaming anyone but yourself normally needs host or co-host.
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RenameUser(ZrcSdkHandle handle, int32_t userID, const char* name);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionFeedback(ZrcSdkHandle handle, int32_t feedbackType);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_ClearAllFeedback(ZrcSdkHandle handle);

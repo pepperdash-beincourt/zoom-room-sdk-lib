@@ -3400,6 +3400,17 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetMyChildAsActiveSpeaker(ZrcSdk
     return (int)pPart->SetMyChildAsActiveSpeaker(userID);
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_RenameUser(ZrcSdkHandle handle, int32_t userID, const char* name)
+{
+    if (!handle || !name) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IParticipantHelper* pPart = pMS->GetParticipantHelper();
+    if (!pPart) { inst->RaiseErrorEvent("Participant Helper not available", -1); return -1; }
+    return (int)pPart->RenameUser(userID, std::string(name));
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SendReactionEmoji(ZrcSdkHandle handle, const char* emoji)
 {
     if (!handle || !emoji) return -1;

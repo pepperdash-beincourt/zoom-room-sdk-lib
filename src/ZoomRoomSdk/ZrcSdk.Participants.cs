@@ -102,6 +102,8 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_SetMySelfAsActiveSpeaker(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_SetMyChildAsActiveSpeaker(IntPtr handle, int userID);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_RenameUser(IntPtr handle, int userID, string name);
 
     /// <summary>Removes (expels) a participant from the meeting. Host only.</summary>
     public bool ExpelUser(int userID) { ThrowIfDisposed(); return ZrcSdk_ExpelUser(_handle, userID) == 0; }
@@ -121,6 +123,19 @@ public partial class ZrcSdk
     /// Multi-camera rooms only; Zoom Rooms 6.6.0+. Returns the raw SDK result code (0 = success).
     /// </summary>
     public int SetMyChildAsActiveSpeaker(int userID) { ThrowIfDisposed(); return ZrcSdk_SetMyChildAsActiveSpeaker(_handle, userID); }
+
+    /// <summary>
+    /// Renames a participant for the current meeting - for example one of the room's own camera tiles
+    /// (a participant whose <see cref="ParticipantInfo.ParentUserID"/> is the room's user ID). Renaming
+    /// anyone but the room itself normally needs host or co-host. Returns the raw SDK result code
+    /// (0 = success; 402 = not supported for a multi-stream video user).
+    /// </summary>
+    public int RenameUser(int userID, string name)
+    {
+        ThrowIfDisposed();
+        if (name == null) return -1;
+        return ZrcSdk_RenameUser(_handle, userID, name);
+    }
 
     // ── Delegates ──────────────────────────────────────────────────────────────
 
