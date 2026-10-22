@@ -3515,6 +3515,20 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StartBreakoutRooms(ZrcSdkHandle 
     return (int)pAdmin->StartBreakoutRooms();
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_IsBOEnabled(ZrcSdkHandle handle, int* outEnabled)
+{
+    if (!handle || !outEnabled) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    GET_MEETING_SERVICE(inst, pMS);
+    IBreakoutRoomHelper* pBO = pMS->GetBreakoutRoomHelper();
+    if (!pBO) { inst->RaiseErrorEvent("BreakoutRoom Helper not available", -1); return -1; }
+    bool enabled = false;
+    int rc = (int)pBO->IsBOEnabled(enabled);
+    *outEnabled = enabled ? 1 : 0;
+    return rc;
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_StopBreakoutRooms(ZrcSdkHandle handle)
 {
     if (!handle) return -1;

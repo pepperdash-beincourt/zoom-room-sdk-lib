@@ -576,6 +576,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_JoinBreakoutRoom(ZrcSdkHandle ha
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_LeaveBreakoutRoom(ZrcSdkHandle handle, const char* boRoomBID);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_BroadcastMessageToBreakoutRooms(ZrcSdkHandle handle, const char* message);
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_AskForHelpInBreakoutRoom(ZrcSdkHandle handle);
+// Whether the breakout room feature is enabled in the current meeting (*outEnabled 1/0).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_IsBOEnabled(ZrcSdkHandle handle, int* outEnabled);
 
 // ── Chat ──────────────────────────────────────────────────────────────────────
 // Send chat message to all (receiverUserID=0) or to individual

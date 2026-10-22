@@ -27,6 +27,8 @@ public partial class ZrcSdk
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern int ZrcSdk_AskForHelpInBreakoutRoom(IntPtr handle);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int ZrcSdk_IsBOEnabled(IntPtr handle, out int enabled);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetBOStatusChangedCallback(IntPtr handle, SdkEventCallbackDelegate? cb, IntPtr userData);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     private static extern void ZrcSdk_SetBORoomListCallback(IntPtr handle, ZrcBORoomListCallbackDelegate? cb, IntPtr userData);
@@ -64,6 +66,18 @@ public partial class ZrcSdk
 
     /// <summary>Asks the host for help from within a breakout room (attendee action).</summary>
     public bool AskForHelpInBreakoutRoom() { ThrowIfDisposed(); return ZrcSdk_AskForHelpInBreakoutRoom(_handle) == 0; }
+
+    /// <summary>
+    /// Whether the breakout room feature is enabled in the current meeting. Returns false when the
+    /// query fails (e.g. not in a meeting); <paramref name="enabled"/> is only meaningful on true.
+    /// </summary>
+    public bool IsBOEnabled(out bool enabled)
+    {
+        ThrowIfDisposed();
+        var ok = ZrcSdk_IsBOEnabled(_handle, out var value) == 0;
+        enabled = value != 0;
+        return ok;
+    }
 
     private void OnBOStatusChangedCallback(string message, int status, IntPtr userData) =>
         BOStatusChanged?.Invoke(this, new SdkEventArgs { Message = message, ErrorCode = status });
