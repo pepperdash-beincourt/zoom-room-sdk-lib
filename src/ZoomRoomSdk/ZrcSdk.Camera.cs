@@ -24,6 +24,8 @@ public partial class ZrcSdk
     private static extern int ZrcSdk_SetCurrentCamera(IntPtr handle, string deviceID);
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     private static extern int ZrcSdk_SetCameraDisplayName(IntPtr handle, string deviceID, string displayName);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    private static extern int ZrcSdk_SelectMultipleCamera(IntPtr handle, string deviceID, int isSelected);
 
     // Camera presets (index range [0,1,2]; empty deviceID = main/near camera).
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -207,6 +209,19 @@ public partial class ZrcSdk
         ThrowIfDisposed();
         if (string.IsNullOrEmpty(deviceID) || displayName == null) return -1;
         return ZrcSdk_SetCameraDisplayName(_handle, deviceID, displayName);
+    }
+
+    /// <summary>
+    /// Selects or deselects a camera for multi-camera - the same as ticking it in the Zoom Room's
+    /// multi-camera settings - which adds or removes its tile in a meeting. A persistent Zoom Room
+    /// setting. Returns the raw SDK result code (0 = success; 136 = multi-camera not enabled,
+    /// 137 = multi-camera count at its maximum, 138 = this camera can't be selected).
+    /// </summary>
+    public int SelectMultipleCamera(string deviceID, bool isSelected)
+    {
+        ThrowIfDisposed();
+        if (string.IsNullOrEmpty(deviceID)) return -1;
+        return ZrcSdk_SelectMultipleCamera(_handle, deviceID, isSelected ? 1 : 0);
     }
 
     /// <summary>

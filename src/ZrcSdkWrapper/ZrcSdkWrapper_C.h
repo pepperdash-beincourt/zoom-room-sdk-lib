@@ -624,6 +624,8 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_GetCurrentCamera(ZrcSdkHandle ha
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle handle, const char* deviceID);
 // Renames a camera in the Zoom Room's settings (persistent). ZR 6.0+.
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraDisplayName(ZrcSdkHandle handle, const char* deviceID, const char* displayName);
+// Select (1) or deselect (0) a camera for multi-camera (the Zoom Room's multi-camera camera list).
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SelectMultipleCamera(ZrcSdkHandle handle, const char* deviceID, int isSelected);
 
 // ── Phone Call ────────────────────────────────────────────────────────────────
 // SIP call wrapping. Command methods that take a callID look up the cached SIPCallInfo; pass an

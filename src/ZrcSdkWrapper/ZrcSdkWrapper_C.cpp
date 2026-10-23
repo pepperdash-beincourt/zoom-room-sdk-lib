@@ -3775,6 +3775,15 @@ ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCameraDisplayName(ZrcSdkHandl
     return (int)inst->pSettingService->SetCameraDisplayName(std::string(deviceID), std::string(displayName));
 }
 
+ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SelectMultipleCamera(ZrcSdkHandle handle, const char* deviceID, int isSelected)
+{
+    if (!handle || !deviceID) return -1;
+    ZrcSdkInstance* inst = (ZrcSdkInstance*)handle;
+    if (!inst->bInitialized) { inst->RaiseErrorEvent("SDK not initialized", -1); return -1; }
+    if (!inst->pSettingService) { inst->RaiseErrorEvent("Setting Service not available", -1); return -1; }
+    return (int)inst->pSettingService->SelectMultipleCamera(std::string(deviceID), isSelected != 0);
+}
+
 ZRCSDKWRAPPER_API int ZRCSDKWRAPPER_CALL ZrcSdk_SetCurrentCamera(ZrcSdkHandle handle, const char* deviceID)
 {
     if (!handle || !deviceID) return -1;
